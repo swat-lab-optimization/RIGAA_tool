@@ -83,10 +83,14 @@ def main(problem, algo, runs_number, save_results, random_seed, debug):
         sys.exit(1)
 
     n_offsprings = cf.ga["pop_size"]
+    if algo == "rigaa":
+        rl_pop_percent = cf.rl["init_pop_prob"]
+    else:
+        rl_pop_percent = 0
     algorithm = ALRGORITHMS[algo](
         n_offsprings=n_offsprings,
         pop_size=cf.ga["pop_size"],
-        sampling=SAMPLERS[problem](),
+        sampling=SAMPLERS[problem](rl_pop_percent),
         crossover=OPERATORS[problem + "_crossover"](cf.ga["cross_rate"]),
         mutation=OPERATORS[problem + "_mutation"](cf.ga["mut_rate"]),
         eliminate_duplicates=DuplicateElimination(),

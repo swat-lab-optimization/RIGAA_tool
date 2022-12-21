@@ -5,5 +5,6 @@ from pymoo.algorithms.soo.nonconvex.random_search import RandomSearch
 ALRGORITHMS = {
     "ga": GA,
     "nsga2": NSGA2,
+    "rigaa": NSGA2,
     "random": RandomSearch,
 }

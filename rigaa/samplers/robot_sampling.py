@@ -50,6 +50,12 @@ class RobotSampling(Sampling):
     """
     Module to sample the initial population
     """
+
+    def __init__(self, init_pop_prob):
+        super().__init__()
+        self.init_pop_prob = init_pop_prob
+
+
     def _do(self, problem, n_samples, **kwargs):
         """
         This is a function to generate the initial population of the algorithm
@@ -61,7 +67,7 @@ class RobotSampling(Sampling):
             r = np.random.random()
             s = RobotSolution()
            
-            if r < cf.rl["init_pop_prob"]:
+            if r < self.init_pop_prob:
                 states, fitness = generate_rl_map()
             else:
                 states, fitness =  generate_random_solution()

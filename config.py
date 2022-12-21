@@ -5,16 +5,16 @@ rl = {"init_pop_prob": 0.2}
 
 vehicle_env = {
     "map_size": 200,
-    "elem_types": 2,
     "min_len": 5,  # minimal possible distance in meters
     "max_len": 30,  # maximal possible disance to go straight in meters
     "min_angle": 10,  # minimal angle of rotation in degrees
     "max_angle": 80,  # maximal angle of rotation in degrees
+    "speed": 9,
+    "steer_ang": 12,
 }
 
 robot_env = {
     "map_size": 40,
-    "elem_types": 2,
     "min_len": 8,  # 3,  # minimal possible distance in meters
     "max_len": 15,  # 12,#15,  # maximal possible disance to go straight in meters
     "min_pos": 1,  # minimal possible

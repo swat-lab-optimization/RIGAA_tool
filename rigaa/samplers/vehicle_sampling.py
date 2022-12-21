@@ -18,8 +18,8 @@ def generate_random_road():
 
     map_size = cf.vehicle_env["map_size"]
 
-    speed = 9
-    steer_ang = 12
+    speed = cf.vehicle_env["speed"]
+    steer_ang = cf.vehicle_env["steer_ang"]
 
     fitness = 0
 
@@ -54,13 +54,17 @@ class VehicleSampling(Sampling):
 
     returns: a tensor of candidate solutions
     """
+
+    def __init__(self, init_pop_prob):
+        super().__init__()
+        self.init_pop_prob = init_pop_prob
     def _do(self, problem, n_samples, **kwargs):
 
         X = np.full((n_samples, 1), None, dtype=object)
 
         for i in range(n_samples):
             r = np.random.random()
-            if r < cf.rl["init_pop_prob"]:
+            if r < self.init_pop_prob:
                 states, fitness = generate_rl_road()
             else:
                 states, fitness = generate_random_road()
