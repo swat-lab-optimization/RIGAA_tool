@@ -3,6 +3,7 @@ import logging as log
 import numpy as np
 from pymoo.core.sampling import Sampling
 import config as cf
+import time
 from rigaa.utils.car_road import Map
 from rigaa.utils.vehicle import Car
 from rigaa.solutions import VehicleSolution
@@ -65,9 +66,13 @@ class VehicleSampling(Sampling):
         for i in range(n_samples):
             r = np.random.random()
             if r < self.init_pop_prob:
+                start = time.time()
                 states, fitness = generate_rl_road()
+                log.debug("Individual produced by RL in %f sec", time.time() - start)
             else:
+                start = time.time()
                 states, fitness = generate_random_road()
+                log.debug("Individual produced by randomly in %f sec", time.time() - start)
             s = VehicleSolution()
             s.states = states
             s.fitness = fitness

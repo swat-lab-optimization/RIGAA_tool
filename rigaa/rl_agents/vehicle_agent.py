@@ -26,14 +26,14 @@ def generate_rl_road():
         i += 1
         car = Car(cf.vehicle_env["speed"], cf.vehicle_env["steer_ang"], cf.vehicle_env["map_size"])
         map = Map(cf.vehicle_env["map_size"])
-        scenario = environ.all_states[-5]
+        scenario = environ.all_states[-2]
         points = map.get_points_from_states(scenario)
         intp_points = car.interpolate_road(points)
 
         max_fitness, _ = (car.execute_road(intp_points))
         max_fitness = abs(max_fitness)
 
-        if (max_fitness > 3.8) or i > 15:
+        if (max_fitness > 3.7) or i > 15:
 
             scenario_found = True
 

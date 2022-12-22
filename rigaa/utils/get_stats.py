@@ -30,7 +30,7 @@ def get_stats(res, problem, algo):
     gen = len(res.history) - 1
     novelty_list = []
     test_population = res.history[gen].pop.get("X")
-    if algo != "nsga2":
+    if algo != "nsga2" and algo != "rigaa":
         test_population = sorted(test_population, key=lambda x: abs(x[0].fitness), reverse=True)
     for i in combinations(range(0, cf.ga["test_suite_size"]), 2):
         current1 = test_population[i[0]] #res.history[gen].pop.get("X")[i[0]]
