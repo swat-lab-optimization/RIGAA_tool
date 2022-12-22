@@ -3,7 +3,7 @@ import os
 import logging as log
 from rigaa.solutions.robot_solution import RobotSolution
 from rigaa.solutions.vehicle_solution import VehicleSolution
-
+from datetime import datetime
 import config as cf
 
 
@@ -20,7 +20,10 @@ def save_tcs_images(test_suite, problem, run, algo):
         algo: the algorithm used to generate the test suite. Can be "random", "ga", "nsga2",
     """
 
-    images_path = cf.files["images_path"] +  "_" + algo
+    now = datetime.now()
+    dt_string = now.strftime("%d-%m-%Y")
+
+    images_path = dt_string + "_" + cf.files["images_path"] +  "_" + algo + "_" + problem
 
     if not os.path.exists(images_path):
         os.makedirs(images_path)

@@ -135,3 +135,6 @@ dmypy.json
 *.png
 *.json
 logs.txt
+*stats*
+*images*
+*tcs*

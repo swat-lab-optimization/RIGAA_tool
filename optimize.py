@@ -5,7 +5,6 @@ import logging as log
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
 
-
 import config as cf
 from rigaa import ALRGORITHMS
 from rigaa.duplicate_elimination.duplicate_rem import DuplicateElimination
@@ -60,18 +59,17 @@ def parse_arguments():
     parser.add_argument('--save_results', type=str, default=True, help='Save results, possible values: True, False')
     parser.add_argument('--seed', type=int, default=None, help='Random seed')
     parser.add_argument('--debug', type=str, default=False, help='Run in debug mode, possible values: True, False')
+    parser.add_argument('--n_eval', type=int, default=None, help='Number of evaluations to run. This parameter overwrites number of generations in the config file')
     
     arguments = parser.parse_args()
     return arguments
 
 
-def main(problem, algo, runs_number, save_results, random_seed, debug):
+def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
     """
     Function for running the optimization and saving the results"""
 
     log_file = "logs.txt"
-
-
 
     setup_logging(log_file, debug)
 
@@ -97,8 +95,12 @@ def main(problem, algo, runs_number, save_results, random_seed, debug):
         n_points_per_iteration=n_offsprings
     )
 
-    termination = get_termination("n_gen", cf.ga["n_gen"])
-    #termination = get_termination("n_eval", 3000)
+    if n_eval is None:
+        termination = get_termination("n_gen", cf.ga["n_gen"])
+        log.info("The search will be terminated after %d generations", cf.ga["n_gen"])
+    else:
+        termination = get_termination("n_eval", n_eval)
+        log.info("The search will be terminated after %d evaluations", n_eval)
 
     tc_stats = {}
     tcs = {}
@@ -132,7 +134,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug):
         tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
 
         if save_results:
-            save_tc_results(tc_stats, tcs, tcs_convergence, algo)
+            save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem)
             save_tcs_images(test_suite, problem, m, algo)
 
 
@@ -140,5 +142,5 @@ def main(problem, algo, runs_number, save_results, random_seed, debug):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    main(args.problem, args.algorithm, args.runs, args.save_results, args.seed, args.debug)
+    main(args.problem, args.algorithm, args.runs, args.save_results, args.seed, args.debug, args.n_eval)
 

@@ -9,4 +9,6 @@ PROBLEMS = {
     "robot_nsga2": RobotProblem2Obj,
     "robot_random": RobotProblem1Obj,
     "vehicle_random": VehicleProblem1Obj,
+    "vehicle_rigaa": VehicleProblem2Obj,
+    "robot_rigaa": RobotProblem2Obj
 }
