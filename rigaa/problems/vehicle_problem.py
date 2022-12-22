@@ -21,7 +21,7 @@ class VehicleProblem1Obj(ElementwiseProblem):
         s = x[0]
         s.fitness = s.eval_fitness()
         out["F"] = s.fitness
-        out["G"] = 5 - s.fitness * (-1)
+        out["G"] = 6 - s.fitness * (-1)
 
         log.debug("Evaluated individual %s, fitness %s", s, s.fitness)
 
@@ -61,6 +61,6 @@ class VehicleProblem2Obj(ElementwiseProblem):
             s.novelty = 0
 
         out["F"] = [s.fitness, s.novelty]
-        out["G"] =  5 - s.fitness * (-1)
+        out["G"] =  6 - s.fitness * (-1)
 
         log.debug("Evaluated individual %s, fitness %s, novelty %s", s, s.fitness, s.novelty)

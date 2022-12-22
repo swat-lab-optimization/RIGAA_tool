@@ -3,3 +3,6 @@ pymoo==0.6.0
 shapely
 pandas
 numpy
+stable-baselines3
+torch==1.12.1
+descartes
