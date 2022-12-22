@@ -20,7 +20,7 @@ def get_stats(res, problem, algo):
     results = []
     population = -res.history[gen].pop.get("F")
     if algo != "nsga2" and algo != "rigaa":
-        population = sorted(population, key=lambda x: abs(x[0].fitness), reverse=True)
+        population = sorted(population, key=lambda x: x[0], reverse=True)
     for i in range(cf.ga["test_suite_size"]):
 
 
