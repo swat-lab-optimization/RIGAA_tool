@@ -6,7 +6,7 @@ from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 from rigaa.rl_agents.robot_agent import generate_rl_map
 import config as cf
-
+import time
 
 def generate_random_solution():
     """
@@ -68,9 +68,14 @@ class RobotSampling(Sampling):
             s = RobotSolution()
            
             if r < self.init_pop_prob:
+                start = time.time()
                 states, fitness = generate_rl_map()
+
+                log.debug("Individual produced by RL in %f sec", time.time() - start)
             else:
+                start = time.time()
                 states, fitness =  generate_random_solution()
+                log.debug("Individual produced by randomly in %f sec", time.time() - start)
             
             s.states = states
             s.fitness = fitness

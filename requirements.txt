@@ -1,8 +1,9 @@
 
 pymoo==0.6.0
-shapely
+Shapely==1.8.0
 pandas
 numpy
 stable-baselines3
 torch==1.12.1
 descartes
+beamngpy==1.24

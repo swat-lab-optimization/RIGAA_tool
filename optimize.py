@@ -25,8 +25,6 @@ def setup_logging(log_to, debug):
     #def log_exception(extype, value, trace):
     #    log.exception('Uncaught exception:', exc_info=(extype, value, trace))
 
-
-
     term_handler = log.StreamHandler()
     log_handlers = [term_handler]
     #term_handler.setLevel(log.INFO)
@@ -45,8 +43,6 @@ def setup_logging(log_to, debug):
     #sys.excepthook = log_exception
 
     log.info(start_msg)
-
-    
 
 
 def parse_arguments():

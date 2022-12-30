@@ -9,6 +9,12 @@ from rigaa.utils.vehicle import Car
 import matplotlib.patches as patches
 from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
+
+from simulator.code_pipeline.beamng_executor import BeamngExecutor
+from simulator.code_pipeline.tests_generation import RoadTestFactory
+from simulator.code_pipeline.validation import TestValidator
+
+import os
 class VehicleSolution:
 
     """
@@ -20,15 +26,14 @@ class VehicleSolution:
 
         self.road_points = []
         self.states = []
-        self.speed = 9
-        self.steer_ang = 12
+        self.speed = cf.vehicle_env["speed"]
+        self.steer_ang = cf.vehicle_env["steer_ang"]
         self.map_size = cf.vehicle_env["map_size"]
         self.fitness = 0
         self.car_path = []
         self.novelty = 0
         self.intp_points = []
         self.just_fitness = 0
-
 
     def eval_fitness(self):
         """
@@ -56,6 +61,50 @@ class VehicleSolution:
         self.road_points = road_points
 
         return self.fitness
+
+    def eval_fitness_full(self):
+
+        
+        test_validator = TestValidator(cf.vehicle_env["map_size"])
+
+        map = Map(self.map_size)
+        car = Car(self.speed, self.steer_ang, self.map_size)
+        road_points = map.get_points_from_states(self.states)
+
+        the_test = RoadTestFactory.create_road_test(road_points)
+        self.intp_points = car.interpolate_road(road_points)
+
+        is_valid, validation_msg = test_validator.validate_test(the_test)
+
+        print(is_valid)
+
+        if (is_valid== True):
+
+            res_path  = "BeamNG_res"
+            if not(os.path.exists(res_path)):
+                os.mkdir(res_path)
+
+            executor  = BeamngExecutor(res_path, cf.vehicle_env["map_size"],
+                                    time_budget=360,
+                                    beamng_home="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0", 
+                                    beamng_user="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0_user", 
+                                    road_visualizer=None) #RoadTestVisualizer(map_size=cf.vehicle_env["map_size"])
+            
+            
+            test_outcome, description, execution_data = executor._execute(the_test)
+            #test_outcome, description, execution_data = executor.execute_test(the_test)
+            
+
+            fitness = -max([i.oob_percentage for i in execution_data])
+
+            print("oob", fitness)
+        else:
+            fitness = 0
+
+        self.fitness = fitness
+
+        return fitness
+
 
 
     def intersect(self, tc1, tc2):
@@ -133,8 +182,8 @@ class VehicleSolution:
         bottom = 0
 
         road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(8.0, cap_style=2, join_style=2)
-        road_patch = PolygonPatch(road_poly, fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
-        ax.add_patch(road_patch )
+        road_patch = PolygonPatch((road_poly), fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
+        ax.add_patch(road_patch)
 
 
         ax.set_title("Test case fitenss " + str(fitness), fontsize=17)

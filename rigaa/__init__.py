@@ -8,3 +8,4 @@ ALRGORITHMS = {
     "rigaa": NSGA2,
     "random": RandomSearch,
 }
+
