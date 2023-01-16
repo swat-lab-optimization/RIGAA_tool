@@ -5,8 +5,13 @@ from scipy.interpolate import splprep, splev
 from shapely.geometry import LineString, Point
 from numpy.ma import arange
 
-import config as cf
+#import config as cf
+import json
 
+import matplotlib.pyplot as plt 
+from shapely.geometry import LineString, Polygon
+from descartes import PolygonPatch
+from rigaa.utils.car_road import Map
 
 class Car:
     """
@@ -443,5 +448,50 @@ def is_too_sharp(the_test, TSHD_RADIUS=47):
     else:
         check = False
     return check
+
+def build_tc(road_points, car_path):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    road_x = []
+    road_y = []
+
+    for p in road_points:
+        road_x.append(p[0])
+        road_y.append(p[1])
+
+    ax.plot(car_path[0], car_path[1], "bo", label="Car path")
+
+    ax.plot(road_x, road_y, "yo--", label="Road")
+
+    top = 200
+    bottom = 0
+
+    road_poly = LineString([(t[0], t[1]) for t in road_points]).buffer(8.0, cap_style=2, join_style=2)
+    road_patch = PolygonPatch((road_poly), fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
+    ax.add_patch(road_patch)
+
+
+    ax.tick_params(axis='both', which='major', labelsize=16)
+    ax.legend(fontsize=16)
+    ax.set_ylim(bottom, top)
+    plt.ioff()
+    ax.set_xlim(bottom, top)
+    ax.legend()
+    fig.savefig("test.png")
+    plt.close(fig)
+
+if __name__ == "__main__":
+    path  = "07-01-2023_tcs_1_rigaa_vehicle\\07-01-2023-tcs.json"
+
+    with open(path, "r") as f:
+      tcs = json.load(f)
+
+    states = tcs["run1"]
+
+    test_map = Map(200)
+    road = test_map.get_points_from_states(states)
+    car = Car(9, 12, 200)
+    points = car.interpolate_road(road)
+    fitness = car.execute_road(intp_points)
+
 
 

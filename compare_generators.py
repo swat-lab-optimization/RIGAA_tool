@@ -157,6 +157,8 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         save_results(run_stats, "random_gen", problem)
         save_results(run_stats_rl, "rl_gen", problem)
 
+        #save_tcs_images(test_suite, problem, m, algo)
+
 
             
             
@@ -164,8 +166,8 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         
 if __name__ == "__main__":
     problem = "vehicle"
-    runs = 10
+    runs = 30
     test_scenario_num = 30
     setup_logging("log.txt", False)
-    compare_generators(problem, runs, test_scenario_num, full_model=True)
+    compare_generators(problem, runs, test_scenario_num, full_model=False)
 

@@ -17,6 +17,7 @@ from rigaa.utils.get_test_suite import get_test_suite
 from rigaa.utils.random_seed import get_random_seed
 from rigaa.utils.save_tc_results import save_tc_results
 from rigaa.utils.save_tcs_images import save_tcs_images
+from rigaa.utils.callback import DebugCallback
 
 def setup_logging(log_to, debug):
     """
@@ -60,12 +61,13 @@ def parse_arguments():
     parser.add_argument('--seed', type=int, default=None, help='Random seed')
     parser.add_argument('--debug', type=str, default=False, help='Run in debug mode, possible values: True, False')
     parser.add_argument('--n_eval', type=int, default=None, help='Number of evaluations to run. This parameter overwrites number of generations in the config file')
+    parser.add_argument('--full', type=str, default=False, help='Whether to run the evaluation using a simulator: True, False')
     
     arguments = parser.parse_args()
     return arguments
 
 
-def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
+def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, full):
     """
     Function for running the optimization and saving the results"""
 
@@ -80,7 +82,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
 
-    n_offsprings = cf.ga["pop_size"]
+    n_offsprings = int(cf.ga["pop_size"])
     if algo == "rigaa":
         rl_pop_percent = cf.rl["init_pop_prob"]
     else:
@@ -102,6 +104,8 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
         termination = get_termination("n_eval", n_eval)
         log.info("The search will be terminated after %d evaluations", n_eval)
 
+    #termination = get_termination("time", "01:30:00")
+
     tc_stats = {}
     tcs = {}
     tcs_convergence = {}
@@ -116,13 +120,14 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
         log.info("Using random seed: %s", seed)
 
         res = minimize(
-            PROBLEMS[problem + "_" + algo](),
+            PROBLEMS[problem + "_" + algo](full=full),
             algorithm,
             termination,
             seed=seed,
             verbose=True,
             save_history=True,
-            eliminate_duplicates=True
+            eliminate_duplicates=True,
+            callback=DebugCallback(debug)
         )
 
         log.info("Execution time, %f sec", res.exec_time)
@@ -133,7 +138,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
 
         tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
 
-        if save_results:
+        if save_results == "True":
             save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem)
             save_tcs_images(test_suite, problem, m, algo)
 
@@ -142,5 +147,5 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    main(args.problem, args.algorithm, args.runs, args.save_results, args.seed, args.debug, args.n_eval)
+    main(args.problem, args.algorithm, args.runs, args.save_results, args.seed, args.debug, args.n_eval, args.full)
 

@@ -5,7 +5,7 @@ class RobotProblem2Obj(ElementwiseProblem):
     '''
     A class to define the two objective problem for the robot.
     '''
-    def __init__(self):
+    def __init__(self, full=False):
         super().__init__(n_var=1, n_obj=2, n_ieq_constr=1)
 
     def _evaluate(self, x, out, *args, **kwargs):
@@ -50,7 +50,7 @@ class RobotProblem1Obj(ElementwiseProblem):
     '''
     A class to define the single objective problem for the robot.
     '''
-    def __init__(self):
+    def __init__(self, full=False):
         super().__init__(n_var=1, n_obj=1, n_ieq_constr=1)
 
     def _evaluate(self, x, out, *args, **kwargs):
