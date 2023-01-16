@@ -132,7 +132,7 @@ def evaluate_scenario(points):
     else: 
         fitness = 0
 
-    return fitness, [tot_x[:-1], tot_y[:-1]]
+    return -fitness, [tot_x[:-1], tot_y[:-1]]
    
 
 

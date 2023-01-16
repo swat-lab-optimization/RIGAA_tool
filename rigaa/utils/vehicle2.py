@@ -232,23 +232,26 @@ class Car:
                     self.distance = distance
 
                     self.tot_dist.append(distance)
-                    if distance <= 1:
+                    build_tc(int_points, [self.tot_x, self.tot_y])
+                    if distance <= 2:
                         self.go_straight()
                         current_pos.append((self.x, self.y))
                         self.speed += 0.3
 
                     else:
-                        angle = -1 + self.angle
+                        '''
+                        angle = -5 + self.angle
                         x = self.speed * np.cos(m.radians(angle)) + self.x
                         y = self.speed * np.sin(m.radians(angle)) + self.y
 
                         distance_right = self.get_distance(mini_road, x, y)
 
-                        angle = 1 + self.angle
+                        angle = 5 + self.angle
                         x = self.speed * np.cos(m.radians(angle)) + self.x
                         y = self.speed * np.sin(m.radians(angle)) + self.y
 
                         distance_left = self.get_distance(mini_road, x, y)
+                        '''
 
                         if distance_right < distance_left:
                             self.turn_right()
@@ -258,6 +261,7 @@ class Car:
                             current_pos.append((self.x, self.y))
 
                         self.speed -= 0.2
+                        
 
                     current_road = LineString(current_pos)
                     current_length = current_road.length
@@ -485,13 +489,14 @@ if __name__ == "__main__":
     with open(path, "r") as f:
       tcs = json.load(f)
 
-    states = tcs["run1"]
+    states = tcs["run1"]["0"]
 
     test_map = Map(200)
     road = test_map.get_points_from_states(states)
     car = Car(9, 12, 200)
     points = car.interpolate_road(road)
-    fitness = car.execute_road(intp_points)
+    fitness, car_path = car.execute_road(points)
+    build_tc(points, car_path)
 
 
 
