@@ -1,5 +1,6 @@
 
 import math 
+import numpy as np
 class LaneController:
     def __init__(self, waypoints):
         self.waypoints = waypoints
@@ -30,12 +31,20 @@ class LaneController:
             steering = 0
             speeed = 0
         else:
-        
+
+
+
+            
             dx = self.waypoints[self.current_waypoint+1][0] - x
             dy = self.waypoints[self.current_waypoint+1][1] - y
             target_yaw = math.atan2(dy, dx)
-            if dy > 0 and dx < 0:
+            if dy > 0:# and dx < 0:
                 target_yaw -= 2*math.pi
+            
+            #target_yaw = self.get_angle([x, y], [self.waypoints[self.current_waypoint+1][0], self.waypoints[self.current_waypoint+1][1]])
+            #elif dy > 0 and dx > 0:
+            #    target_yaw -= math.pi
+
             
 
             #if target_yaw < 0:
@@ -83,6 +92,29 @@ class LaneController:
 
 
         return steering, speed, closest_distance, self.done
+
+
+    
+    def get_angle(self, node_a, node_b):
+        """
+        It takes two points, and returns the angle between them
+
+        Args:
+          node_a: The first node
+          node_b: the node that is being rotated
+
+        Returns:
+          The angle between the two nodes.
+        """
+        vector = np.array(node_b) - np.array(node_a)
+        cos = vector[0] / (np.linalg.norm(vector))
+
+        angle = (math.acos(cos))
+
+        if node_a[1] > node_b[1]:
+            return -angle
+        else:
+            return angle
 
 class PIDController:
     def __init__(self, kp=1.0, ki=0.1, kd=0.01):

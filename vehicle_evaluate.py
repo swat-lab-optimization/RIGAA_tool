@@ -14,6 +14,7 @@ from rigaa.utils.car_road import Map
 
 from rigaa.utils.lane_controller import LaneController
 from rigaa.utils.kinematic_model import KinematicModel
+from rigaa.utils.road_validity_check import is_valid_road
 
 def interpolate_road(road):
         """
@@ -89,45 +90,58 @@ def build_tc(road_points, car_path, fitness):
 
 
 def evaluate_scenario(points):
-    
-    init_pos = points[0]
-    x0 = init_pos[0]
-    y0 = init_pos[1]
-    yaw0 = 0
-    speed0 = 15
-    waypoints = points
-    vehicle = KinematicModel(x0, y0, yaw0, speed0)
-    controller = LaneController(waypoints)
-    done = False
+
     tot_x = []
     tot_y = []
-    distance_list = [0]
-    steering = 0
-    count = 0
-    dt = 0.5
-    while not(done):
-        x, y, yaw, speed = vehicle.x, vehicle.y, vehicle.yaw, vehicle.speed
-        steering, speed_command, distance, done = controller.control(x, y, yaw, speed)
-        vehicle.update(steering, 0.08, dt)
-        tot_x.append(vehicle.x)
-        tot_y.append(vehicle.y)
-        count += 1
-        if count > 6:
-            distance_list.append(distance)
-        #build_tc(points, [tot_x, tot_y], max(distance_list))
-    #print(len(tot_x))
-    fitness = max(distance_list)
-    #print(distance_list)
-   # print("Fitness:", fitness)
-    return fitness, [tot_x, tot_y]
+
+    if is_valid_road(points):
+    
+        init_pos = points[0]
+        x0 = init_pos[0]
+        y0 = init_pos[1]
+        yaw0 = 0
+        speed0 = 20
+        waypoints = points
+        vehicle = KinematicModel(x0, y0, yaw0, speed0)
+        controller = LaneController(waypoints)
+        done = False
+        distance_list = [0]
+        steering = 0
+        count = 0
+        dt = 0.5
+        while not(done):
+            x, y, yaw, speed = vehicle.x, vehicle.y, vehicle.yaw, vehicle.speed
+            steering, speed_command, distance, done = controller.control(x, y, yaw, speed)
+            vehicle.update(steering, 0.2, dt)
+
+            count += 1
+            if count > 6:
+                if distance < 7.5:
+                    distance_list.append(distance)
+                    tot_x.append(vehicle.x)
+                    tot_y.append(vehicle.y)
+            build_tc(points, [tot_x, tot_y], max(distance_list))
+
+        if (distance_list[:-1]):
+            fitness = max(distance_list[:-1])
+        else:
+            fitness = max(distance_list)
+
+        #print(distance_list)
+        # print("Fitness:", fitness)
+    else: 
+        fitness = 0
+
+    return fitness, [tot_x[:-1], tot_y[:-1]]
    
 
 
 if __name__ == "__main__":
     #path  = "07-01-2023_tcs_1_rigaa_vehicle\\07-01-2023-tcs.json"
     #path = "06-01-2023-tcs_full_rigaa_vehicle\\22-12-2022-tcs.json"
-    #path = "23-12-2022_tcs3_rigaa_vehicle\\23-12-2022-tcs.json"
-    path = "23-12-2022_tcs3_random_vehicle\\23-12-2022-tcs.json"
+    path = "23-12-2022_tcs3_rigaa_vehicle\\23-12-2022-tcs.json"
+    #path = "23-12-2022_tcs3_random_vehicle\\23-12-2022-tcs.json"
+    #path = "22-12-2022_tcs3_nsga2_vehicle\\22-12-2022-tcs.json"
 
     with open(path, "r") as f:
         tcs = json.load(f)
@@ -135,9 +149,9 @@ if __name__ == "__main__":
     #states = tcs["run1"]["5"]
     
 
-    for i in range(len(tcs["run1"])):
-        #i = 3
-        states = tcs["run1"][str(i)]
+    for i in range(len(tcs["run4"])):
+        #i = 11
+        states = tcs["run4"][str(i)]
         test_map = Map(200)
         
         road = test_map.get_points_from_states(states)
