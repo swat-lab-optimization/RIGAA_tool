@@ -7,9 +7,11 @@ class KinematicModel:
         self.yaw = yaw
         self.speed = speed
 
-    def update(self, steering, acceleration, delta_time):
+    def update(self, steering, acceleration, delta_time, speed):
         # Calculate the new yaw angle
         self.yaw += steering * delta_time
+
+        self.speed = speed
 
         # Calculate the new speed
         self.speed += acceleration * delta_time

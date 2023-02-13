@@ -10,6 +10,7 @@ from rigaa.samplers import GENERATORS
 from rigaa.solutions.vehicle_solution import VehicleSolution
 from rigaa.utils.calc_novelty import calc_novelty
 import config as cf
+from rigaa.utils.save_tcs_images import save_tcs_images
 
 def setup_logging(log_to, debug):
     """
@@ -96,7 +97,9 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
     row = ["Model", "Simulator"]
     writer.writerow(row)
     f.close
-
+    
+    test_suite_ran = {}
+    test_suite_rl = {}
     for run in range(runs):
         log.info("Running run %d", run)
 
@@ -112,6 +115,9 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         full_eval = False
         if full_model and problem=="vehicle":
             full_eval = True
+        
+        current_suite_ran = {}
+        current_suite_rl = {}
 
         for i in range(test_scenario_num):
 
@@ -131,7 +137,9 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
             test_scenarios.append(scenario)
             test_scenarios_rl.append(scenario_rl)
             if full_eval:
+                print("Evaluating random scenario")
                 fitness = full_model_eval(scenario)
+                print("Evaluating RL scenario")
                 fitness_rl = full_model_eval(scenario_rl)
                 f = open('results.csv', 'a')
                 writer = csv.writer(f)
@@ -144,8 +152,10 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
 
             scenario_fitness.append(fitness)
             scenario_rl_fitness.append(fitness_rl)
-
-
+            current_suite_ran[str(i)] = scenario
+            current_suite_rl[str(i)] = scenario_rl
+        test_suite_ran["run"+str(run)] = current_suite_ran
+        test_suite_rl["run"+str(run)] = current_suite_rl
 
 
         results = get_stats(test_scenarios, scenario_fitness, times, problem)
@@ -156,6 +166,12 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
 
         save_results(run_stats, "random_gen", problem)
         save_results(run_stats_rl, "rl_gen", problem)
+
+        save_tcs_images(current_suite_ran, problem, run, "random_gen")
+        save_tcs_images(current_suite_rl, problem, run, "rl_gen")
+
+
+
 
         #save_tcs_images(test_suite, problem, m, algo)
 

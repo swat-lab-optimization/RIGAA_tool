@@ -4,17 +4,20 @@ import matplotlib.pyplot as plt
 
 import config as cf
 from rigaa.utils.car_road import Map
-from rigaa.utils.vehicle import Car
+from rigaa.utils.vehicle_evaluate import evaluate_scenario
+from rigaa.utils.vehicle_evaluate import interpolate_road
 
 import matplotlib.patches as patches
 from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
+import os
+import copy
 
 from simulator.code_pipeline.beamng_executor import BeamngExecutor
 from simulator.code_pipeline.tests_generation import RoadTestFactory
 from simulator.code_pipeline.validation import TestValidator
 
-import os
+
 class VehicleSolution:
 
     """
@@ -47,15 +50,15 @@ class VehicleSolution:
           The fitness of the individual.
         """
         test_map = Map(self.map_size)
-        car = Car(self.speed, self.steer_ang, self.map_size)
-        road_points = test_map.get_points_from_states(self.states)
-        self.states = self.states[:len(road_points)].copy()
+        road_points, new_states = test_map.get_points_from_states(self.states)
+        self.states = copy.deepcopy(new_states)
+        
         if len(road_points) <= 2:
             self.fitness = 0
         else:
-            intp_points = car.interpolate_road(road_points)
-            self.fitness, self.car_path = car.execute_road(
-                intp_points
+            self.intp_points = interpolate_road(road_points)
+            self.fitness, self.car_path = evaluate_scenario(
+                self.intp_points
             )
 
         self.road_points = road_points
@@ -68,15 +71,14 @@ class VehicleSolution:
         test_validator = TestValidator(cf.vehicle_env["map_size"])
 
         map = Map(self.map_size)
-        car = Car(self.speed, self.steer_ang, self.map_size)
-        road_points = map.get_points_from_states(self.states)
+        road_points, self.states = map.get_points_from_states(self.states)
 
         the_test = RoadTestFactory.create_road_test(road_points)
-        self.intp_points = car.interpolate_road(road_points)
 
         is_valid, validation_msg = test_validator.validate_test(the_test)
 
         print(is_valid)
+        print(validation_msg)
 
         if (is_valid== True):
 
@@ -157,11 +159,9 @@ class VehicleSolution:
         """
         map_size = cf.vehicle_env["map_size"]
         test_map = Map(map_size)
-        road_points = test_map.get_points_from_states(states)
-        speed = cf.vehicle_env["speed"]
-        steer_ang = cf.vehicle_env["steer_ang"]
-        car = Car(speed, steer_ang, map_size)
-        intp_points = car.interpolate_road(road_points)
+        road_points, new_states = test_map.get_points_from_states(states)
+        states = copy.deepcopy(new_states)
+        intp_points = interpolate_road(road_points)
 
         fig, ax = plt.subplots(figsize=(8, 8))
         road_x = []
@@ -171,7 +171,7 @@ class VehicleSolution:
             road_x.append(p[0])
             road_y.append(p[1])
 
-        fitness, car_path = car.execute_road(intp_points)
+        fitness, car_path = evaluate_scenario(intp_points)
 
         if len(car_path):
             ax.plot(car_path[0], car_path[1], "bo", label="Car path")

@@ -6,7 +6,7 @@ import numpy as np
 from scipy.interpolate import splprep, splev
 from shapely.geometry import LineString, Point
 from numpy.ma import arange
-
+import math
 import matplotlib.pyplot as plt 
 from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
@@ -15,6 +15,9 @@ from rigaa.utils.car_road import Map
 from rigaa.utils.lane_controller import LaneController
 from rigaa.utils.kinematic_model import KinematicModel
 from rigaa.utils.road_validity_check import is_valid_road
+
+from simulator.code_pipeline.tests_generation import RoadTestFactory
+from simulator.code_pipeline.validation import TestValidator
 
 def interpolate_road(road):
         """
@@ -47,7 +50,7 @@ def interpolate_road(road):
             k = 3
         f2, u = splprep([old_x_vals, old_y_vals], s=0, k=k)
 
-        step_size = 1 / num_nodes *4
+        step_size = 1 / num_nodes *5
 
         xnew = arange(0, 1 + step_size, step_size)
 
@@ -58,7 +61,7 @@ def interpolate_road(road):
         return nodes
 
 
-def build_tc(road_points, car_path, fitness):
+def build_tc(road_points, car_path, fitness, path):
     fig, ax = plt.subplots(figsize=(8, 8))
     road_x = []
     road_y = []
@@ -85,52 +88,92 @@ def build_tc(road_points, car_path, fitness):
     plt.ioff()
     ax.set_xlim(bottom, top)
     ax.legend()
-    fig.savefig("test.png")
+    fig.savefig(path)
     plt.close(fig)
 
+def get_angle(node_a, node_b):
+    """
+    It takes two points, and returns the angle between them
+
+    Args:
+        node_a: The first node
+        node_b: the node that is being rotated
+
+    Returns:
+        The angle between the two nodes.
+    """
+    vector = np.array(node_b) - np.array(node_a)
+    cos = vector[0] / (np.linalg.norm(vector))
+
+    angle = (math.acos(cos))
+
+    if node_a[1] > node_b[1]:
+        return -angle
+    else:
+        return angle
 
 def evaluate_scenario(points):
 
     tot_x = []
     tot_y = []
+    
+
+    #test_validator = TestValidator(200)
+
+    #the_test = RoadTestFactory.create_road_test(points)
+    
+    #is_valid, validation_msg = test_validator.validate_test(the_test)
+
+    #print(validation_msg)
 
     if is_valid_road(points):
-    
+    #if is_valid:
+
         init_pos = points[0]
         x0 = init_pos[0]
         y0 = init_pos[1]
-        yaw0 = 0
-        speed0 = 20
+        yaw0 = 0#get_angle(points[1], points[0]) #0
+        speed0 = 15  # 12
         waypoints = points
         vehicle = KinematicModel(x0, y0, yaw0, speed0)
-        controller = LaneController(waypoints)
+        controller = LaneController(waypoints, speed0)
         done = False
         distance_list = [0]
         steering = 0
         count = 0
-        dt = 0.5
+        dt = 0.7
         while not(done):
             x, y, yaw, speed = vehicle.x, vehicle.y, vehicle.yaw, vehicle.speed
-            steering, speed_command, distance, done = controller.control(x, y, yaw, speed)
-            vehicle.update(steering, 0.2, dt)
-
+            steering, speed, distance, done = controller.control(x, y, yaw, speed)
+            vehicle.update(steering, 0.1, dt, speed)  #accel = 0.05, v0 = 12
+            tot_x.append(vehicle.x)
+            tot_y.append(vehicle.y)
             count += 1
-            if count > 6:
-                if distance < 7.5:
-                    distance_list.append(distance)
-                    tot_x.append(vehicle.x)
-                    tot_y.append(vehicle.y)
-            build_tc(points, [tot_x, tot_y], max(distance_list))
+            if count > 7:
+                #if distance < 7.5:
+                distance_list.append(distance)
+
+            #build_tc(points, [tot_x, tot_y], max(distance_list))
+
+        car_path = LineString(zip(tot_x, tot_y))
+        if car_path.is_simple is False:
+            distance_list2 = [min(3, i) for i in distance_list]
+        else:
+            distance_list2 = distance_list
+
 
         if (distance_list[:-1]):
-            fitness = max(distance_list[:-1])
+            fitness = max(distance_list2[:-1])
         else:
-            fitness = max(distance_list)
+            fitness = max(distance_list2)
 
         #print(distance_list)
         # print("Fitness:", fitness)
     else: 
         fitness = 0
+
+
+
 
     return -fitness, [tot_x[:-1], tot_y[:-1]]
    
@@ -139,9 +182,10 @@ def evaluate_scenario(points):
 if __name__ == "__main__":
     #path  = "07-01-2023_tcs_1_rigaa_vehicle\\07-01-2023-tcs.json"
     #path = "06-01-2023-tcs_full_rigaa_vehicle\\22-12-2022-tcs.json"
-    path = "23-12-2022_tcs3_rigaa_vehicle\\23-12-2022-tcs.json"
+    #path = "23-12-2022_tcs3_rigaa_vehicle\\23-12-2022-tcs.json"
     #path = "23-12-2022_tcs3_random_vehicle\\23-12-2022-tcs.json"
     #path = "22-12-2022_tcs3_nsga2_vehicle\\22-12-2022-tcs.json"
+    path = "16-01-2023_tcs_rigaa_vehicle\\16-01-2023-tcs.json"
 
     with open(path, "r") as f:
         tcs = json.load(f)
@@ -154,11 +198,11 @@ if __name__ == "__main__":
         states = tcs["run4"][str(i)]
         test_map = Map(200)
         
-        road = test_map.get_points_from_states(states)
+        road, states = test_map.get_points_from_states(states)
         points = interpolate_road(road)
         fitness, car_path = evaluate_scenario(points)
         print(fitness)
-        build_tc(points, car_path, fitness)
+        build_tc(points, car_path, fitness, "test\\" + str(i) + ".png")
 
     
 

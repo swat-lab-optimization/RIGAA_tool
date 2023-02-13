@@ -11,7 +11,7 @@ import json
 import matplotlib.pyplot as plt 
 from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
-from rigaa.utils.car_road import Map
+#from rigaa.utils.car_road import Map
 
 class Car:
     """

@@ -2,7 +2,7 @@ import copy
 from pymoo.core.mutation import Mutation
 import numpy as np
 import config as cf
-
+from rigaa.utils.car_road import Map
 import logging as log
 
 class VehicleMutation(Mutation):
@@ -67,6 +67,10 @@ class VehicleMutation(Mutation):
                         n -= 1
 
                 sn.states = child.copy()
+                
+                test_map = Map(cf.vehicle_env["map_size"])
+                sn.road_points, new_states = test_map.get_points_from_states(sn.states)
+                sn.states = copy.deepcopy(new_states)
                 X[i, 0] = sn
 
         return X

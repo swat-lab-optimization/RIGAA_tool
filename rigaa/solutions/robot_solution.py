@@ -72,7 +72,7 @@ class RobotSolution:
         tc_size  = min(len(tc1), len(tc2))
         for i in range(tc_size):
             if tc1[i][0] == tc2[i][0]:
-                if (abs(tc1[i][1] - tc2[i][1]) <= 5) and (abs(tc1[i][2] - tc2[i][2]) <= 5):
+                if (abs(tc1[i][1] - tc2[i][1]) <= 2) and (abs(tc1[i][2] - tc2[i][2]) <= 2):
                     intersection.append(tc1[i])
 
         return intersection
@@ -124,7 +124,10 @@ class RobotSolution:
         ax.plot(rx, ry, "-r", label="Robot path")
         ax.scatter(ox, oy, s=150, marker="s", color="k", label="Walls")
 
-        fitness = LineString([(t[0], t[1]) for t in zip(rx, ry)]).length
+        if len(rx) > 2:
+            fitness = LineString([(t[0], t[1]) for t in zip(rx, ry)]).length
+        else:
+            fitness = 0
         top = map_size + 1
         bottom = -1
         ax.set_title("Test case fitenss " + str(fitness), fontsize=17)

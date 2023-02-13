@@ -82,7 +82,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
 
-    n_offsprings = int(cf.ga["pop_size"])
+    n_offsprings = 100 #int(cf.ga["pop_size"]/3) # int(cf.ga["pop_size"]/2) #100
     if algo == "rigaa":
         rl_pop_percent = cf.rl["init_pop_prob"]
     else:
@@ -93,7 +93,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         sampling=SAMPLERS[problem](rl_pop_percent),
         crossover=OPERATORS[problem + "_crossover"](cf.ga["cross_rate"]),
         mutation=OPERATORS[problem + "_mutation"](cf.ga["mut_rate"]),
-        eliminate_duplicates=DuplicateElimination(),
+        eliminate_duplicates=DuplicateElimination(algo, problem),
         n_points_per_iteration=n_offsprings
     )
 

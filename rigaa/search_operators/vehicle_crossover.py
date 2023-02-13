@@ -1,10 +1,11 @@
 import random as rm
 import logging as log
 import numpy as np
+import copy
 from pymoo.core.crossover import Crossover
-
+from rigaa.utils.car_road import Map
 from rigaa.solutions import VehicleSolution
-
+import config as cf
 # this is the crossover operator for the vehicle problem
 class VehicleCrossover(Crossover):
     """
@@ -44,6 +45,12 @@ class VehicleCrossover(Crossover):
                     offa.states[crossover_point:] = tc_b[crossover_point:]
                     offb.states[:crossover_point] = tc_b[:crossover_point]
                     offb.states[crossover_point:] = tc_a[crossover_point:]
+
+                    test_map = Map(cf.vehicle_env["map_size"])
+                    offa.road_points, new_offa_states = test_map.get_points_from_states(offa.states)
+                    offa.states = copy.deepcopy(new_offa_states)
+                    offb.road_points, new_offb_states = test_map.get_points_from_states(offb.states)
+                    offb.states = copy.deepcopy(new_offb_states)
                     
                     Y[0, k, 0], Y[1, k, 0] = offa, offb
 

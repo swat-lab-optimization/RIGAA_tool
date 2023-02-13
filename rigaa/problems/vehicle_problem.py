@@ -25,7 +25,7 @@ class VehicleProblem1Obj(ElementwiseProblem):
             out["G"] = 0.95 - s.fitness * (-1)
         else:
             s.fitness = s.eval_fitness()
-            out["G"] = 5 - s.fitness * (-1)
+            out["G"] = 4.5 - s.fitness * (-1)
         out["F"] = s.fitness
         #out["G"] = 5 - s.fitness * (-1)
 
@@ -55,7 +55,9 @@ class VehicleProblem2Obj(ElementwiseProblem):
             out["G"] =  0.95 - s.fitness * (-1)
         else:
             s.fitness = s.eval_fitness()
-            out["G"] =  5 - s.fitness * (-1)
+            out["G"] =  4.5 - s.fitness * (-1) #4.5
+            #if len(s.road_points) != len(s.states):
+            #    print(s.states)
         algorithm = kwargs["algorithm"]
 
         solutions = algorithm.pop.get("X")

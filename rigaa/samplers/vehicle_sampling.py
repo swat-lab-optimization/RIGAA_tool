@@ -5,10 +5,10 @@ from pymoo.core.sampling import Sampling
 import config as cf
 import time
 from rigaa.utils.car_road import Map
-from rigaa.utils.vehicle import Car
 from rigaa.solutions import VehicleSolution
-from rigaa.rl_agents.vehicle_agent import generate_rl_road
-
+from rigaa.rl_agents.vehicle_agent2 import generate_rl_road
+from rigaa.utils.vehicle_evaluate import evaluate_scenario
+from rigaa.utils.vehicle_evaluate import interpolate_road
 def generate_random_road():
     """
     It generates a random road topology
@@ -19,15 +19,12 @@ def generate_random_road():
 
     map_size = cf.vehicle_env["map_size"]
 
-    speed = cf.vehicle_env["speed"]
-    steer_ang = cf.vehicle_env["steer_ang"]
 
     fitness = 0
 
-    while fitness == 0:  # ensures that the generated road is valid
+    while abs(int(fitness)) == 0:  # ensures that the generated road is valid
         done = False
         test_map = Map(map_size)
-        car = Car(speed, steer_ang, map_size)
         while not done:
             action = np.random.choice(actions)
             if action == 0:
@@ -40,10 +37,11 @@ def generate_random_road():
                 angle = np.random.choice(angles)
                 done = not (test_map.turn_left(angle))
         scenario = test_map.scenario[:-1]
-
-        road_points = test_map.get_points_from_states(scenario)
-        intp_points = car.interpolate_road(road_points)
-        fitness, _ = car.execute_road(intp_points)
+        
+        map = Map(map_size)
+        road_points, scenario = map.get_points_from_states(scenario)
+        intp_points = interpolate_road(road_points)
+        fitness, _ = evaluate_scenario(intp_points)
 
     return scenario, fitness
 

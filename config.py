@@ -1,5 +1,6 @@
 
-ga = {"pop_size": 150, "n_gen": 50,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 30}
+#ga = {"pop_size": 200, "n_gen": 50,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 30} #robot
+ga = {"pop_size": 150, "n_gen": 50,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 30} #vehice
 files = {"stats_path": "stats", "tcs_path": "tcs", "images_path": "tc_images"}
 rl = {"init_pop_prob": 0.2}
 

@@ -9,7 +9,14 @@ class DebugCallback(Callback):
         self.debug = debug
 
     def notify(self, algorithm):
-        #print(algorithm.pop.get("X")[0])
+        '''
+        for sol, i in enumerate(algorithm.pop.get("X")):
+            if len(i[0].road_points) != len(i[0].states):
+                print(i[0].states)
+                i[0].states = i[0].states[:len(i[0].road_points)].copy()
+        '''
+        
+
         if self.debug:
             population = list(algorithm.pop.get("X"))
             fitness = list(algorithm.pop.get("F"))

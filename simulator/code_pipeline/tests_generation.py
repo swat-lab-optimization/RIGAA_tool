@@ -138,6 +138,86 @@ class RoadTestFactory:
         setattr(road_test, 'id', next(RoadTestFactory.test_id_generator))
         return road_test
 
+class MyRoadTestFactory:
+
+    # Static variable
+    test_id_generator = _incremental_id_generator()
+
+    class RoadTest:
+        """
+            This class represent a test, i.e., the road that the driving agent should follow.
+            Note that this class is nested in the RoadTestFactory to avoid direct creation
+        """
+
+        def __init__(self, road_points):
+            assert type(road_points) is list, "You must provide a list of road points to create a RoadTest"
+            assert all(len(i) == 2 for i in road_points), "Malformed list of road points"
+            # The original input
+            self.road_points = road_points[:]
+            # The interpolated input
+            self.interpolated_points = _interpolate(self.road_points)
+            # The rendered road
+            #self.road_polygon = RoadPolygon.from_nodes(self.interpolated_points)
+
+            # At the beginning we do not know whether the test is valid or not
+            self.is_valid = None
+            self.validation_message = None
+
+        def get_road_polygon(self):
+            return self.road_polygon
+
+        def get_road_length(self):
+            return LineString([(t[0], t[1]) for t in self.interpolated_points]).length
+
+        def set_validity(self, is_valid, validation_message):
+            self.is_valid = is_valid
+            self.validation_message = validation_message
+
+        def to_json(self):
+            theobj = {}
+            # Statically generated attributes
+            theobj['is_valid'] = self.is_valid
+            theobj['validation_message'] = self.validation_message
+            theobj['road_points'] = self.road_points
+            theobj['interpolated_points'] = [(p[0], p[1]) for p in self.interpolated_points]
+            # Dynamically generated attributes.
+            # https://stackoverflow.com/questions/610883/how-to-know-if-an-object-has-an-attribute-in-python
+            # "easier to ask for forgiveness than permission" (EAFP)
+            try:
+                theobj['id' ] = self.id
+            except AttributeError:
+                pass
+
+            try:
+                theobj['execution_data' ] = self.execution_data
+            except AttributeError:
+                pass
+
+            try:
+                theobj['test_outcome'] = self.test_outcome
+            except AttributeError:
+                pass
+
+            try:
+                theobj['description'] = self.description
+            except AttributeError:
+                pass
+
+            try:
+                theobj['features'] = self.features
+            except AttributeError:
+                pass
+
+            return json.dumps(theobj)
+
+    @staticmethod
+    def create_road_test(road_points):
+        road_test = RoadTestFactory.RoadTest(road_points)
+        # TODO Why not simply declare the id as field of RoadTest?
+        # Generate the new id. Call next otherwise we return the generator
+        setattr(road_test, 'id', next(RoadTestFactory.test_id_generator))
+        return road_test
+
 
 class TestGenerationStatistic:
     """

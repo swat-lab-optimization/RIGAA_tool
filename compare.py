@@ -49,16 +49,21 @@ def build_times_table(times_list, column_names):
     columns  = ["Metric"]
     for name in column_names:
         columns.append(name)
+    columns.append("p-value")
+    columns.append("Effect size")
 
     row_0 = ["mean generation time, s"]
     for alg in times_list:
-        row_0.append(np.mean(alg))
+        row_0.append(round(np.mean(alg), 3))
+    row_0.append(round(mannwhitneyu(times_list[1], times_list[0], alternative="two-sided")[1],3))
+    row_0.append(str(round(cliffsDelta(times_list[1], times_list[0])[0],3)) + ", " + str(cliffsDelta(times_list[1], times_list[0])[1]) )
       
+    
     row_1 = ["generation time std, s"]
     for alg in times_list:
         row_1.append(np.std(alg))
 
-    rows = [columns, row_0, row_1]
+    rows = [columns, row_0]
     with open("results_time.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
@@ -74,25 +79,25 @@ def build_median_table(fitness_list, diversity_list, column_names):
 
     row_0 = ["Mean fitness"]
     for alg in fitness_list:
-        row_0.append(np.mean(alg))
+        row_0.append(round(np.mean(alg), 3))
       
     row_1 = ["Mean diversity"]
     for alg in diversity_list:
-        row_1.append(np.mean(alg))
+        row_1.append(round(np.mean(alg), 3))
 
     if (len(fitness_list) == 2) and (len(diversity_list) == 2):
-        row_0.append(mannwhitneyu(fitness_list[1], fitness_list[0], alternative="two-sided")[1])
-        row_0.append(cliffsDelta(fitness_list[1], fitness_list[0])[0])
+        row_0.append(round(mannwhitneyu(fitness_list[1], fitness_list[0], alternative="two-sided")[1],3))
+        row_0.append(round(cliffsDelta(fitness_list[1], fitness_list[0])[0], 3))
         row_0.append(cliffsDelta(fitness_list[1], fitness_list[0])[1])
 
-        row_1.append(mannwhitneyu(diversity_list[0], diversity_list[1], alternative="two-sided")[1])
-        row_1.append(cliffsDelta(diversity_list[0], diversity_list[1])[0])
+        row_1.append(round(mannwhitneyu(diversity_list[0], diversity_list[1], alternative="two-sided")[1], 3))
+        row_1.append(round(cliffsDelta(diversity_list[0], diversity_list[1])[0], 3))
         row_1.append(cliffsDelta(diversity_list[0], diversity_list[1])[1])
         columns.append("p-value")
         columns.append("Effect size")
 
     rows = [columns, row_0, row_1]
-    with open("results.csv", 'w', newline='') as csvfile:
+    with open("res.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
             writer.writerow(row)
@@ -113,7 +118,7 @@ def build_cliff_data(fitness_list, diversity_list, column_names):
                pair_values[i] = round(pair_values[i], 3)
         rows.append(pair_values)
 
-    with open("results_effect_size_fitness.csv", 'w', newline='') as csvfile:
+    with open("res_p_value_fitness.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
             writer.writerow(row)
@@ -134,7 +139,7 @@ def build_cliff_data(fitness_list, diversity_list, column_names):
                pair_values[i] = round(pair_values[i], 3)
         rows.append(pair_values)
     
-    with open("results_effect_size_diversity.csv", 'w', newline='') as csvfile:
+    with open("res_p_value_diversity.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
             writer.writerow(row)
@@ -187,8 +192,8 @@ def plot_boxplot(data_list, label_list, name, max_range):
 
     fig, ax1 = plt.subplots() #figsize=(8, 4)
     #ax1.set_xlabel('Algorithm', fontsize=20)
-    ax1.set_xlabel('Generator', fontsize=20)
-    #ax1.set_xlabel('Epsilon value', fontsize=20)
+    #ax1.set_xlabel('Generator', fontsize=20)
+    ax1.set_xlabel('Epsilon value', fontsize=20)
 
     ax1.set_ylabel(name, fontsize=20)
     
@@ -200,9 +205,9 @@ def plot_boxplot(data_list, label_list, name, max_range):
     top = max_range
     bottom = 0
     ax1.set_ylim(bottom, top)
-    ax1.boxplot(data_list, widths=0.4, labels=label_list)
+    ax1.boxplot(data_list, widths=0.55, labels=label_list)
 
-    plt.subplots_adjust(bottom=0.15, left=0.15)
+    plt.subplots_adjust(bottom=0.15, left=0.16)
 
     fig.savefig(name + ".png")
     plt.close()
@@ -237,7 +242,7 @@ def main(stats_path, stats_names):
             dfs[i]["mean"] = dfs[i].mean(axis=1)
             dfs[i]["std"] = dfs[i].std(axis=1)
         
-        #plot_convergence(dfs, stats_names)
+        plot_convergence(dfs, stats_names)
 
     fitness_list = []
     novelty_list = []
@@ -262,15 +267,17 @@ def main(stats_path, stats_names):
         fitness_list.append(results_fitness)
         novelty_list.append(results_novelty)
         time_list.append(results_time) 
+    
+    #max_time = max(max(time_list[0]), max(time_list[1]))
+    plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+ 3)
+    plot_boxplot(novelty_list, stats_names, "Diversity", 1.05)
+    #plot_boxplot(time_list, stats_names, "Time, s", max_time+0.2)
+    #print(results_time)
 
-    #plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+0.1)
-    #plot_boxplot(novelty_list, stats_names, "Diversity", 1)
-    print(results_time)
+    #build_times_table(time_list, stats_names)
 
-    build_times_table(time_list, stats_names)
-
-    #build_median_table(fitness_list, novelty_list, stats_names)
-    #build_cliff_data(fitness_list, novelty_list, stats_names)
+    build_median_table(fitness_list, novelty_list, stats_names)
+    build_cliff_data(fitness_list, novelty_list, stats_names)
 
 
 

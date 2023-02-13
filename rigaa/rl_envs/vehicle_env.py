@@ -14,20 +14,20 @@ import os
 
 class CarEnv(Env):
     def __init__(self):
-        self.max_number_of_points = 30
+        self.max_number_of_points = 31
         self.action_space = MultiDiscrete([3, cf.vehicle_env['max_len'] - cf.vehicle_env['min_len'], cf.vehicle_env['max_angle'] - cf.vehicle_env['min_angle']])  # 0 - increase temperature, 1 - decrease temperature
 
         self.diversity_buffer = []
         
 
-        self.max_steps = 29
+        self.max_steps = 30
         self.steps = 0
 
         self.max_fitness = 5
 
 
         self.fitness = 0
-        self.ran_prob = 0.05
+        self.ran_prob = 0.1 #0.05 #0.1
 
         self.car_path = []
         self.road = []
@@ -77,10 +77,12 @@ class CarEnv(Env):
         map = Map(cf.vehicle_env['map_size'])
         assert self.action_space.contains(action)
         self.done = False
-
+        
+        
         r = np.random.random()
         if r < self.ran_prob:
             action = self.action_space.sample()
+        
 
         self.state[self.steps] = self.set_state(action)
 
@@ -135,7 +137,7 @@ class CarEnv(Env):
     def evaluate_scenario(self):
         car = Car(cf.vehicle_env["speed"], cf.vehicle_env["steer_ang"], cf.vehicle_env["map_size"])
         map = Map(cf.vehicle_env['map_size'])
-        points = map.get_points_from_states(self.state[:self.steps])
+        points, _ = map.get_points_from_states(self.state[:self.steps])
         intp_points = car.interpolate_road(points)
 
         reward, self.car_path = (car.execute_road(intp_points))

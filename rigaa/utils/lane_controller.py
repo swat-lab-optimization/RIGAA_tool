@@ -2,22 +2,31 @@
 import math 
 import numpy as np
 class LaneController:
-    def __init__(self, waypoints):
+    def __init__(self, waypoints, speed):
         self.waypoints = waypoints
         self.current_waypoint = 0
         self.done = False
         self.max_steering = math.pi
         #self.cutoff_frequency = 3
         self.previous_yaw = 0
+        self.window = 10
+        self.point_limit = 10
+        self.speed_increment = 1
+        self.max_speed = 30
+        self.speed = speed
+        self.min_speed = 8
 
     def control(self, x, y, yaw, speed):
         # Find the next waypoint
         closest_distance = float('inf')
         closest_waypoint = self.current_waypoint
-        for i, waypoint in enumerate(self.waypoints[self.current_waypoint:]):
+        
+        for i, waypoint in enumerate(self.waypoints[self.current_waypoint:self.point_limit]):
+            self.point_limit = min(len(self.waypoints)-1,self.current_waypoint + self.window)
             distance = math.sqrt((x - waypoint[0])**2 + (y - waypoint[1])**2)
             if distance < closest_distance:
                 closest_distance = distance
+                #i = min(i, 10)
                 closest_waypoint = i + self.current_waypoint
         self.current_waypoint = closest_waypoint
         #print(self.current_waypoint)
@@ -37,30 +46,27 @@ class LaneController:
             
             dx = self.waypoints[self.current_waypoint+1][0] - x
             dy = self.waypoints[self.current_waypoint+1][1] - y
+            
             target_yaw = math.atan2(dy, dx)
             if dy > 0:# and dx < 0:
                 target_yaw -= 2*math.pi
             
-            #target_yaw = self.get_angle([x, y], [self.waypoints[self.current_waypoint+1][0], self.waypoints[self.current_waypoint+1][1]])
-            #elif dy > 0 and dx > 0:
-            #    target_yaw -= math.pi
-
-            
-
-            #if target_yaw < 0:
-            #    target_yaw +=  math.pi
-
-            #target_yaw = min(target_yaw, math.pi)
-            #target_yaw = max(target_yaw, -math.pi)
-
-            #if abs(target_yaw - self.previous_yaw) > math.pi:
-            #    target_yaw = target_yaw/10
-
-            #print("Yaw:", target_yaw)
             self.previous_yaw = target_yaw
 
             # Calculate the steering angle
             steering = target_yaw - yaw
+
+            self.speed = speed
+            
+            
+            if abs(target_yaw - yaw) < 0.4: # if the vehicle is going straight
+                self.speed += self.speed_increment
+                if self.speed > self.max_speed:
+                    self.speed = self.max_speed
+            elif abs(target_yaw - yaw) > 1.2:
+                self.speed -= self.speed_increment/2
+                if self.speed <  self.min_speed:
+                    self.speed = self.min_speed
 
 
             # Limit the steering angle
@@ -76,11 +82,11 @@ class LaneController:
             #    steering = prev_steering
 
             #dt = 0.1
-            '''
-            alpha = dt / (1.0/self.cutoff_frequency + dt)
-            steering = alpha * steering + (1.0 - alpha) * self.previous_steering
-            self.previous_steering = steering
-            '''
+            
+            #alpha = dt / (1.0/self.cutoff_frequency + dt)
+            #steering = alpha * steering + (1.0 - alpha) * self.previous_steering
+            #self.previous_steering = steering
+            
 
 
             steering = min(steering, self.max_steering)
@@ -91,7 +97,7 @@ class LaneController:
 
 
 
-        return steering, speed, closest_distance, self.done
+        return steering, self.speed, closest_distance, self.done
 
 
     
