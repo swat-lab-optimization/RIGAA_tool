@@ -191,9 +191,9 @@ def plot_boxplot(data_list, label_list, name, max_range):
     """
 
     fig, ax1 = plt.subplots() #figsize=(8, 4)
-    #ax1.set_xlabel('Algorithm', fontsize=20)
+    ax1.set_xlabel('Algorithm', fontsize=20)
     #ax1.set_xlabel('Generator', fontsize=20)
-    ax1.set_xlabel('Epsilon value', fontsize=20)
+    #ax1.set_xlabel('Epsilon value', fontsize=20)
 
     ax1.set_ylabel(name, fontsize=20)
     
@@ -269,7 +269,7 @@ def main(stats_path, stats_names):
         time_list.append(results_time) 
     
     #max_time = max(max(time_list[0]), max(time_list[1]))
-    plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+ 3)
+    plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+ 2)
     plot_boxplot(novelty_list, stats_names, "Diversity", 1.05)
     #plot_boxplot(time_list, stats_names, "Time, s", max_time+0.2)
     #print(results_time)
