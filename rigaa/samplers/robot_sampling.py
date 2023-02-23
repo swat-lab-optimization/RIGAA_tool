@@ -18,10 +18,10 @@ def generate_random_solution():
     """
     grid_size = cf.robot_env["grid_size"]
     robot_radius = cf.robot_env["robot_radius"]
-    sx = cf.robot_env["start"]
-    sy = sx
-    gx = cf.robot_env["goal"]
-    gy = gx
+    sx = cf.robot_env["sx"]
+    sy = cf.robot_env["sy"]
+    gx = cf.robot_env["gx"]
+    gy = cf.robot_env["gy"]
 
     map_size = cf.robot_env["map_size"]
     path_size = 0
