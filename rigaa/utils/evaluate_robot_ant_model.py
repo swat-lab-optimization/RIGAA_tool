@@ -133,8 +133,8 @@ def evaluate_robot_ant_model(maze, waypoints, video=False):
             act = np.clip(act, -1.0, 1.0)
 
         ns, r, done, info = env.step(act)
-        print("Reward", r)
-        print("Done", done)
+        #print("Reward", r)
+        #print("Done", done)
         timeout = False
         if ts >= max_episode_steps:
             timeout = True
