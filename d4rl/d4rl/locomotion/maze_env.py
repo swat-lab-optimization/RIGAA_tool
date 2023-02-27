@@ -313,6 +313,7 @@ class MazeEnv(gym.Env):
 
     visited = {}
     to_visit = [target_rowcol]
+    
     while to_visit:
       next_visit = []
       for rowcol in to_visit:
@@ -334,8 +335,11 @@ class MazeEnv(gym.Env):
             continue
           if next_rowcol in visited:
             continue
-          next_visit.append(next_rowcol)
+          if not(next_rowcol in next_visit):
+              next_visit.append(next_rowcol)
       to_visit = next_visit
+      print("To visit size", len(to_visit))
+      print("Next visit", len(next_visit))
 
     raise ValueError('No path found to target.')
 

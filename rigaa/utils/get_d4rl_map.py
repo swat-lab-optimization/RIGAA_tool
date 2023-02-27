@@ -33,7 +33,7 @@ def get_d4rl_map(states):
     rx, ry, rtime = a_star.planning(sx, sy, gx, gy)
     print("Time taken", rtime)
     #print("original points", list(zip(rx, ry)))
-    points = rdp(list(zip(rx, ry)), 0.9)
+    points = rdp(list(zip(rx, ry)), 1)
     print("Approximated points", (points[::-1]))
     adopt_points = ant_adapt_points(points)
     print("Adopted points", adopt_points)

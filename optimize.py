@@ -82,7 +82,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
 
-    n_offsprings = 100 #int(cf.ga["pop_size"]/3) # int(cf.ga["pop_size"]/2) #100
+    n_offsprings = int(cf.ga["pop_size"]) # int(cf.ga["pop_size"]/2) #100
     if algo == "rigaa":
         rl_pop_percent = cf.rl["init_pop_prob"]
     else:
@@ -104,7 +104,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         termination = get_termination("n_eval", n_eval)
         log.info("The search will be terminated after %d evaluations", n_eval)
 
-    #termination = get_termination("time", "01:30:00")
+    termination = get_termination("time", "01:30:00")
 
     tc_stats = {}
     tcs = {}
