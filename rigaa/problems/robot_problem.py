@@ -22,7 +22,7 @@ class RobotProblem2Obj(ElementwiseProblem):
 
         if self.full:
             s.eval_fitness_full()
-            out["G"] = 0.1 - s.fitness * (-1)
+            out["G"] = 2 - s.fitness * (-1)
 
         else:
             s.eval_fitness()

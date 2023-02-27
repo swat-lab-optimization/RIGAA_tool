@@ -338,8 +338,8 @@ class MazeEnv(gym.Env):
           if not(next_rowcol in next_visit):
               next_visit.append(next_rowcol)
       to_visit = next_visit
-      print("To visit size", len(to_visit))
-      print("Next visit", len(next_visit))
+      #print("To visit size", len(to_visit))
+      #print("Next visit", len(next_visit))
 
     raise ValueError('No path found to target.')
 
@@ -359,8 +359,8 @@ class MazeEnv(gym.Env):
         target_x += robot_x  # Target is given in relative coordinates.
         target_y += robot_y
       target_row, target_col = self._xy_to_rowcol([target_x, target_y])
-      print ('Target: ', target_row, target_col, target_x, target_y)
-      print ('Robot: ', robot_row, robot_col, robot_x, robot_y)
+      #print ('Target: ', target_row, target_col, target_x, target_y)
+      #print ('Robot: ', robot_row, robot_col, robot_x, robot_y)
 
       waypoint_row, waypoint_col = self._get_best_next_rowcol(
           [robot_row, robot_col], [target_row, target_col])
@@ -374,7 +374,7 @@ class MazeEnv(gym.Env):
       goal_x = waypoint_x - robot_x
       goal_y = waypoint_y - robot_y
 
-      print ('Waypoint: ', waypoint_row, waypoint_col, waypoint_x, waypoint_y)
+      #print ('Waypoint: ', waypoint_row, waypoint_col, waypoint_x, waypoint_y)
 
       return goal_reaching_policy_fn(obs, (goal_x, goal_y))
 

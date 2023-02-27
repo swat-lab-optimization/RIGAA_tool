@@ -6,7 +6,8 @@ def generate_rl_map():
     #model_save_path = "models//rl_model_09-21_mlp_v0_1_120000_steps.zip"
     #model_save_path = "models//rl_model_09-24_mlp_v0_0_500000_steps.zip"
     #model_save_path = "models\\2023-01-21-rl_model-0_540000_steps.zip"
-    model_save_path = "models\\2023-01-28-rl_model-0_600000_steps.zip"
+    #model_save_path = "models\\2023-01-28-rl_model-0_600000_steps.zip"
+    model_save_path = "models/2023-01-28-rl_model-0_600000_steps.zip"
     model = PPO.load(model_save_path)
 
     environ = RobotEnv()

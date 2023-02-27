@@ -67,7 +67,7 @@ class RobotSolution:
             #for i in maze:
             #    print(i)
             fitness = evaluate_robot_ant_model(maze, waypoints)
-            self.fitness = -fitness
+            self.fitness = -1/fitness
         return self.fitness
 
 

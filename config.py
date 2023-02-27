@@ -2,7 +2,7 @@
 #ga = {"pop_size": 200, "n_gen": 50,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 30} #robot
 ga = {"pop_size": 10, "n_gen": 10,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 3} #vehice
 files = {"stats_path": "stats", "tcs_path": "tcs", "images_path": "tc_images"}
-rl = {"init_pop_prob": 0.2}
+rl = {"init_pop_prob": 1}
 
 vehicle_env = {
     "map_size": 200,
