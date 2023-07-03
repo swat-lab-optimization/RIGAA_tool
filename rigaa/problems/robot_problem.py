@@ -1,5 +1,5 @@
 from pymoo.core.problem import ElementwiseProblem
-
+import time
 import logging as log
 class RobotProblem2Obj(ElementwiseProblem):
     '''
@@ -18,7 +18,10 @@ class RobotProblem2Obj(ElementwiseProblem):
         """
 
         s = x[0]
+        start = time.time()
         s.eval_fitness()
+        eval_time = time.time() - start
+        #log.info(f"Solution evalution time {eval_time} ")
 
         algorithm = kwargs["algorithm"]
         solutions = algorithm.pop.get("X")

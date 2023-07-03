@@ -185,5 +185,5 @@ if __name__ == "__main__":
     runs = 30
     test_scenario_num = 30
     setup_logging("log.txt", False)
-    compare_generators(problem, runs, test_scenario_num, full_model=False)
+    compare_generators(problem, runs, test_scenario_num, full_model=True)
 

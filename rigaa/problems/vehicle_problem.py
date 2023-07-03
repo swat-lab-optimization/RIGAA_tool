@@ -1,6 +1,6 @@
 import logging as log
 from pymoo.core.problem import ElementwiseProblem
-
+import numpy as np
 
 class VehicleProblem1Obj(ElementwiseProblem):
     '''
@@ -8,7 +8,7 @@ class VehicleProblem1Obj(ElementwiseProblem):
     '''
 
     def __init__(self, full=False):
-        super().__init__(n_var=1, n_obj=1, n_ieq_constr=1)
+        super().__init__(n_var=1, n_obj=1, n_ieq_constr=1) #, xl=np.array([0, 10, 5]), xu=np.array([2, 80, 30])
         self.full = full
 
     def _evaluate(self, x, out, *args, **kwargs):
@@ -37,7 +37,7 @@ class VehicleProblem2Obj(ElementwiseProblem):
     Module to calculate the fitnes of the individuals
     '''
 
-    def __init__(self, full=False):
+    def __init__(self, full=False, **kwargs):
         super().__init__(n_var=1, n_obj=2, n_ieq_constr=1)
         self.full = full
 

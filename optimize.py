@@ -19,6 +19,7 @@ from rigaa.utils.save_tc_results import save_tc_results
 from rigaa.utils.save_tcs_images import save_tcs_images
 from rigaa.utils.callback import DebugCallback
 
+
 def setup_logging(log_to, debug):
     """
     It sets up the logging system
@@ -82,8 +83,10 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
 
-    n_offsprings = 100 #int(cf.ga["pop_size"]/3) # int(cf.ga["pop_size"]/2) #100
-    if algo == "rigaa":
+
+
+    n_offsprings = 100 #int(cf.ga["pop_size"]) #30#0 #int(cf.ga["pop_size"]/3) # int(cf.ga["pop_size"]/2) #100
+    if algo == "rigaa" or  algo == "rigaa_s":
         rl_pop_percent = cf.rl["init_pop_prob"]
     else:
         rl_pop_percent = 0
@@ -94,7 +97,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         crossover=OPERATORS[problem + "_crossover"](cf.ga["cross_rate"]),
         mutation=OPERATORS[problem + "_mutation"](cf.ga["mut_rate"]),
         eliminate_duplicates=DuplicateElimination(algo, problem),
-        n_points_per_iteration=n_offsprings
+        n_points_per_iteration=n_offsprings,
     )
 
     if n_eval is None:
@@ -131,6 +134,7 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
         )
 
         log.info("Execution time, %f sec", res.exec_time)
+
 
         test_suite = get_test_suite(res, algo)
         tc_stats["run" + str(m)] = get_stats(res, problem, algo)
