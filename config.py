@@ -22,10 +22,11 @@ robot_env = {
     "min_pos": 1,  # minimal possible
     "max_pos": 38,  # 49 29,  # maximal possible position in meters
     "grid_size": 1,  # 1,  # size of the grid in meters
-    "robot_radius": 0.1,  # 1,  # radius of the robot in meters
-    "start": 1,  # 1,  # start x position
-    "goal": 38,  # 1,  # start y position
-}
+    "robot_radius": 0.2,  # 1,  # radius of the robot in meters
+    "sx": 1,  # 1,  # start x position
+    "sy": 38,
+    "gx": 38,  # 1,  # start y position
+    "gy": 1}
 
 
 

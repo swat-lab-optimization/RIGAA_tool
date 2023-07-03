@@ -71,6 +71,37 @@ class Map:
 
         return new_points
 
+    def horizontal2(self, distance, position):
+        """
+        It takes in a distance and a position, and then it creates a horizontal line of points that are the
+        same distance from the center position
+
+        Args:
+          distance: the size of the horizontal object
+          position: the x-coordinate of the center of the horizontal object
+
+        Returns:
+          The new points that are being added to the map.
+        """
+
+        new_points = []
+
+        #init_pos = [self.current_level, position]
+        init_pos = [position, self.current_level]
+        if self.point_valid(init_pos):
+            self.all_map_points[init_pos[1]][init_pos[0]] = 0
+        for i in range(1, round(distance / 2)):
+            point_left = [init_pos[0] - i, init_pos[1]]
+            point_right = [init_pos[0] + i, init_pos[1]]
+            if self.point_valid(point_left):
+                self.all_map_points[point_left[1]][point_left[0]] = 0
+            if self.point_valid(point_right):
+                self.all_map_points[point_right[1]][point_right[0]] = 0
+
+        self.current_level += 1
+
+        return new_points
+
     def vertical(self, distance, position):
         """
         It takes in a distance and a position, and then it creates a vertical line of points that are the
@@ -96,6 +127,36 @@ class Map:
                 self.all_map_points[-point_down[1]][point_down[0]] = 0
             if self.point_valid(point_up):
                 self.all_map_points[-point_up[1]][point_up[0]] = 0
+
+        self.current_level += 1
+
+        return new_points
+
+    def vertical2(self, distance, position):
+        """
+        It takes in a distance and a position, and then it creates a vertical line of points that are the
+        same distance from the center position
+
+        Args:
+          distance: the size of the vertical object
+          position: the x-coordinate of the center of the vertical object
+
+        Returns:
+          The new points
+        """
+
+        new_points = []
+
+        init_pos = [position, self.current_level]
+        if self.point_valid(init_pos):
+            self.all_map_points[init_pos[1]][init_pos[0]] = 0
+        for i in range(1, round(distance / 2)):
+            point_down = [init_pos[0], init_pos[1] - i]
+            point_up = [init_pos[0], init_pos[1] + i]
+            if self.point_valid(point_down):
+                self.all_map_points[point_down[1]][point_down[0]] = 0
+            if self.point_valid(point_up):
+                self.all_map_points[point_up[1]][point_up[0]] = 0
 
         self.current_level += 1
 
@@ -179,7 +240,7 @@ class Map:
           The actual 2D matrix of the map.
         """
 
-        self.current_level = 2
+        self.current_level = 1
 
         self.create_init_box()
 
@@ -187,9 +248,9 @@ class Map:
         for state in tc:
             action = int(state[0])
             if action == 0:
-                self.horizontal(int(state[1]), int(state[2]))
+                self.horizontal2(int(state[1]), int(state[2]))
             elif action == 1:
-                self.vertical(int(state[1]), int(state[2]))
+                self.vertical2(int(state[1]), int(state[2]))
             else:
                 log.error("ERROR: Invalid action")
         return self.all_map_points

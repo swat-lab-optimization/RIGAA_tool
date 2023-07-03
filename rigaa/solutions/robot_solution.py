@@ -21,15 +21,15 @@ class RobotSolution:
         self.states = []
         self.fitness = 0
         self.novelty = 0
-        self.sx = 1  # [m]
-        self.sy = 1  # [m]
-        self.gx = cf.robot_env["map_size"] - 2  # [m]
-        self.gy = cf.robot_env["map_size"] - 2  # [m]
+        self.sx = cf.robot_env["sx"]  # [m]
+        self.sy = cf.robot_env["sy"]  # [m]
+        self.gx = cf.robot_env["gx"]  # [m]
+        self.gy = cf.robot_env["gy"]  # [m]
         self.robot_path_x = []
         self.robot_path_y = []
 
-        self.grid_size = 1  # [m]
-        self.robot_radius = 0.1  # [m]
+        self.grid_size = cf.robot_env["grid_size"]  # [m]
+        self.robot_radius = cf.robot_env["robot_radius"]  # [m]
 
     def eval_fitness(self):
         """
@@ -108,10 +108,10 @@ class RobotSolution:
         map_size = cf.robot_env["map_size"]
 
         map_builder = Map(map_size)
-        grid_size = 1
-        robot_radius = 0.1
-        sx, sy = 1, 1
-        gx, gy = map_size - 2, map_size - 2
+        grid_size = cf.robot_env["grid_size"]
+        robot_radius = cf.robot_env["robot_radius"]
+        sx, sy = cf.robot_env["sx"], cf.robot_env["sy"]
+        gx, gy = cf.robot_env["gx"], cf.robot_env["gy"]
         map_points = map_builder.get_points_from_states(states)
         points_list = map_builder.get_points_cords(map_points)
 
