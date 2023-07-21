@@ -4,6 +4,6 @@ Shapely==1.8.0
 pandas
 numpy
 stable-baselines3
-#torch==1.12.1
+ #torch==1.12.1
 descartes
 beamngpy==1.24

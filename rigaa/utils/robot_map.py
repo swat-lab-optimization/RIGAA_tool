@@ -229,7 +229,7 @@ class Map:
 
         return cords
 
-    def get_points_from_states(self, states):
+    def get_points_from_states(self, states, full=False):
         """
         It takes a list states describing the map with obstacles and returns a list of points
 
@@ -248,9 +248,15 @@ class Map:
         for state in tc:
             action = int(state[0])
             if action == 0:
-                self.horizontal2(int(state[1]), int(state[2]))
+                if full == True:
+                    self.horizontal2(int(state[1]), int(state[2]))
+                else:
+                    self.horizontal(int(state[1]), int(state[2]))        
             elif action == 1:
-                self.vertical2(int(state[1]), int(state[2]))
+                if full == True:
+                    self.vertical2(int(state[1]), int(state[2]))
+                else:
+                    self.vertical(int(state[1]), int(state[2]))
             else:
                 log.error("ERROR: Invalid action")
         return self.all_map_points

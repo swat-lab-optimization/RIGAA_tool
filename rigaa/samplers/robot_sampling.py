@@ -36,13 +36,15 @@ def generate_random_solution():
                 cf.robot_env["min_pos"], cf.robot_env["max_pos"] + 1)
             states.append([ob_type, value, position])
         map_builder = Map(map_size)
-        map_points = map_builder.get_points_from_states(states)
+        map_points = map_builder.get_points_from_states(states, full=True)
         points_list = map_builder.get_points_cords(map_points)
         ox = [t[0] for t in points_list]
         oy = [t[1] for t in points_list]
         a_star = AStarPlanner(ox, oy, grid_size, robot_radius)
         rx, ry, _ = a_star.planning(sx, sy, gx, gy)
         path_size = len(rx)
+
+    #RobotSolution.build_image(states)
 
     return states, -path_size
 

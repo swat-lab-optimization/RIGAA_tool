@@ -6,8 +6,10 @@ import config as cf
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import logging as log
+import time
 
-
+from rigaa.utils.get_d4rl_map import get_d4rl_map
+from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
 class RobotSolution:
     """
     This is the class to contain all the information about the candidate solution
@@ -56,6 +58,26 @@ class RobotSolution:
             self.fitness = 0
 
         return self.fitness
+    
+    def eval_fitness_full(self):
+        maze, waypoints  = get_d4rl_map(self.states)
+        start = time.time()
+        if len(waypoints) < 3:
+            self.fitness = 0
+        else:
+            #RobotSolution().build_image(self.states, save_path="test.png")
+            #for i in maze:
+            #    print(i)
+            fitness, reward = evaluate_robot_ant_model(maze, waypoints)
+            end_time = time.time() - start
+            self.fitness = -1/fitness  # reward#
+            log.info("Fitness %s", self.fitness)
+            log.info("Evaluation time %s", end_time)
+            #log.info("Reward %s", reward )
+        return self.fitness
+
+
+
 
     def intersect(self, tc1, tc2):
         """
@@ -112,7 +134,7 @@ class RobotSolution:
         robot_radius = cf.robot_env["robot_radius"]
         sx, sy = cf.robot_env["sx"], cf.robot_env["sy"]
         gx, gy = cf.robot_env["gx"], cf.robot_env["gy"]
-        map_points = map_builder.get_points_from_states(states)
+        map_points = map_builder.get_points_from_states(states, full=True)
         points_list = map_builder.get_points_cords(map_points)
 
         ox = [t[0] for t in points_list]
