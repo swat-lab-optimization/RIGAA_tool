@@ -15,7 +15,7 @@ def ant_adapt_points(points):
 def get_d4rl_map(states):
     map_builder = Map(cf.robot_env["map_size"])
     map_points = map_builder.get_points_from_states(states, full=True)
-    
+
     points_list = map_builder.get_points_cords(map_points)
     ant_map_points = np.logical_not(map_points).astype(int)
     ant_map_points = [list(row) for row in ant_map_points]
@@ -32,12 +32,12 @@ def get_d4rl_map(states):
 
     a_star = AStarPlanner(ox, oy, grid_size, robot_radius)  # noqa: E501
     rx, ry, rtime = a_star.planning(sx, sy, gx, gy)
-    print("Time taken", rtime)
+    #print("Time taken", rtime)
     #print("original points", list(zip(rx, ry)))
     points = rdp(list(zip(rx, ry)), 1)
-    print("Approximated points", (points[::-1]))
+    #print("Approximated points", (points[::-1]))
     adopt_points = ant_adapt_points(points)
-    print("Adopted points", adopt_points)
+    #print("Adopted points", adopt_points)
 
 
 

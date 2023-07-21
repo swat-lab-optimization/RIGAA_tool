@@ -49,7 +49,7 @@ def load_policy(policy_file):
     data = torch.load(policy_file)
     policy = data['exploration/policy'].to('cpu')
     env = data['evaluation/env']
-    print("Policy loaded")
+    #print("Policy loaded")
     return policy, env
 
 def save_video(save_dir, file_name, frames, episode_id=0, tr=0):
@@ -61,7 +61,7 @@ def save_video(save_dir, file_name, frames, episode_id=0, tr=0):
         img = Image.fromarray(np.flipud(frames[i]), 'RGB')
         img.save(os.path.join(filename, 'frame_{}.png'.format(i)))
 
-def evaluate_robot_ant_model(maze, waypoints, video=False):
+def evaluate_robot_ant_model(maze, waypoints, video=True):
     noisy = False
     env = "Ant"
     env_name = env
@@ -125,6 +125,8 @@ def evaluate_robot_ant_model(maze, waypoints, video=False):
     current_try = 0
     target_reached_list = []
     old_xy = np.array([0,0])
+    final_rewards = []
+    current_run_rewards = []
     while targets_reached < len(target_list) and current_try < tries_num:
         act, waypoint_goal = data_collection_policy(s)
 
@@ -133,6 +135,7 @@ def evaluate_robot_ant_model(maze, waypoints, video=False):
             act = np.clip(act, -1.0, 1.0)
 
         ns, r, done, info = env.step(act)
+        current_run_rewards.append(r)
         #print("Reward", r)
         #print("Done", done)
         timeout = False
@@ -153,7 +156,7 @@ def evaluate_robot_ant_model(maze, waypoints, video=False):
 
         if done or timeout:
             done = False
-            print("Number of time steps", ts)
+            #print("Number of time steps", ts)
             ts = 0
             #s = env.reset()
             
@@ -161,26 +164,30 @@ def evaluate_robot_ant_model(maze, waypoints, video=False):
 
                 last_target_reached = targets_reached
                 target_reached_list.append(last_target_reached/len(target_list))
+                final_rewards.append(sum(current_run_rewards)/len(current_run_rewards))
+                current_run_rewards = []
                 
                 s = env.reset()
-                print("Reached ", targets_reached, " targets so far")
+                #print("Reached ", targets_reached, " targets so far")
                 targets_reached = 0
                 env.set_target_goal(goal_input=target_list[targets_reached])
-                print("Doing reset")
+                #print("Doing reset")
                 current_try += 1
             else:
-                print("Reached ", targets_reached, " targets so far")
+                #print("Reached ", targets_reached, " targets so far")
                 targets_reached += 1
                 last_target_reached = targets_reached
                 if targets_reached < len(target_list):
                     env.set_target_goal(goal_input=target_list[targets_reached])
                 else:
                     target_reached_list.append(last_target_reached/len(target_list))
+                    final_rewards.append(sum(current_run_rewards)/len(current_run_rewards))
+                    current_run_rewards = []
                     s = env.reset()
-                    print("Reached ", targets_reached, " targets so far")
+                    #print("Reached ", targets_reached, " targets so far")
                     targets_reached = 0
                     env.set_target_goal(goal_input=target_list[targets_reached])
-                    print("Doing reset")
+                    #print("Doing reset")
                     current_try += 1
 
             if video:
@@ -200,7 +207,7 @@ def evaluate_robot_ant_model(maze, waypoints, video=False):
     #glfw.terminate()
     env.close()
     
-    return sum(target_reached_list)/len(target_reached_list)
+    return sum(target_reached_list)/len(target_reached_list), sum(final_rewards)/len(final_rewards)
     
     
 

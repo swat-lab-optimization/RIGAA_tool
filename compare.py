@@ -191,8 +191,8 @@ def plot_boxplot(data_list, label_list, name, max_range):
     """
 
     fig, ax1 = plt.subplots() #figsize=(8, 4)
-    ax1.set_xlabel('Algorithm', fontsize=20)
-    #ax1.set_xlabel('Generator', fontsize=20)
+    #ax1.set_xlabel('Algorithm', fontsize=20)
+    ax1.set_xlabel('Generator', fontsize=20)
     #ax1.set_xlabel('Epsilon value', fontsize=20)
 
     ax1.set_ylabel(name, fontsize=20)

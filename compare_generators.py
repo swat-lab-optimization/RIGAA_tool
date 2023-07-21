@@ -5,9 +5,11 @@ import os
 import csv
 from datetime import datetime
 from itertools import combinations
+import sys
 import logging as log
 from rigaa.samplers import GENERATORS
 from rigaa.solutions.vehicle_solution import VehicleSolution
+from rigaa.solutions.robot_solution import RobotSolution
 from rigaa.utils.calc_novelty import calc_novelty
 import config as cf
 from rigaa.utils.save_tcs_images import save_tcs_images
@@ -39,10 +41,18 @@ def setup_logging(log_to, debug):
     log.info(start_msg)
 
 
-def full_model_eval(scenario):
-    vehicle = VehicleSolution()
-    vehicle.states = scenario
-    fitness = vehicle.eval_fitness_full()
+def full_model_eval(scenario, problem):
+    if problem == "vehicle":
+        vehicle = VehicleSolution()
+        vehicle.states = scenario
+        fitness = vehicle.eval_fitness_full()
+    elif problem == "robot":
+        robot = RobotSolution()
+        robot.states = scenario
+        fitness = robot.eval_fitness_full()
+    else:
+        log.error("Invalid problem")
+        sys.exit(1)
     return fitness
 
 def get_stats(scenarios, fitness, times, problem):
@@ -113,7 +123,7 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         scenario_fitness = []
 
         full_eval = False
-        if full_model and problem=="vehicle":
+        if full_model:
             full_eval = True
         
         current_suite_ran = {}
@@ -137,10 +147,13 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
             test_scenarios.append(scenario)
             test_scenarios_rl.append(scenario_rl)
             if full_eval:
-                print("Evaluating random scenario")
-                fitness = full_model_eval(scenario)
-                print("Evaluating RL scenario")
-                fitness_rl = full_model_eval(scenario_rl)
+                log.info("Evaluating random scenario")
+                fitness = full_model_eval(scenario, problem)
+                #log.info("Fitness random %s", fitness)
+                log.info("Evaluating RL scenario")
+                fitness_rl = full_model_eval(scenario_rl, problem)
+                #log.info("Fitness RL %s", fitness_rl)
+                
                 f = open('results.csv', 'a')
                 writer = csv.writer(f)
                 row1 = [fit_model1, fitness]
@@ -148,7 +161,8 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
                 writer.writerow(row1)
                 writer.writerow(row2)
                 f.close
-                log.info("Finished evaluation, saving to file")
+                
+                #log.info("Finished evaluation, saving to file")
 
             scenario_fitness.append(fitness)
             scenario_rl_fitness.append(fitness_rl)
@@ -181,9 +195,9 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
 
         
 if __name__ == "__main__":
-    problem = "vehicle"
-    runs = 30
+    problem = "robot"
+    runs = 10
     test_scenario_num = 30
     setup_logging("log.txt", False)
-    compare_generators(problem, runs, test_scenario_num, full_model=False)
+    compare_generators(problem, runs, test_scenario_num, full_model=True)
 

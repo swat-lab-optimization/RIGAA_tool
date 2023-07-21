@@ -60,6 +60,7 @@ class RobotProblem1Obj(ElementwiseProblem):
     '''
     def __init__(self, full=False):
         super().__init__(n_var=1, n_obj=1, n_ieq_constr=1)
+        self.full = full
 
     def _evaluate(self, x, out, *args, **kwargs):
         """
@@ -67,9 +68,16 @@ class RobotProblem1Obj(ElementwiseProblem):
         :param x: the input vector
         :param out: the output vector with the fitness and constrains
         """
+
         s = x[0]
-        s.eval_fitness()
+
+        if self.full:
+            s.eval_fitness_full()
+            out["G"] = 2 - s.fitness * (-1)
+
+        else:
+            s.eval_fitness()
+            out["G"] = 150 - s.fitness * (-1)
         out["F"] = s.fitness
-        out["G"] = 150 - s.fitness * (-1) #150 - s.fitness * (-1)
 
         log.debug("Evaluated individual %s, fitness %s", s, s.fitness)

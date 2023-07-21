@@ -263,7 +263,7 @@ class MazeEnv(gym.Env):
     else:
       self.target_goal = goal_input
     
-    print ('Target Goal: ', self.target_goal)
+    #print ('Target Goal: ', self.target_goal)
     ## Make sure that the goal used in self._goal is also reset:
     self._goal = self.target_goal
 
@@ -306,42 +306,45 @@ class MazeEnv(gym.Env):
   def _get_best_next_rowcol(self, current_rowcol, target_rowcol):
     """Runs BFS to find shortest path to target and returns best next rowcol. 
        Add obstacle avoidance"""
-    current_rowcol = tuple(current_rowcol)
-    target_rowcol = tuple(target_rowcol)
-    if target_rowcol == current_rowcol:
-        return target_rowcol
+    try:
+      current_rowcol = tuple(current_rowcol)
+      target_rowcol = tuple(target_rowcol)
+      if target_rowcol == current_rowcol:
+          return target_rowcol
 
-    visited = {}
-    to_visit = [target_rowcol]
-    
-    while to_visit:
-      next_visit = []
-      for rowcol in to_visit:
-        visited[rowcol] = True
-        row, col = rowcol
-        left = (row, col - 1)
-        right = (row, col + 1)
-        down = (row + 1, col)
-        up = (row - 1, col)
-        for next_rowcol in [left, right, down, up]:
-          if next_rowcol == current_rowcol:  # Found a shortest path.
-            return rowcol
-          next_row, next_col = next_rowcol
-          if next_row < 0 or next_row >= len(self._maze_map):
-            continue
-          if next_col < 0 or next_col >= len(self._maze_map[0]):
-            continue
-          if self._maze_map[next_row][next_col] not in [0, RESET, GOAL]:
-            continue
-          if next_rowcol in visited:
-            continue
-          if not(next_rowcol in next_visit):
-              next_visit.append(next_rowcol)
-      to_visit = next_visit
+      visited = {}
+      to_visit = [target_rowcol]
+      
+      while to_visit:
+        next_visit = []
+        for rowcol in to_visit:
+          visited[rowcol] = True
+          row, col = rowcol
+          left = (row, col - 1)
+          right = (row, col + 1)
+          down = (row + 1, col)
+          up = (row - 1, col)
+          for next_rowcol in [left, right, down, up]:
+            if next_rowcol == current_rowcol:  # Found a shortest path.
+              return rowcol
+            next_row, next_col = next_rowcol
+            if next_row < 0 or next_row >= len(self._maze_map):
+              continue
+            if next_col < 0 or next_col >= len(self._maze_map[0]):
+              continue
+            if self._maze_map[next_row][next_col] not in [0, RESET, GOAL]:
+              continue
+            if next_rowcol in visited:
+              continue
+            if not(next_rowcol in next_visit):
+                next_visit.append(next_rowcol)
+        to_visit = next_visit
       #print("To visit size", len(to_visit))
       #print("Next visit", len(next_visit))
-
-    raise ValueError('No path found to target.')
+    except:
+        #raise ValueError('No path found to target.')
+        print("No path found to target.")
+        return target_rowcol
 
   def create_navigation_policy(self,
                                goal_reaching_policy_fn,
@@ -362,8 +365,13 @@ class MazeEnv(gym.Env):
       #print ('Target: ', target_row, target_col, target_x, target_y)
       #print ('Robot: ', robot_row, robot_col, robot_x, robot_y)
 
-      waypoint_row, waypoint_col = self._get_best_next_rowcol(
-          [robot_row, robot_col], [target_row, target_col])
+      try:
+        waypoint_row, waypoint_col = self._get_best_next_rowcol(
+            [robot_row, robot_col], [target_row, target_col])
+      except:
+        print("None returned")
+        waypoint_row, waypoint_col = target_row, target_col
+
       
       if waypoint_row == target_row and waypoint_col == target_col:
         waypoint_x = target_x

@@ -44,7 +44,7 @@ def load_policy(policy_file):
     data = torch.load(policy_file)
     policy = data['exploration/policy']
     env = data['evaluation/env']
-    print("Policy loaded")
+    #print("Policy loaded")
     if True:
         set_gpu_mode(True)
         policy.cuda()

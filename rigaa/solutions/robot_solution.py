@@ -6,6 +6,7 @@ import config as cf
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import logging as log
+import time
 
 from rigaa.utils.get_d4rl_map import get_d4rl_map
 from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
@@ -60,14 +61,19 @@ class RobotSolution:
     
     def eval_fitness_full(self):
         maze, waypoints  = get_d4rl_map(self.states)
+        start = time.time()
         if len(waypoints) < 3:
             self.fitness = 0
         else:
             #RobotSolution().build_image(self.states, save_path="test.png")
             #for i in maze:
             #    print(i)
-            fitness = evaluate_robot_ant_model(maze, waypoints)
-            self.fitness = -1/fitness
+            fitness, reward = evaluate_robot_ant_model(maze, waypoints)
+            end_time = time.time() - start
+            self.fitness = -1/fitness  # reward#
+            log.info("Fitness %s", self.fitness)
+            log.info("Evaluation time %s", end_time)
+            #log.info("Reward %s", reward )
         return self.fitness
 
 
