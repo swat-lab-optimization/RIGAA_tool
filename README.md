@@ -9,6 +9,11 @@
   <img src="img/output_vehicle.gif" width="350" /> 
 </p>
 
+<p float="center" align="center">
+  <img src="img/output_robot.gif" width="350" />
+  <img src="img/gif_veh.gif" width="350" /> 
+</p>
+
 <h1 align="center">
 	Reinforcement learning Informed Genetic Algorithm for Autonomous systems testing (RIGAA)
 </h1>

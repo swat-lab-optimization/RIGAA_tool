@@ -32,7 +32,7 @@ class BeamngExecutor(AbstractTestExecutor):
                                              time_budget=time_budget, debug=debug)
 
         # TODO This is specific to the TestSubject, we should encapsulate this better
-        self.risk_value = 0.05
+        self.risk_value = 0.5#0.05
 
         self.oob_tolerance = oob_tolerance
         self.max_speed_in_ms = max_speed_in_kmh * 0.277778
