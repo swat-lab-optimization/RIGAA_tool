@@ -2,13 +2,18 @@
 import json
 import os
 import time
-from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
+import logging as log
+
+#from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
 from simulator.code_pipeline.tests_generation import RoadTestFactory
 from simulator.code_pipeline.validation import TestValidator
 
 
 import config as cf
 from rigaa.utils.car_road import Map
+
+from rigaa.utils.get_d4rl_map import get_d4rl_map
+from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
 
 def execute_vehicle_scenario(scenario):
     """
@@ -63,10 +68,29 @@ def execute_vehicle_scenario(scenario):
 
 
 
+def execute_robot_scenario(scenario):
+    maze, waypoints  = get_d4rl_map(scenario)
+    start = time.time()
+    if len(waypoints) < 3:
+        fitness = 0
+    else:
+        #RobotSolution().build_image(self.states, save_path="test.png")
+        #for i in maze:
+        #    print(i)
+        fitness, reward = evaluate_robot_ant_model(maze, waypoints)
+        end_time = time.time() - start
+        fitness = -1/fitness  # reward#
+        log.info("Fitness %s", fitness)
+        log.info("Evaluation time %s", end_time)
+        #log.info("Reward %s", reward )
+    return fitness
+
+
 if __name__ == "__main__":
-    problem = "vehicle"
-    scenario_path = "C:\\DIMA\\PhD\\RIGAA_tool\\06-01-2023-tcs_full_rigaa_vehicle\\22-12-2022-tcs.json"
-    run = 9
+    problem = "robot"
+    #scenario_path = "C:\\DIMA\\PhD\\RIGAA_tool\\06-01-2023-tcs_full_rigaa_vehicle\\22-12-2022-tcs.json"
+    scenario_path = "/home/dmhum/RIGAA_tool/04-03-2023_tcs_fit_rigaa_robot/04-03-2023-tcs.json"
+    run = 1
     tc = 0
     with open(scenario_path, "r") as f:
         scenarios = json.load(f)["run" + str(run)]
@@ -75,5 +99,5 @@ if __name__ == "__main__":
         if problem == "vehicle":
             execute_vehicle_scenario(scenarios[scenario])
         elif problem == "robot":
-            execute_robot_scenario(scenario)
+            execute_robot_scenario(scenarios[scenario])
 
