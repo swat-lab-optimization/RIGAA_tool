@@ -10,7 +10,7 @@
 </p>
 
 <p float="center" align="center">
-  <img src="img/output_robot.gif" width="350" />
+  <img src="img/gif_rob.gif" width="335" />
   <img src="img/gif_veh.gif" width="350" /> 
 </p>
 
