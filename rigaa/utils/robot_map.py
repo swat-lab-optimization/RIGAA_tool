@@ -1,6 +1,7 @@
 
 import numpy as np
 import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
 class Map:
 
     """
@@ -38,6 +39,14 @@ class Map:
             self.all_map_points[i][self.map_size - 1] = 0
 
         self.all_map_points[-1][:] = 0
+        
+        
+        #self.all_map_points[-2][:3] = 0
+        #self.all_map_points[-3][:3] = 0
+
+        #self.all_map_points[1][-3:] = 0
+        #self.all_map_points[2][-3:] = 0
+        #
 
         return
 
@@ -226,6 +235,10 @@ class Map:
             for j, point in enumerate(row):
                 if point == 0:
                     cords.append([j, i])
+
+        #to_remove = [[1, 1], [1, 2], [2, 1], [2, 2], [self.max_x - 2, self.max_y - 2], [self.max_x - 3, self.max_y - 3], [self.max_x - 3, self.max_y - 2], [self.max_x - 2, self.max_y - 3]]
+        #for r in to_remove:
+        #    cords.remove(r)
 
         return cords
 

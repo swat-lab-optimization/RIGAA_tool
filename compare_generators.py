@@ -7,6 +7,7 @@ from datetime import datetime
 from itertools import combinations
 import sys
 import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
 from rigaa.samplers import GENERATORS
 from rigaa.solutions.vehicle_solution import VehicleSolution
 from rigaa.solutions.robot_solution import RobotSolution

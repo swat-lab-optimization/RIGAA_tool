@@ -1,5 +1,6 @@
 
-
+import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
 import matplotlib.pyplot as plt
 
 import config as cf
@@ -77,8 +78,8 @@ class VehicleSolution:
 
         is_valid, validation_msg = test_validator.validate_test(the_test)
 
-        print(is_valid)
-        print(validation_msg)
+        log.debug(is_valid)
+        log.debug(validation_msg)
 
         if (is_valid== True):
 
@@ -99,7 +100,7 @@ class VehicleSolution:
 
             fitness = -max([i.oob_percentage for i in execution_data])
 
-            print("oob", fitness)
+            log.debug("oob", fitness)
         else:
             fitness = 0
 

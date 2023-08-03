@@ -5,6 +5,7 @@ import math as m
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
 import copy
 class Map:
     """Class that conducts transformations to vectors automatically,

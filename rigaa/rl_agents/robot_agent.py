@@ -1,5 +1,5 @@
 from stable_baselines3 import PPO
-from rigaa.rl_envs.robot_env import RobotEnv
+from rigaa.rl_envs.robot_env import RobotEnvEval
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import config as cf
@@ -12,7 +12,7 @@ def generate_rl_map():
     model_save_path = "models/2023-01-28-rl_model-0_600000_steps.zip"
     model = PPO.load(model_save_path)
 
-    environ = RobotEnv()
+    environ = RobotEnvEval()
 
     scenario_found = False
     #scenario_list = []

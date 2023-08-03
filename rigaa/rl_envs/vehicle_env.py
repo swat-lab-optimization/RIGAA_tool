@@ -12,7 +12,7 @@ from rigaa.utils.vehicle import Car
 import os
 
 
-class CarEnv(Env):
+class CarEnvEval(Env):
     def __init__(self):
         self.max_number_of_points = 31
         self.action_space = MultiDiscrete([3, cf.vehicle_env['max_len'] - cf.vehicle_env['min_len'], cf.vehicle_env['max_angle'] - cf.vehicle_env['min_angle']])  # 0 - increase temperature, 1 - decrease temperature

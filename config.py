@@ -21,12 +21,13 @@ robot_env = {
     "max_len": 15,  # 12,#15,  # maximal possible disance to go straight in meters
     "min_pos": 1,  # minimal possible
     "max_pos": 38,  # 49 29,  # maximal possible position in meters
-    "grid_size": 0.5,  # 1,  # size of the grid in meters
-    "robot_radius": 0.9,  # 1,  # radius of the robot in meters
+    "grid_size": 1,#0.5,  # 1,  # size of the grid in meters
+    "robot_radius": 0.1,#0.9,  # 1,  # radius of the robot in meters
     "sx": 1,  # 1,  # start x position
-    "sy": 38,
-    "gx": 36,  # 1,  # start y position
-    "gy": 3}
+    "sy": 1,#38,
+    "gx": 38,#36,  # 1,  # start y position
+    "gy": 38#3
+    }
 
 
 

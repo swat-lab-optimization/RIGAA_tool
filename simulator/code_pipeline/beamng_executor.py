@@ -18,6 +18,7 @@ from simulator.self_driving.vehicle_state_reader import VehicleStateReader
 from shapely.geometry import Point
 
 import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
 import os.path
 FloatDTuple = Tuple[float, float, float, float]
 

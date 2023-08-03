@@ -1,6 +1,8 @@
 import argparse
 import sys
 import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
+
 
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
@@ -18,6 +20,7 @@ from rigaa.utils.random_seed import get_random_seed
 from rigaa.utils.save_tc_results import save_tc_results
 from rigaa.utils.save_tcs_images import save_tcs_images
 from rigaa.utils.callback import DebugCallback
+
 
 
 def setup_logging(log_to, debug):

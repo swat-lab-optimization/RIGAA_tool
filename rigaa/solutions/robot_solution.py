@@ -6,10 +6,11 @@ import config as cf
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import logging as log
+log.getLogger('matplotlib').setLevel(log.WARNING)
 import time
 
-from rigaa.utils.get_d4rl_map import get_d4rl_map
-from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
+#from rigaa.utils.get_d4rl_map import get_d4rl_map
+#from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
 class RobotSolution:
     """
     This is the class to contain all the information about the candidate solution

@@ -1,12 +1,14 @@
 
 from stable_baselines3 import PPO
 import numpy as np
+import logging as log
 
-from rigaa.rl_envs.vehicle_env import CarEnv
+from rigaa.rl_envs.vehicle_env import CarEnvEval
 from rigaa.utils.vehicle_evaluate import interpolate_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 from rigaa.utils.car_road import Map
 import config as cf
+
 #from rigaa.samplers.vehicle_sampling import generate_random_road
 
 def generate_rl_road():
@@ -18,7 +20,7 @@ def generate_rl_road():
     model_save_path  = "models\\2023-01-26-rl_model_nt_koef_0010_2740000_steps.zip"
     model = PPO.load(model_save_path)
 
-    environ = CarEnv()
+    environ = CarEnvEval()
 
     scenario_found = False
     i = 0
@@ -46,7 +48,7 @@ def generate_rl_road():
             #if i > 10:
             #    scenario = generate_random_road()
 
-            print("Found scenario after %d attempts" % i)
+            log.debug(f"Found scenario after {i} attempts")
 
             i  = 0
             
