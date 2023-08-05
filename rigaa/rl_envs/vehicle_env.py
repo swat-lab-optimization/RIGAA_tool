@@ -21,11 +21,11 @@ from rigaa.utils.vehicle_evaluate import evaluate_scenario
 
 class CarEnv(Env):
     def __init__(self):
-        self.max_number_of_points = 35
+        self.max_number_of_points = 31 
         self.action_space = MultiDiscrete(
             [
                 3,
-                int(cf.vehicle_env["max_len"] - cf.vehicle_env["min_len"])/5,
+                int(cf.vehicle_env["max_len"] - cf.vehicle_env["min_len"]),
                 int(cf.vehicle_env["max_angle"] - cf.vehicle_env["min_angle"])/2,
             ]
         ) 
@@ -95,13 +95,13 @@ class CarEnv(Env):
 
     def set_state(self, action):
         if action[0] == 0:
-            distance = action[1] + cf.vehicle_env["min_len"]*5
+            distance = action[1] + cf.vehicle_env["min_len"]
             angle = 0
         elif action[0] == 1:
-            angle = action[2] + cf.vehicle_env["min_angle"]*2
+            angle = action[2]*2 + cf.vehicle_env["min_angle"]
             distance = 0
         elif action[0] == 2:
-            angle = action[2] + cf.vehicle_env["min_angle"]*2
+            angle = action[2]*2 + cf.vehicle_env["min_angle"]
             distance = 0
 
         return [action[0], distance, angle]

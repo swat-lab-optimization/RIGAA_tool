@@ -36,7 +36,7 @@ class RobotEnv(Env):
             [
                 2,
                 cf.robot_env["max_len"] - cf.robot_env["min_len"],
-                (cf.robot_env["max_pos"] - cf.robot_env["min_pos"])/2,
+                (cf.robot_env["max_pos"] - cf.robot_env["min_pos"]), # divide by 2 to reduce the action space
             ]
         )  # 0 - increase temperature, 1 - decrease temperature
         if policy == "MlpPolicy":
@@ -297,7 +297,7 @@ class RobotEnv(Env):
         input `action` list and a constant value `
         """
         obs_size = action[1] + cf.robot_env["min_len"]
-        position = action[2]*2 + cf.robot_env["min_pos"]
+        position = action[2] + cf.robot_env["min_pos"]  #action[2]*2 to reduce the action space
 
         return [action[0], obs_size, position]
 

@@ -97,11 +97,11 @@ if __name__ == "__main__":
     final_results = {}
     final_novelty = {}
  
-    for m in range(5):
+    for m in range(1):
 
         checkpoint_callback_ppo = CheckpointCallback(
             save_freq=20000,
-            save_path=dt_string + "_rl_training_models",
+            save_path=name + "_rl_training_models",
             name_prefix=name + "_" + str(m),
         )
         log_path = dt_string + "_tensorboard_logs"

@@ -14,7 +14,7 @@ from descartes import PolygonPatch
 import os
 import copy
 
-from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
+#from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
 from simulator.code_pipeline.tests_generation import RoadTestFactory
 from simulator.code_pipeline.validation import TestValidator
 

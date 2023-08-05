@@ -65,6 +65,7 @@ def evaluate(name, model, problem):
     episodes = 30
     i = 0
     results = []
+    scenario_list = []
     while environ.episode < episodes:
         obs = environ.reset()
         done = False
