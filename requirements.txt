@@ -7,3 +7,5 @@ stable-baselines3
  #torch==1.12.1
 descartes
 beamngpy==1.24
+gym==0.26.2
+tensorboard==2.13.0

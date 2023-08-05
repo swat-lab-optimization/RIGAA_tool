@@ -66,6 +66,8 @@ class RobotEnv(Env):
         self.map_points = []
         self.reward = 0
 
+        self.min_fitness = 70
+
 
         self.done = False
 
@@ -235,7 +237,7 @@ class RobotEnv(Env):
 
         return np.array(observations, dtype=np.int8)
 
-    def render(self, img_path="./", mode="human"):
+    def render(self, scenario=[], img_path="./", mode="human"):
         fig, ax = plt.subplots(figsize=(12, 12))
 
         road_x = []

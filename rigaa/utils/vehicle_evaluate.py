@@ -112,7 +112,7 @@ def get_angle(node_a, node_b):
     else:
         return angle
 
-def evaluate_scenario(points):
+def evaluate_scenario(points, rl_train=False):
 
     tot_x = []
     tot_y = []
@@ -166,14 +166,11 @@ def evaluate_scenario(points):
             fitness = max(distance_list2[:-1])
         else:
             fitness = max(distance_list2)
-
-        #print(distance_list)
-        # print("Fitness:", fitness)
-    else: 
-        fitness = 0
-
-
-
+    else:
+        if rl_train:
+            fitness = -1
+        else: 
+            fitness = 0
 
     return -fitness, [tot_x[:-1], tot_y[:-1]]
    
