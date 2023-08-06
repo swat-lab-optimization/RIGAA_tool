@@ -33,7 +33,7 @@ from the start, enabling more efficient exploration of the solution space.
 The diagram of the RIGAA approach is shown below. The *ρ* parameter corresponds to a proportion of RL generated solutions.
 
 <p float="center" align="center">
-  <img src="img/rigaa_diagram.png" width="500" /> 
+  <img src="./img/rigaa_diagram.png" width="500" /> 
 </p>
 
 ## Usage
