@@ -178,22 +178,13 @@ Below we provide the instrucions on how to replicate the results presented in ea
 
 For comparing random and RL-based test generator for autonomous robot problem, we used the following commands:
 ```python
-python compare_generators.py --problem "robot" --runs 30 --tc_num 30
+python compare_generators.py --problem <problem> --runs 30 --tc_num 30
 ```
 
 ```python
-python compare_generators.py --problem "robot" --runs 10 --tc_num 30 --full True
+python compare_generators.py --problem <problem> --runs 10 --tc_num 30 --full True
 ```
 (for comparing the fitness and the diversity of the generated test cases for test subjects in a simulator)
 
-For comparing random and RL-based test generator for autonomous vehicle problem, we used the following commands:
-```python
-python compare_generators.py --problem "vehicle" --runs 30 --tc_num 30
-```
-
-```python
-python compare_generators.py --problem "vehicle" --runs 10 --tc_num 30 --full True
-```
-(for comparing the fitness and the diversity of the generated test cases for test subjects in a simulator)
 
 The obtained results are stored in the ``results`` folder.
