@@ -148,3 +148,8 @@ novelty_debug.py
 
 *zip*
 !rigaa_diagram.png
+# Except JSON files in the root "results" folder
+!results/*.json
+
+# Except JSN files in subfolders of "results" folder
+!results/**/*.json
