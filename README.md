@@ -187,4 +187,4 @@ python compare_generators.py --problem <problem> --runs 10 --tc_num 30 --full Tr
 (for comparing the fitness and the diversity of the generated test cases for test subjects in a simulator)
 
 
-The obtained results are stored in the ``results`` folder.
+The obtained results are stored in the [``results``](/results/)folder.

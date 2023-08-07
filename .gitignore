@@ -134,10 +134,13 @@ dmypy.json
 
 *.png
 *.json
+
 logs.txt
-*stats*
+
+*.txt
+
 *images*
-*tcs*
+
 
 *log*
 *simulations*
@@ -151,5 +154,6 @@ novelty_debug.py
 # Except JSON files in the root "results" folder
 !results/*.json
 
-# Except JSN files in subfolders of "results" folder
+# Except JSON files in subfolders of "results" folder
 !results/**/*.json
+
