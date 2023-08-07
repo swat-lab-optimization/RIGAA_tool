@@ -66,12 +66,13 @@ def parse_arguments():
     parser.add_argument('--debug', type=str, default=False, help='Run in debug mode, possible values: True, False')
     parser.add_argument('--n_eval', type=int, default=None, help='Number of evaluations to run. This parameter overwrites number of generations in the config file')
     parser.add_argument('--full', type=str, default=False, help='Whether to run the evaluation using a simulator: True, False')
+    parser.add_argument('--eval_time', type=str, default=None, help='Time to run the algorithm. n_eval should not be specified to use eval_time')
     
     arguments = parser.parse_args()
     return arguments
 
 
-def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, full):
+def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, full, eval_time):
     """
     Function for running the optimization and saving the results"""
 
@@ -106,6 +107,9 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
     if n_eval is None:
         termination = get_termination("n_gen", cf.ga["n_gen"])
         log.info("The search will be terminated after %d generations", cf.ga["n_gen"])
+    elif eval_time is not None:
+        termination = get_termination("time", eval_time)
+        log.info("The search will be terminated after %d seconds", eval_time)
     else:
         termination = get_termination("n_eval", n_eval)
         log.info("The search will be terminated after %d evaluations", n_eval)
@@ -154,5 +158,5 @@ def main(problem, algo, runs_number, save_results, random_seed, debug, n_eval, f
 
 if __name__ == "__main__":
     args = parse_arguments()
-    main(args.problem, args.algorithm, args.runs, args.save_results, args.seed, args.debug, args.n_eval, args.full)
+    main(args.problem, args.algorithm, args.runs, args.save_results, args.seed, args.debug, args.n_eval, args.full, args.eval_time)
 

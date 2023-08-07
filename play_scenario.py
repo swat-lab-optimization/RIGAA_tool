@@ -4,7 +4,7 @@ import os
 import time
 import logging as log
 
-#from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
+from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
 from simulator.code_pipeline.tests_generation import RoadTestFactory
 from simulator.code_pipeline.validation import TestValidator
 
