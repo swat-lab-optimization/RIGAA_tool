@@ -6,6 +6,7 @@ import csv
 from datetime import datetime
 from itertools import combinations
 import sys
+import argparse
 import logging as log
 log.getLogger('matplotlib').setLevel(log.WARNING)
 from rigaa.samplers import GENERATORS
@@ -192,13 +193,33 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
 
 
             
-            
+def parse_arguments():
+    '''
+    Function for parsing the arguments
+    '''
+    parser = argparse.ArgumentParser(
+                    prog = 'compare_generators.py',
+                    description = 'A script for comparing the random and RL generators for a given problem',
+                    epilog = "For more information, please visit https://github.com/swat-lab-optimization/rigaa-tool ")
+    parser.add_argument('--problem', type=str, default="robot", help='Name of the problem to generate the test scenarios for. Available options: robot, vehicle')
+    parser.add_argument('--runs', type=int, default=10, help='Number of times to run the comparison')
+    parser.add_argument('--tc_num', type=int, default=30, help='Number of test scenarios to generate for each run')
+    parser.add_argument('--full', type=str, default=False, help='Whether to run the evaluation using a simulator: True, False')
+    arguments = parser.parse_args()
+    return arguments
 
         
 if __name__ == "__main__":
-    problem = "robot"
-    runs = 10
-    test_scenario_num = 30
+    args = parse_arguments()
+    problem = args.problem # "robot"
+    runs = args.runs # 10
+    test_scenario_num = args.tc_num # 30
     setup_logging("log.txt", False)
-    compare_generators(problem, runs, test_scenario_num, full_model=True)
+    if args.full == "True":
+        full_model = True
+    elif args.full == "False":
+        full_model = False
+    else:
+        raise ValueError("full argument should be either True or False")
+    compare_generators(problem, runs, test_scenario_num, full_model=full_model)
 

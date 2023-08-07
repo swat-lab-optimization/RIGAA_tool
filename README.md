@@ -102,7 +102,7 @@ where ``<trained_model_path>`` is the path to the .zip file containing the train
 
 ### Installation instructions to run the ant agent in Mujoco simulator for autonomous robot case study
 
-1. We could make it work on Ubuntu 20.04 LTS with python 3.8 or 3.9, with Pytroch with Cuda available. Running on Ubuntu virtual machine on Windows did not work.
+1. This installation was tested Ubuntu 20.04 LTS with python 3.8 or 3.9, with Pytroch with Cuda available. Running on Ubuntu virtual machine on Windows did not work.
 2. Clone this repository to your machine. Then change the directory.
 
 ```
@@ -134,7 +134,66 @@ pip install -e .
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your_path/.mujoco/mujoco210/bin
 ```
-8. Now almost everything is set-up.
+9. At this point you should be able to run the simulator guided search search for the ``robot`` problem. To do so, run the following command:
+```python
+python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --n_eval 8000 --n_offsprings 50 --full True
+```
+10. The provided installation instructions were based on the one provided in the D4RL repository. For more details, please refer to the [D4RL repository](https://github.com/Farama-Foundation/D4RL).
 
 ### Installing the BeamNG simulator for autonomous vehicle case study
+1. This tool needs the BeamNG simulator to be installed on the machine where it is running. A free version of the BeamNG simulator for research purposes can be obtained by registering at https://register.beamng.tech and following the instructions provided by BeamNG. 
+> **Note**: As stated on the BeamNG registration page, please use your university email address. 
 
+2. Fill the "Application Text" field of the registration form with the following text:
+```
+I would like to run experiments in the BeamNG simulator as a part of my research project and for that I need to a
+copy of BeamNG.tech
+```
+
+For our experiments we used `BeamNG.tech v0.26.2.0`, please make sure you download exactly this version of the simulator, i.e., file `BeamNG.tech.v0.26.2.0.zip`.
+
+3. Installing BeamNG.tech is as simple as extracting the files to a target folder in your system (e.g., `C:\BeamNG.tech.v0.26.2.0`). We call this folder `<BEAMNG_HOME>`. Additionally you need to create another folder (e.g., `C:\BeamNG.tech.v0.26.2.0_userpath`) that will act as BeamNG.tech working dir. BeamNG.tech will copy in this directory the levels and its cache. We call this folder `<BEAMNG_USER>`.
+
+Copy the tech.key file that you received after registering inside the <BEAMNG_USER> folder.
+
+> NOTE: Make sure that `<BEAMNG_HOME>` and `<BEAMNG_USER>` contain no spaces nor special characters. 
+
+> NOTE: Please use different folders for `<BEAMNG_HOME>` and `<BEAMNG_USER>`.
+
+> NOTE: Our pipeline supports also the previous simulator version, i.e., `BeamNG.tech v0.26.1.0`. 
+
+The original installation instructions can be found in the [SBFT CPS tool competition repository](https://github.com/sbft-cps-tool-competition/cps-tool-competition/blob/main/documentation/INSTALL.md).
+
+
+4. At this point you should be able to run the simulator guided search search for the ``vehicle`` problem. To do so, run the following command:
+```python
+python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --n_eval 65000 --full True
+```
+
+## Replication package
+
+Below we provide the instrucions on how to replicate the results presented in each RQ of the paper.
+
+### RQ1: *Comparing the performance of the RL-based test generator and random test generator*
+
+For comparing random and RL-based test generator for autonomous robot problem, we used the following commands:
+```python
+python compare_generators.py --problem "robot" --runs 30 --tc_num 30
+```
+
+```python
+python compare_generators.py --problem "robot" --runs 10 --tc_num 30 --full True
+```
+(for comparing the fitness and the diversity of the generated test cases for test subjects in a simulator)
+
+For comparing random and RL-based test generator for autonomous vehicle problem, we used the following commands:
+```python
+python compare_generators.py --problem "vehicle" --runs 30 --tc_num 30
+```
+
+```python
+python compare_generators.py --problem "vehicle" --runs 10 --tc_num 30 --full True
+```
+(for comparing the fitness and the diversity of the generated test cases for test subjects in a simulator)
+
+The obtained results are stored in the ``results`` folder.
