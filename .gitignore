@@ -139,7 +139,6 @@ logs.txt
 
 *.txt
 
-*images*
 
 
 *log*
@@ -157,3 +156,8 @@ novelty_debug.py
 # Except JSON files in subfolders of "results" folder
 !results/**/*.json
 
+# Except JSON files in the root "results" folder
+!results/*.png
+
+# Except JSON files in subfolders of "results" folder
+!results/**/*.png
