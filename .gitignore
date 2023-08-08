@@ -163,3 +163,5 @@ novelty_debug.py
 !results/**/*.png
 
 !models/*.zip
+
+!levels_template/**/*.json
