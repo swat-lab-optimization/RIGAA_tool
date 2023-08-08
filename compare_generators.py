@@ -95,9 +95,6 @@ def save_results(results, algo, problem):
             os.path.join(stats_path, dt_string + "-stats.json")
         )
 
-
-
-
 def compare_generators(problem, runs, test_scenario_num, full_model=False):
     generator = GENERATORS[problem]
     generator_rl = GENERATORS[problem + "_rl"]
@@ -151,11 +148,12 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
             if full_eval:
                 log.info("Evaluating random scenario")
                 fitness = full_model_eval(scenario, problem)
-                #log.info("Fitness random %s", fitness)
+                log.info("Fitness random %s", fitness)
                 log.info("Evaluating RL scenario")
                 fitness_rl = full_model_eval(scenario_rl, problem)
-                #log.info("Fitness RL %s", fitness_rl)
+                log.info("Fitness RL %s", fitness_rl)
                 
+                '''
                 f = open('results.csv', 'a')
                 writer = csv.writer(f)
                 row1 = [fit_model1, fitness]
@@ -163,6 +161,7 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
                 writer.writerow(row1)
                 writer.writerow(row2)
                 f.close
+                '''
                 
                 #log.info("Finished evaluation, saving to file")
 
@@ -204,7 +203,7 @@ def parse_arguments():
     parser.add_argument('--problem', type=str, default="robot", help='Name of the problem to generate the test scenarios for. Available options: robot, vehicle')
     parser.add_argument('--runs', type=int, default=10, help='Number of times to run the comparison')
     parser.add_argument('--tc_num', type=int, default=30, help='Number of test scenarios to generate for each run')
-    parser.add_argument('--full', type=str, default=False, help='Whether to run the evaluation using a simulator: True, False')
+    parser.add_argument('--full', type=str, default="False", help='Whether to run the evaluation using a simulator: True, False')
     arguments = parser.parse_args()
     return arguments
 

@@ -8,11 +8,38 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import logging as log
 from scipy.stats import mannwhitneyu
 
 from matplotlib.ticker import MaxNLocator
 
 from rigaa.utils.cliffsDelta import cliffsDelta
+
+def setup_logging(log_to, debug):
+    """
+    It sets up the logging system
+    """
+    #def log_exception(extype, value, trace):
+    #    log.exception('Uncaught exception:', exc_info=(extype, value, trace))
+
+    term_handler = log.StreamHandler()
+    log_handlers = [term_handler]
+    #term_handler.setLevel(log.INFO)
+    start_msg = "Started test generation"
+
+    if log_to is not None:
+        file_handler = log.FileHandler(log_to, 'w', 'utf-8')
+        #file_handler.setLevel(log.DEBUG)
+        log_handlers.append(file_handler)
+        start_msg += " ".join([", writing logs to file: ", str(log_to)])
+
+    log_level = log.DEBUG if debug else log.INFO
+
+    log.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',  level=log_level, handlers=log_handlers, force=True)
+
+    #sys.excepthook = log_exception
+
+    log.info(start_msg)
 
 def parse_arguments():
     """
@@ -20,7 +47,7 @@ def parse_arguments():
     :return: The arguments that are being passed to the program
     """
 
-    print("Parsing the arguments")
+    log.info("Parsing the arguments")
     parser = argparse.ArgumentParser(
                     prog = 'compare.py',
                     description = 'A tool for generating test cases for autonomous systems',
@@ -62,7 +89,8 @@ def compare_mean_best_values_found(best_fitness_list, column_names, plot_name):
         row_0.append(round(np.mean(val), 3))
 
     rows = [columns, row_0]
-    with open(plot_name + "_mean.csv", 'w', newline='') as csvfile:
+    log.info("Writing mean best values to " + plot_name + "_mean_best_val.csv")
+    with open(plot_name + "_mean_best_val.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
             writer.writerow(row)
@@ -95,7 +123,10 @@ def compare_p_val_best_values_found(best_fitness_list, column_names, plot_name):
                pair_values[i] = round(pair_values[i], 3)
         rows.append(pair_values)
 
-    with open(plot_name + "_res_p_value.csv", 'w', newline='') as csvfile:
+
+
+    log.info(f"Writing p-values and effect sizes to {plot_name}_p_val_best_val.csv")
+    with open(plot_name + "_res_p_best_val.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
             writer.writerow(row)
@@ -134,6 +165,8 @@ def build_times_table(times_list, column_names):
         row_1.append(np.std(alg))
 
     rows = [columns, row_0]
+
+    log.info(f"Writing the results of generation time to results_time.csv")
     with open("results_time.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
@@ -166,6 +199,8 @@ def build_median_table(fitness_list, diversity_list, column_names, plot_name):
         columns.append("Effect size")
 
     rows = [columns, row_0, row_1]
+
+    log.info(f"Writing results to {plot_name}_res.csv")
     with open(plot_name + "_res.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
@@ -187,6 +222,9 @@ def build_cliff_data(fitness_list, diversity_list, column_names, plot_name):
                pair_values[i] = round(pair_values[i], 3)
         rows.append(pair_values)
 
+
+    log.info("Writing cliff delta data to file: " + plot_name + "_res_p_value.csv")
+
     with open(plot_name + "_res_p_value_fitness.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
@@ -207,7 +245,8 @@ def build_cliff_data(fitness_list, diversity_list, column_names, plot_name):
             if not(isinstance(p, str)):
                pair_values[i] = round(pair_values[i], 3)
         rows.append(pair_values)
-    
+
+    log.info(f"Writing to {plot_name + '_res_p_value_diversity.csv'}")    
     with open(plot_name + "_res_p_value_diversity.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in rows:
@@ -245,6 +284,8 @@ def plot_convergence(dfs, stats_names, plot_name):
         plt.plot(x, dfs[i]["mean"][:len_df], label=stats_names[i])
         plt.fill_between(x, np.array(dfs[i]["mean"][:len_df] - dfs[i]["std"][:len_df]), np.array(dfs[i]["mean"][:len_df] + dfs[i]["std"][:len_df]), alpha=0.2)
         plt.legend()
+
+    log.info("Saving plot to " + plot_name + "_convergence.png")
     plt.savefig(plot_name + '_convergence.png', bbox_inches='tight')
     plt.close()
 
@@ -260,14 +301,14 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
     """
 
     fig, ax1 = plt.subplots() #figsize=(8, 4)
-    ax1.set_xlabel('Algorithm', fontsize=18)
-    #ax1.set_xlabel('Generator', fontsize=20)
+    #ax1.set_xlabel('Algorithm', fontsize=18)
+    ax1.set_xlabel('Generator', fontsize=20)
     #ax1.set_xlabel('Epsilon value', fontsize=20)
 
-    ax1.set_ylabel(name, fontsize=18)
+    ax1.set_ylabel(name, fontsize=20)
     
 
-    ax1.tick_params(axis="both", labelsize=14)
+    ax1.tick_params(axis="both", labelsize=18)
     
     ax1.yaxis.grid(True, linestyle='-', which='both', color='darkgray', linewidth=2, alpha=0.5)
 
@@ -277,6 +318,8 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
     ax1.boxplot(data_list, widths=0.55, labels=label_list)
 
     plt.subplots_adjust(bottom=0.15, left=0.16)
+
+    log.info("Saving box plot: " + plot_name + "_" + name + ".png")
 
     fig.savefig(plot_name + "_" + name + ".png", bbox_inches='tight')
     plt.close()
@@ -344,18 +387,17 @@ def main(stats_path, stats_names, plot_name):
         time_list.append(results_time) 
         best_fitness_list.append(results_best_fitness)
     
-    #max_time = max(max(time_list[0]), max(time_list[1]))
+    if results_time:
+        max_time = max(max(time_list[0]), max(time_list[1]))
+        plot_boxplot(time_list, stats_names, "Time, s", max_time+0.2, plot_name)
+        build_times_table(time_list, stats_names)
     
-    #plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+ 2, plot_name)
-    #plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
+    plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+ 2, plot_name)
+    plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
     
-    #plot_boxplot(time_list, stats_names, "Time, s", max_time+0.2)
-    #print(results_time)
+    build_median_table(fitness_list, novelty_list, stats_names, plot_name)
+    build_cliff_data(fitness_list, novelty_list, stats_names, plot_name)
 
-    #build_times_table(time_list, stats_names)
-
-    #build_median_table(fitness_list, novelty_list, stats_names, plot_name)
-    #build_cliff_data(fitness_list, novelty_list, stats_names, plot_name)
     compare_mean_best_values_found(best_fitness_list, stats_names, plot_name)
     compare_p_val_best_values_found(best_fitness_list, stats_names, plot_name)
 
@@ -363,8 +405,11 @@ def main(stats_path, stats_names, plot_name):
 
 if __name__ == "__main__":
     arguments = parse_arguments()
+    setup_logging("log.txt", False)
+
     stats_path = arguments.stats_path
     stats_names = arguments.stats_names
     plot_name = arguments.plot_name
+
 
     main(stats_path, stats_names, plot_name)

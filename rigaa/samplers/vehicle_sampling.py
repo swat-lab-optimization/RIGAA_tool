@@ -6,7 +6,7 @@ import config as cf
 import time
 from rigaa.utils.car_road import Map
 from rigaa.solutions import VehicleSolution
-from rigaa.rl_agents.vehicle_agent2 import generate_rl_road
+from rigaa.rl_agents.vehicle_agent import generate_rl_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 from rigaa.utils.vehicle_evaluate import interpolate_road
 def generate_random_road():
