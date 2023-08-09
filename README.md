@@ -176,7 +176,7 @@ Below we provide the instrucions on how to replicate the results presented in ea
 
 ### RQ1: *Comparing the performance of the RL-based test generator and random test generator*
 
-For comparing random and RL-based test generator for autonomous robot problem, we used the following commands:
+For comparing random and RL-based test generator for autonomous robot problem, we used the following commands (to use the simulator for comparison use the ``full`` argument):
 ```python
 python compare_generators.py --problem <problem> --runs 30 --tc_num 30
 ```
@@ -184,7 +184,11 @@ python compare_generators.py --problem <problem> --runs 30 --tc_num 30
 ```python
 python compare_generators.py --problem <problem> --runs 10 --tc_num 30 --full True
 ```
-(for comparing the fitness and the diversity of the generated test cases for test subjects in a simulator)
+The script will generate the file with the statistics in terms of fitness and diversity of the generated test scenarios with random and RL based generators.
+The obtained results are stored in the [``results/RQ1``](/results/RQ1) folder.  
+To visualize the results (i.e. obtain the boxplots as well as the tables with statistical tests) run the following command with the ``compare.py`` script:
 
-
-The obtained results are stored in the [``results``](/results/)folder.
+```python
+python compare.py  --stats_path "/results/RQ1/09-03-2023_stats_random_gen_vehicle" "results/RQ1/09-03-2023_stats_rl_gen_vehicle" --stats_names "Random" "RL agent" --plot_name "09-03-2023_vehicle_full"
+```
+where ``stats_names`` and ``plot-name`` can be chosen arbitrary and are only used for visualisation and storage.
