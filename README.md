@@ -36,6 +36,18 @@ The diagram of the RIGAA approach is shown below. The *ρ* parameter corresponds
   <img src="./img/rigaa_diagram.png" width="600" /> 
 </p>
 
+
+## Table of Contents
+- <span style="font-size: x-large;"> [Usage](#usage)
+- <span style="font-size: x-large;"> [Search-based test scenario generation](#search-based-test-scenario-generation)
+- <span style="font-size: x-large;"> [Training RL agents for scenario generation](#training-RL-agents-for-scenario-generation)
+- <span style="font-size: x-large;">[Simulator installation for Ant robot environment](#installation-instructions-to-run-the-ant-agent-in-mujoco-simulator-for-autonomous-robot-case-study)
+- <span style="font-size: x-large;">[Simulator installation for autonomous vehicle environment](#installing-the-beamng-simulator-for-autonomous-vehicle-case-study)
+- <span style="font-size: x-large;">[Results replication](#replication-package)
+
+
+
+
 ## Usage
 
 
@@ -192,3 +204,10 @@ To visualize the results (i.e. obtain the boxplots as well as the tables with st
 python compare.py  --stats_path "/results/RQ1/09-03-2023_stats_random_gen_vehicle" "results/RQ1/09-03-2023_stats_rl_gen_vehicle" --stats_names "Random" "RL agent" --plot_name "09-03-2023_vehicle_full"
 ```
 where ``stats_names`` and ``plot-name`` can be chosen arbitrary and are only used for visualisation and storage.
+
+### RQ2: *Selecting the *ρ* hyperparameter of the RIGAA algorithm*
+
+To replicate the date we obtained in our experiments, run the following command:
+```python
+
+```
