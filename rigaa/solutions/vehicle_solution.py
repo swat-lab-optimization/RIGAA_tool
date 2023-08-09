@@ -89,8 +89,8 @@ class VehicleSolution:
 
             executor  = BeamngExecutor(res_path, cf.vehicle_env["map_size"],
                                     time_budget=360,
-                                    beamng_home="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0", 
-                                    beamng_user="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0_user", 
+                                    beamng_home="<BemaNG_home_path>", #C:\\BeamNG\\BeamNG.tech.v0.26.2.0
+                                    beamng_user="<BeamNG_user_path>", #C:\\Users\\DmytroHUMENIUK\\Documents\\BeamNG.tech.v0.26.2.0_user
                                     road_visualizer=None) #RoadTestVisualizer(map_size=cf.vehicle_env["map_size"])
             
             

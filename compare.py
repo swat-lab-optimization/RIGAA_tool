@@ -315,7 +315,7 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
     top = max_range
     bottom = 0
     ax1.set_ylim(bottom, top)
-    ax1.boxplot(data_list, widths=0.55, labels=label_list)
+    ax1.boxplot(data_list, widths=0.45, labels=label_list)
 
     plt.subplots_adjust(bottom=0.15, left=0.16)
 
@@ -392,7 +392,7 @@ def main(stats_path, stats_names, plot_name):
         plot_boxplot(time_list, stats_names, "Time, s", max_time+0.2, plot_name)
         build_times_table(time_list, stats_names)
     
-    plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness+ 2, plot_name)
+    plot_boxplot(fitness_list, stats_names, "Fitness", max_fitness + 0.05, plot_name) # + 2
     plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
     
     build_median_table(fitness_list, novelty_list, stats_names, plot_name)
