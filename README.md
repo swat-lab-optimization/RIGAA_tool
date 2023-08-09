@@ -39,19 +39,13 @@ The diagram of the RIGAA approach is shown below. The *ρ* parameter corresponds
 
 ## Table of Contents
 - <span style="font-size: x-large;"> [Usage](#usage)
-- <span style="font-size: x-large;"> [Search-based test scenario generation](#search-based-test-scenario-generation)
-- <span style="font-size: x-large;"> [Training RL agents for scenario generation](#training-RL-agents-for-scenario-generation)
+  - <span style="font-size: x-large;"> [Search-based test scenario generation](#search-based-test-scenario-generation)
+  - <span style="font-size: x-large;"> [Training RL agents for scenario generation](#training-RL-agents-for-scenario-generation)
 - <span style="font-size: x-large;">[Simulator installation for Ant robot environment](#installation-instructions-to-run-the-ant-agent-in-mujoco-simulator-for-autonomous-robot-case-study)
 - <span style="font-size: x-large;">[Simulator installation for autonomous vehicle environment](#installing-the-beamng-simulator-for-autonomous-vehicle-case-study)
 - <span style="font-size: x-large;">[Results replication](#replication-package)
 
-
-
-
 ## Usage
-
-
-
 RIGAA tool can be used as a search-based test case generation tool, guided by a system behaviour in a simulator or by a surrogate (simplified) fitness function. We also provide scripts for traiinig and evaluating test generation RL agents.
 
 To use the tool first, make sure your environment is with ``python>=3.7`` and install the requirements with:
@@ -112,7 +106,7 @@ python evaluate.py --problem <problem> --save_path_name "run0" --model_path <tra
 ```
 where ``<trained_model_path>`` is the path to the .zip file containing the trained model, ``<problem>`` is the problem name (``robot`` or ``vehicle``).
 
-### Installation instructions to run the ant agent in Mujoco simulator for autonomous robot case study
+## Installation instructions to run the ant agent in Mujoco simulator for autonomous robot case study
 
 1. This installation was tested Ubuntu 20.04 LTS with python 3.8 or 3.9, with Pytroch with Cuda available. Running on Ubuntu virtual machine on Windows did not work.
 2. Clone this repository to your machine. Then change the directory.
@@ -152,7 +146,9 @@ python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results Tr
 ```
 10. The provided installation instructions were based on the one provided in the D4RL repository. For more details, please refer to the [D4RL repository](https://github.com/Farama-Foundation/D4RL).
 
-### Installing the BeamNG simulator for autonomous vehicle case study
+## Installing the BeamNG simulator for autonomous vehicle case study
+The provided installation instructions are based on the instructions that can be found in the [SBFT CPS tool competition repository](https://github.com/sbft-cps-tool-competition/cps-tool-competition/blob/main/documentation/INSTALL.md).
+
 1. This tool needs the BeamNG simulator to be installed on the machine where it is running. A free version of the BeamNG simulator for research purposes can be obtained by registering at https://register.beamng.tech and following the instructions provided by BeamNG. 
 > **Note**: As stated on the BeamNG registration page, please use your university email address. 
 
@@ -174,12 +170,19 @@ Copy the tech.key file that you received after registering inside the <BEAMNG_US
 
 > NOTE: Our pipeline supports also the previous simulator version, i.e., `BeamNG.tech v0.26.1.0`. 
 
-The original installation instructions can be found in the [SBFT CPS tool competition repository](https://github.com/sbft-cps-tool-competition/cps-tool-competition/blob/main/documentation/INSTALL.md).
 
-
-4. At this point you should be able to run the simulator guided search search for the ``vehicle`` problem. To do so, run the following command:
+4. Enter the `<BEAMNG_HOME>` and `<BEAMNG_USER>`paths to the [vehicle_solition.py](rigaa/solutions/vehicle_solution.py) file.
 ```python
-python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --n_eval 65000 --full True
+executor  = BeamngExecutor(res_path, cf.vehicle_env["map_size"],
+                                    time_budget=360,
+                                    beamng_home="<BemaNG_home_path>", 
+                                    beamng_user="<BeamNG_user_path>",
+                                    road_visualizer=None) 
+```
+
+5. At this point you should be able to run the simulator guided search search for the ``vehicle`` problem. To do so, run the following command to run the search algorithm for 2 hours:
+```python
+python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --eval_time "01:30:00" --full True
 ```
 
 ## Replication package
@@ -201,13 +204,34 @@ The obtained results are stored in the [``results/RQ1``](/results/RQ1) folder.
 To visualize the results (i.e. obtain the boxplots as well as the tables with statistical tests) run the following command with the ``compare.py`` script:
 
 ```python
-python compare.py  --stats_path "/results/RQ1/09-03-2023_stats_random_gen_vehicle" "results/RQ1/09-03-2023_stats_rl_gen_vehicle" --stats_names "Random" "RL agent" --plot_name "09-03-2023_vehicle_full"
+python compare.py  --stats_path "/results/RQ1/09-03-2023_stats_random_gen_vehicle" "results/RQ1/09-03-2023_stats_rl_gen_vehicle" --stats_names "Random" "RL agent" --plot_name "rq1_vehicle_full"
 ```
 where ``stats_names`` and ``plot-name`` can be chosen arbitrary and are only used for visualisation and storage.
 
 ### RQ2: *Selecting the *ρ* hyperparameter of the RIGAA algorithm*
 
-To replicate the date we obtained in our experiments, run the following command:
+To replicate the data we obtained in our experiments, run the following command:
 ```python
-
+python optimize.py --problem <problem> --algorithm "rigaa" --runs 30 --n_eval <eval_num> --ro <ρ value>
 ```
+For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``ρ`` we used the following values: *0.2, 0.4, 0.6, 0.8, 1*. For the ``robot`` problem the ``<eval_num>`` was 8000 and for the ``vehicle`` 65000.
+
+To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command:
+```python
+python compare.py --stats_path "results/RQ2/robot/07-02-2023_stats2_rigaa_robot" "results/RQ2/robot/08-02-2023_stats_04_rigaa_robot" "results/RQ2/robot/08-02-2023_stats_06_rigaa_robot/" "results/RQ2/robot/08-02-2023_stats_08_rigaa_robot/" "results/RQ2/robot/08-02-2023_stats_1_rigaa_robot/" --stats_names "0.2" "0.4" "0.6" "0.8" "1" --plot_name "rq2_robot"
+```
+You can use an analogical command to process the results for the vehicle problem.
+
+### RQ3: *Comparing RIGAA and randomly initialized MOEA*
+To replicate the data we obtained in our experiments, run the following command:
+```python
+python optimize.py --problem <problem> --algorithm <algorithm> --runs 30 --n_eval <eval_num>
+```
+For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``<algorithm>`` we used the following values: *``"random"``, ``"nsga2"``, ``"smsemoa"``, ``"rigaa"`` and ``"rigaa_s"``*. For the ``robot`` problem the ``<eval_num>`` was 8000 and for the ``vehicle`` 65000.
+
+To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command:
+
+```python
+python compare.py --stats_path "results/RQ3/robot/08-02-2023_stats_random_robot" "results/RQ3/robot/07-02-2023_stats2_nsga2_robot" "results/RQ3/robot/31-03-2023_stats_smsemoa_robot" "results/RQ3/robot/07-02-2023_stats2_rigaa_robot" "results/RQ3/robot/31-03-2023_stats_rigaa_s_robot" --stats_names "Random" "NSGA-II" "SMSEMOA" "RIGAA" "RIGAA_S" --plot_name "rq3_robot"
+```
+

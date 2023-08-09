@@ -12,13 +12,6 @@ import config as cf
 #from rigaa.samplers.vehicle_sampling import generate_random_road
 
 def generate_rl_road():
-    #model_save_path = "models\\2023-01-18-rl_model-0_20000_steps.zip"
-    #model_save_path = "models//rl_model_2022-10-070_2790000_steps.zip"
-    #model_save_path = "models\\2023-01-19-rl_model0_3000000_steps.zip"
-    #model_save_path  = "models\\2023-01-19-rl_model30_2140000_steps.zip"
-    #model_save_path = "models\\2023-01-24-rl_model_nt_koef_0010_3000000_steps.zip"
-
-    #model_save_path  = "models\\2023-01-26-rl_model_nt_koef_0010_2740000_steps.zip"
     model_save_path  = "models\\05-08-2023_vehicle_run1_0_2500000_steps.zip"
     model = PPO.load(model_save_path)
 
