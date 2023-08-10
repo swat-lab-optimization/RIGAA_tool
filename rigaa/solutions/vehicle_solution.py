@@ -2,6 +2,7 @@
 import logging as log
 log.getLogger('matplotlib').setLevel(log.WARNING)
 import matplotlib.pyplot as plt
+import sys
 
 import config as cf
 from rigaa.utils.car_road import Map
@@ -14,9 +15,10 @@ from descartes import PolygonPatch
 import os
 import copy
 
-from simulator.code_pipeline.beamng_executor import BeamngExecutor # comment if using ubuntu
-from simulator.code_pipeline.tests_generation import RoadTestFactory
-from simulator.code_pipeline.validation import TestValidator
+if sys.platform.startswith("win"):
+    from simulator.code_pipeline.beamng_executor import BeamngExecutor 
+    from simulator.code_pipeline.tests_generation import RoadTestFactory
+    from simulator.code_pipeline.validation import TestValidator
 
 
 class VehicleSolution:
@@ -89,8 +91,8 @@ class VehicleSolution:
 
             executor  = BeamngExecutor(res_path, cf.vehicle_env["map_size"],
                                     time_budget=360,
-                                    beamng_home="<BemaNG_home_path>", #C:\\BeamNG\\BeamNG.tech.v0.26.2.0
-                                    beamng_user="<BeamNG_user_path>", #C:\\Users\\DmytroHUMENIUK\\Documents\\BeamNG.tech.v0.26.2.0_user
+                                    beamng_home="<BemaNG_home_path>", 
+                                    beamng_user="<BeamNG_user_path>", 
                                     road_visualizer=None) #RoadTestVisualizer(map_size=cf.vehicle_env["map_size"])
             
             

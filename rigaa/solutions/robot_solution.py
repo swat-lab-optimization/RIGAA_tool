@@ -1,16 +1,17 @@
 
 import matplotlib.pyplot as plt
 from shapely.geometry import LineString
-
+import sys
 import config as cf
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import logging as log
 log.getLogger('matplotlib').setLevel(log.WARNING)
 import time
+if sys.platform.startswith("linux"):
+    from rigaa.utils.get_d4rl_map import get_d4rl_map
+    from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model 
 
-#from rigaa.utils.get_d4rl_map import get_d4rl_map
-#from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
 class RobotSolution:
     """
     This is the class to contain all the information about the candidate solution
@@ -66,9 +67,6 @@ class RobotSolution:
         if len(waypoints) < 3:
             self.fitness = 0
         else:
-            #RobotSolution().build_image(self.states, save_path="test.png")
-            #for i in maze:
-            #    print(i)
             fitness, reward = evaluate_robot_ant_model(maze, waypoints)
             end_time = time.time() - start
             self.fitness = -1/fitness  # reward#

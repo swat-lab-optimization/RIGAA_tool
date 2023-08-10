@@ -44,6 +44,7 @@ The diagram of the RIGAA approach is shown below. The *ρ* parameter corresponds
 - <span style="font-size: x-large;">[Simulator installation for Ant robot environment](#installation-instructions-to-run-the-ant-agent-in-mujoco-simulator-for-autonomous-robot-case-study)
 - <span style="font-size: x-large;">[Simulator installation for autonomous vehicle environment](#installing-the-beamng-simulator-for-autonomous-vehicle-case-study)
 - <span style="font-size: x-large;">[Results replication](#replication-package)
+- <span style="font-size: x-large;">[Results processing](#result-processing)
 
 ## Usage
 RIGAA tool can be used as a search-based test case generation tool, guided by a system behaviour in a simulator or by a surrogate (simplified) fitness function. We also provide scripts for traiinig and evaluating test generation RL agents.
@@ -220,7 +221,7 @@ To build the fitness, diversity and convergence plots as well as obtain statisti
 ```python
 python compare.py --stats_path "results/RQ2/robot/07-02-2023_stats2_rigaa_robot" "results/RQ2/robot/08-02-2023_stats_04_rigaa_robot" "results/RQ2/robot/08-02-2023_stats_06_rigaa_robot/" "results/RQ2/robot/08-02-2023_stats_08_rigaa_robot/" "results/RQ2/robot/08-02-2023_stats_1_rigaa_robot/" --stats_names "0.2" "0.4" "0.6" "0.8" "1" --plot_name "rq2_robot"
 ```
-You can use an analogical command to process the results for the vehicle problem.
+You can use an analogical command to process the results for the vehicle problem using the results for the [vehicle problem](results/RQ2/vehicle/).
 
 ### RQ3: *Comparing RIGAA and randomly initialized MOEA*
 To replicate the data we obtained in our experiments, run the following command:
@@ -234,4 +235,44 @@ To build the fitness, diversity and convergence plots as well as obtain statisti
 ```python
 python compare.py --stats_path "results/RQ3/robot/08-02-2023_stats_random_robot" "results/RQ3/robot/07-02-2023_stats2_nsga2_robot" "results/RQ3/robot/31-03-2023_stats_smsemoa_robot" "results/RQ3/robot/07-02-2023_stats2_rigaa_robot" "results/RQ3/robot/31-03-2023_stats_rigaa_s_robot" --stats_names "Random" "NSGA-II" "SMSEMOA" "RIGAA" "RIGAA_S" --plot_name "rq3_robot"
 ```
+You can use an analogical command to process the results for the vehicle problem.
 
+### RQ4: *Usefulness of RIGAA for simulator-based testing of autonomous robotic systems*
+
+To replicate the data we obtained in our experiments, run the following command:
+```python
+python optimize.py --problem <problem> --algorithm <algorithm> --runs 30 --eval_time "02:00:00" --full True
+```
+For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``<algorithm>`` we used the following values: *``"random"``, ``"nsga2"``,  ``"rigaa"`` (with ρ=0.4)*. 
+
+For the comparing the performace of the lane-keeping assist system (LKAS) testing tools, such as AmbieGen, Frenetic and RIGAA we used the pipeline provided by the [SBST 2022 tool competition](https://github.com/se2p/tool-competition-av).  
+
+To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command for comparing RIGAA to random search and NSGA-II:
+
+```python
+python compare.py --stats_path "results/RQ4/robot/04-03-2023_stats_fit_random_robot" "results/RQ4/robot/04-03-2023_stats_fit_nsga2_robot" "results/RQ4/robot/05-03-2023_fit_rigaa_robot" --stats_names "Random" "NSGA2" "RIGAA" --plot_name "rq4_robot"
+```
+(For the vehicle problem use the results from the [``results/RQ4/vehicle``](/results/RQ4/vehicle) folder.
+
+To visulalize the results for the LKAS testing tools, run the following command:
+```python
+python compare.py --stats_path "results/RQ4/vehicle/results_rigaa_2h/" "results/RQ4/vehicle/results_ambiegen_2h/" "/results/RQ4/vehicle/results_frenetic_2h/" --stats_names "RIGAA" "AmbieGen" "Frenetic" --plot_name "rq4_tools" --tools
+```
+
+## Results processing
+
+After the RIGAA tool run, the experiment metadata, such as the fitness and diversity of the solutions, the best solution found at each generation, the final test scenarios specifications as well as the illustations of the scenarios are saved into the corresponding folders, with the name of the folder starting with a current date.
+
+The obtained folders can be directly passed to the ``compare.py`` script to obtain the boxplots and statistical tests.
+
+To re-execute the saved test cases in the simulator (in the .json files containing the name ``tcs``) use the following command:
+```python
+python play_scenario.py --problem <problem> --scenario_path <tcs_file_path> --run <run_num>
+```
+where ``<problem>`` can be either ``robot`` or ``vehicle``, ``<tcs_file_path>`` is the path to the .json file containing the test cases and ``<run_num>`` is the number of the run for which the test cases should be executed.
+
+## Contributing
+Bug reports and pull requests are welcome. If you have any questions, please contact me at dmytro.humeniuk@polymtl.ca.
+
+## License
+This code is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).  

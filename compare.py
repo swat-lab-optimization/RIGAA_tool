@@ -56,6 +56,7 @@ def parse_arguments():
     parser.add_argument('--stats_path', nargs='+', help='The source folders of the metadate to analyze', required=True)
     parser.add_argument('--stats_names', nargs='+', help='The names of the corresponding algorithms', required=True)
     parser.add_argument("--plot_name", help="Name to add to the plots", required=False, default="")
+    parser.add_argument("--tools", action="store_true", help="Argument to parse the results from tools evaluation")
     in_arguments = parser.parse_args()
     return in_arguments
 
@@ -325,7 +326,7 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
     plt.close()
 
 
-def main(stats_path, stats_names, plot_name):
+def analyse(stats_path, stats_names, plot_name):
     """
     Main function for building plots comparing the algorithms
     It takes a list of paths to folders containing the results of the tool runs, and a list of names
@@ -403,6 +404,47 @@ def main(stats_path, stats_names, plot_name):
 
 
 
+def analyse_tools(stats_path, stats_names, plot_name):
+    """
+    The `analyse_tools` function takes in a list of file paths, a list of statistics names, and a plot
+    name, and performs analyse on the data in those files.
+    
+    Args:
+      stats_path: A list of paths to the directories where the statistics files are located.
+      stats_names: stats_names is a list of names for each set of statistics. It is used to label the
+    different sets of statistics in the plots and tables.
+      plot_name: The name of the plot that will be generated.
+    """
+
+    sparseness_list = []
+    oob_list = []
+    max_sparseness = 0
+    max_oob = 0
+    for path in stats_path:
+        current_sparseness_list = []
+        current_oob_list = []
+        for root, _, files in os.walk(path):
+            for filename in (files):
+                if "oob_stats.csv" in filename:
+                    data = pd.read_csv(os.path.join(root,filename))
+                    sparseness = float(data["avg_sparseness"])
+                    oobs = int(data["total_oob"])
+                    current_sparseness_list.append(sparseness)
+                    current_oob_list.append(oobs)
+        if max(current_sparseness_list) > max_sparseness:
+            max_sparseness = max(current_sparseness_list)
+        if max(current_oob_list) > max_oob:
+            max_oob = max(current_oob_list)
+        sparseness_list.append(current_sparseness_list)
+        oob_list.append(current_oob_list)
+
+    plot_boxplot(sparseness_list, stats_names, "Sparseness", max_sparseness + 1, plot_name)
+    plot_boxplot(oob_list, stats_names, "Numbrer of failures", max_oob + 1, plot_name)
+
+    build_median_table(sparseness_list, oob_list, stats_names, plot_name)
+    build_cliff_data(sparseness_list, oob_list, stats_names, plot_name)
+
+
 if __name__ == "__main__":
     arguments = parse_arguments()
     setup_logging("log.txt", False)
@@ -410,6 +452,9 @@ if __name__ == "__main__":
     stats_path = arguments.stats_path
     stats_names = arguments.stats_names
     plot_name = arguments.plot_name
+    tools = arguments.tools
 
-
-    main(stats_path, stats_names, plot_name)
+    if tools:
+        analyse_tools(stats_path, stats_names, plot_name)
+    else:
+        analyse(stats_path, stats_names, plot_name)
