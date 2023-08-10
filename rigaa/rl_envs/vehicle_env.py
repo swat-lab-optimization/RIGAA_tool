@@ -13,20 +13,15 @@ import matplotlib
 import os
 import time
 
-matplotlib.use("Agg")
-
-import logging as log
-
-import matplotlib.patches as patches
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import LineString
 from descartes import PolygonPatch
 
 import config as cf
 from rigaa.utils.car_road import Map
-from rigaa.utils.vehicle import Car
 from rigaa.utils.vehicle_evaluate import interpolate_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 
+matplotlib.use("Agg")
 
 class CarEnv(Env):
     def __init__(self):
@@ -156,9 +151,6 @@ class CarEnv(Env):
 
         self.old_fitness = self.fitness
 
-        # current_state = self.state.copy()
-        # self.all_fitness.append(self.fitness)
-        # self.all_states.append(current_state)
 
         self.steps += 1
 
@@ -252,10 +244,6 @@ class CarEnvEval(CarEnv):
     def step(self, action):
         assert self.action_space.contains(action)
         self.done = False
-
-        # r = np.random.random()
-        # if r < self.ran_prob:
-        #    action = self.action_space.sample()
 
         self.state[self.steps] = self.set_state(action)
 

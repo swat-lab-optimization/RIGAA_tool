@@ -164,18 +164,6 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
                 fitness_rl = full_model_eval(scenario_rl, problem)
                 log.info("Fitness RL %s", fitness_rl)
 
-                """
-                f = open('results.csv', 'a')
-                writer = csv.writer(f)
-                row1 = [fit_model1, fitness]
-                row2 = [fit_model2, fitness_rl]
-                writer.writerow(row1)
-                writer.writerow(row2)
-                f.close
-                """
-
-                # log.info("Finished evaluation, saving to file")
-
             scenario_fitness.append(fitness)
             scenario_rl_fitness.append(fitness_rl)
             current_suite_ran[str(i)] = scenario

@@ -32,8 +32,11 @@ def setup_logging(log_to, debug):
     """
     It sets up the logging system
     """
-    # def log_exception(extype, value, trace):
-    #    log.exception('Uncaught exception:', exc_info=(extype, value, trace))
+
+    if debug == "True" or debug:
+        debug = True
+    else:
+        debug = False
 
     term_handler = log.StreamHandler()
     log_handlers = [term_handler]
@@ -108,7 +111,7 @@ def parse_arguments():
     parser.add_argument(
         "--full",
         type=str,
-        default=False,
+        default="False",
         help="Whether to run the evaluation using a simulator: True, False",
     )
     parser.add_argument(
@@ -160,6 +163,10 @@ def main(
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
 
+
+    if n_offsprings is None:
+        n_offsprings = cf.ga["pop_size"]
+
     if algo == "rigaa" or algo == "rigaa_s":
         rl_pop_percent = ro
     else:
@@ -183,6 +190,11 @@ def main(
     else:
         termination = get_termination("n_eval", n_eval)
         log.info("The search will be terminated after %d evaluations", n_eval)
+
+    if full == "True":
+        full = True
+    else:
+        full = False
 
     tc_stats = {}
     tcs = {}

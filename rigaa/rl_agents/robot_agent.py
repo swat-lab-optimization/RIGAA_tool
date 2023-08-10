@@ -10,13 +10,14 @@ from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import config as cf
 import numpy as np
-
+import logging as log
 
 def generate_rl_map():
     model_save_path = "models/2023-01-28-rl_model-0_600000_steps.zip"
     model = PPO.load(model_save_path)
+    policy = "MlpPolicy"
 
-    environ = RobotEnvEval()
+    environ = RobotEnvEval(policy)
 
     scenario_found = False
 
@@ -30,6 +31,8 @@ def generate_rl_map():
 
             obs, rewards, done, info = environ.step(action)
         i += 1
+
+        '''
 
         map_builder = Map(cf.robot_env["map_size"])
         map_points = map_builder.get_points_from_states(environ.state, full=True)
@@ -53,11 +56,13 @@ def generate_rl_map():
             fitness = 0
         else:
             fitness = len(rx)
+        '''
+        fitness, _, _ = environ.eval_fitness(environ.state)
 
         if (fitness > 65) or i > 15:
             scenario = environ.state
             scenario_found = True
-            print("Found scenario after %d attempts" % i)
+            log.debug("Found scenario after %d attempts" % i)
 
             i = 0
 

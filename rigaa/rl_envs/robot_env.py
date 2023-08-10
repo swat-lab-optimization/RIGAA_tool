@@ -125,7 +125,6 @@ class RobotEnv(Env):
         a_star = AStarPlanner(
             o_x, o_y, cf.robot_env["grid_size"], cf.robot_env["robot_radius"]
         )  # noqa: E501
-        # log.debug(f"Eval time {(time.time() - start)*1000}")
 
         r_x, r_y, _ = a_star.planning(
             cf.robot_env["sx"],

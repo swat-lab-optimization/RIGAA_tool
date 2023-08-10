@@ -84,12 +84,13 @@ For the explanation of the arguments, refer to the table below.
 Here are the commands to run the tool for the robot and vehicle problems (when the simulator was used the ``full`` argument was set to ``True``):  
 
 ```python
-python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --n_eval 8000 --n_offsprings 50
+python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --n_eval 8000 --n_offsprings 100
 ```
 ```python
 python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --n_eval 65000 
 ```
-For the autonomous robot problem we used ``150`` population size and for the autonomous vehicle - population of ``100`` individuals.
+For both problems we used ``150`` population size.
+One run with this number of evaluatiions will take approximately 1 hour for both systems. To reduce the run time, you can reduce the number of evaluations (``n_eval``).
 
 ### Training RL agents for scenario generation
 
@@ -143,7 +144,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your_path/.mujoco/mujoco210/bin
 ```
 9. At this point you should be able to run the simulator guided search search for the ``robot`` problem. To do so, run the following command:
 ```python
-python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --n_eval 8000 --n_offsprings 50 --full True
+python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --n_eval 8000 --n_offsprings 100 --full True
 ```
 10. The provided installation instructions were based on the one provided in the D4RL repository. For more details, please refer to the [D4RL repository](https://github.com/Farama-Foundation/D4RL).
 

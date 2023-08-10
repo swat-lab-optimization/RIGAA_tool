@@ -11,8 +11,8 @@ from rigaa.solutions.robot_solution import RobotSolution
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 
-if sys.platform.startswith("linux"):
-    from rigaa.rl_agents.robot_agent import generate_rl_map
+#if sys.platform.startswith("linux"):
+from rigaa.rl_agents.robot_agent import generate_rl_map
 import config as cf
 import time
 

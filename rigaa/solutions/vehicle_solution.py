@@ -37,14 +37,11 @@ class VehicleSolution:
 
         self.road_points = []
         self.states = []
-        self.speed = cf.vehicle_env["speed"]
-        self.steer_ang = cf.vehicle_env["steer_ang"]
         self.map_size = cf.vehicle_env["map_size"]
         self.fitness = 0
         self.car_path = []
         self.novelty = 0
         self.intp_points = []
-        self.just_fitness = 0
 
     def eval_fitness(self):
         """
@@ -98,10 +95,9 @@ class VehicleSolution:
                 beamng_home="<BemaNG_home_path>",
                 beamng_user="<BeamNG_user_path>",
                 road_visualizer=None,
-            )  # RoadTestVisualizer(map_size=cf.vehicle_env["map_size"])
+            )
 
             test_outcome, description, execution_data = executor._execute(the_test)
-            # test_outcome, description, execution_data = executor.execute_test(the_test)
 
             fitness = -max([i.oob_percentage for i in execution_data])
 

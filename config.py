@@ -1,5 +1,5 @@
 
-ga = {"pop_size": 100, "n_gen": 100,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 20} # specify the population size here
+ga = {"pop_size": 100, "n_gen": 100,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 30} # specify the population size here
 files = {"stats_path": "stats", "tcs_path": "tcs", "images_path": "tc_images"}
 rl = {"init_pop_prob": 0.4}
 
