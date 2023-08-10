@@ -1,21 +1,24 @@
-
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for checking the validity of the generated road topologies
+"""
 import numpy as np
-
 from scipy.interpolate import splprep, splev
 from shapely.geometry import LineString, Point
 from numpy.ma import arange
-
-#import config as cf
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import Polygon
 import config as cf
 
 rounding_precision = 3
 interpolation_distance = 1
 smoothness = 0
 min_num_nodes = 20
+
+
 def interpolate_test(the_test):
     """
-        Interpolate the road points using cubic splines and ensure we handle 4F tuples for compatibility
+    Interpolate the road points using cubic splines and ensure we handle 4F tuples for compatibility
     """
     old_x_vals = [t[0] for t in the_test]
     old_y_vals = [t[1] for t in the_test]
@@ -39,7 +42,7 @@ def interpolate_test(the_test):
         # Otheriwse, use cubic splines
         k = 3
 
-    pos_tck, pos_u = splprep([old_x_vals, old_y_vals], s= smoothness, k=k)
+    pos_tck, pos_u = splprep([old_x_vals, old_y_vals], s=smoothness, k=k)
 
     step_size = 1 / num_nodes
     unew = arange(0, 1 + step_size, step_size)
@@ -47,10 +50,16 @@ def interpolate_test(the_test):
     new_x_vals, new_y_vals = splev(unew, pos_tck)
 
     # Return the 4-tuple with default z and defatul road width
-    return list(zip([round(v, rounding_precision) for v in new_x_vals],
-                    [round(v, rounding_precision) for v in new_y_vals],
-                    [-28.0 for v in new_x_vals],
-                    [8.0 for v in new_x_vals]))
+    return list(
+        zip(
+            [round(v, rounding_precision) for v in new_x_vals],
+            [round(v, rounding_precision) for v in new_y_vals],
+            [-28.0 for v in new_x_vals],
+            [8.0 for v in new_x_vals],
+        )
+    )
+
+
 def is_too_sharp(the_test, TSHD_RADIUS=47):
     """
     If the minimum radius of the test is greater than the TSHD_RADIUS, then the test is too sharp
@@ -65,11 +74,10 @@ def is_too_sharp(the_test, TSHD_RADIUS=47):
     """
     if TSHD_RADIUS > min_radius(the_test) > 0.0:
         check = True
-        #print("Too sharp")
+        # print("Too sharp")
     else:
         check = False
     return check
-
 
 
 def is_valid_road(points):
@@ -83,25 +91,20 @@ def is_valid_road(points):
     Returns:
       A boolean value.
     """
-    #nodes = [[p[0], p[1]] for p in points]
-    # intp = self.interpolate_road(the_test.road_points)
 
     in_range = is_inside_map(points, cf.vehicle_env["map_size"])
-    #the_test = MyRoadTestFactory.create_road_test(points)
-    #test_validator = TestValidator(cf.vehicle_env["map_size"])
     the_test = interpolate_test(points)
-
-    
 
     road = LineString([(t[0], t[1]) for t in points])
     invalid = (
         (road.is_simple is False)
-       # or (is_too_sharp(points) is True)
+        # or (is_too_sharp(points) is True)
         or (is_too_sharp(the_test) is True)
         or (len(points) < 3)
         or (in_range is False)
     )
-    return not(invalid)
+    return not (invalid)
+
 
 # some of this code was taken from https://github.com/se2p/tool-competition-av
 def find_circle(p1, p2, p3):
@@ -162,7 +165,7 @@ def min_radius(x, w=5):
 
 def is_inside_map(interpolated_points, map_size):
     """
-        Take the extreme points and ensure that their distance is smaller than the map side
+    Take the extreme points and ensure that their distance is smaller than the map side
     """
     xs = [t[0] for t in interpolated_points]
     ys = [t[1] for t in interpolated_points]
@@ -170,7 +173,13 @@ def is_inside_map(interpolated_points, map_size):
     min_x, max_x = min(xs), max(xs)
     min_y, max_y = min(ys), max(ys)
 
-    return 0 < min_x or min_x > map_size and \
-            0 < max_x or max_x > map_size and \
-            0 < min_y or min_y > map_size and \
-            0 < max_y or max_y > map_size
+    return (
+        0 < min_x
+        or min_x > map_size
+        and 0 < max_x
+        or max_x > map_size
+        and 0 < min_y
+        or min_y > map_size
+        and 0 < max_y
+        or max_y > map_size
+    )

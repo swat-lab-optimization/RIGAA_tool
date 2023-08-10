@@ -1,6 +1,13 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for getting the convergence of the search algoritm (best values at each generation)
+"""
 
 import numpy as np
 import config as cf
+
+
 def get_convergence(res, n_offsprings):
     """
     It takes the result of the genetic algorithm and returns a list of the best fitness values of each generation.
@@ -17,7 +24,9 @@ def get_convergence(res, n_offsprings):
         convergence.append(population[0][0])
 
     step = n_offsprings
-    evaluations = np.arange(cf.ga["pop_size"], len(res.history)*n_offsprings + cf.ga["pop_size"], step)
+    evaluations = np.arange(
+        cf.ga["pop_size"], len(res.history) * n_offsprings + cf.ga["pop_size"], step
+    )
 
     for i in range(len(evaluations)):
         res_dict[str(evaluations[i])] = convergence[i]

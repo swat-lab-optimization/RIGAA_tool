@@ -1,5 +1,12 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for generating random seeds
+"""
+
 import time
 import logging as log
+
 
 def get_random_seed():
     """
@@ -16,6 +23,5 @@ def get_random_seed():
         + ((t & 0x0000FF00) << 8)
         + ((t & 0x000000FF) << 24)
     )
-
 
     return seed

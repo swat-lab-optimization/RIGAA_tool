@@ -1,3 +1,9 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for search operators
+"""
+
 import copy
 from pymoo.core.mutation import Mutation
 import logging as log
@@ -9,6 +15,7 @@ class RobotMutation(Mutation):
     """
     Class to define the mutation operator for the robot problem
     """
+
     def __init__(self, mut_rate):
         super().__init__()
         self.mut_rate = mut_rate
@@ -36,7 +43,9 @@ class RobotMutation(Mutation):
                 # change of value operator, change the value of one of the attributes of a random state
                 else:
                     while n > 0:
-                        log.debug("Change of value mutation performed on individual %s", s)
+                        log.debug(
+                            "Change of value mutation performed on individual %s", s
+                        )
                         num = np.random.randint(0, high=len(child))
                         value = np.random.choice(["state", "value", "position"])
 
@@ -44,7 +53,9 @@ class RobotMutation(Mutation):
                             duration_list = [
                                 i
                                 for i in range(
-                                    cf.robot_env["min_len"], cf.robot_env["max_len"] + 1, 1
+                                    cf.robot_env["min_len"],
+                                    cf.robot_env["max_len"] + 1,
+                                    1,
                                 )
                             ]
                             child[num][1] = int(np.random.choice(duration_list))

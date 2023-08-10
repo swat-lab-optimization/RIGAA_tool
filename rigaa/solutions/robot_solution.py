@@ -1,3 +1,8 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for representing the robot problem solution
+"""
 
 import matplotlib.pyplot as plt
 from shapely.geometry import LineString
@@ -6,11 +11,14 @@ import config as cf
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import logging as log
-log.getLogger('matplotlib').setLevel(log.WARNING)
+
+log.getLogger("matplotlib").setLevel(log.WARNING)
 import time
+
 if sys.platform.startswith("linux"):
     from rigaa.utils.get_d4rl_map import get_d4rl_map
-    from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model 
+    from rigaa.utils.evaluate_robot_ant_model import evaluate_robot_ant_model
+
 
 class RobotSolution:
     """
@@ -60,23 +68,20 @@ class RobotSolution:
             self.fitness = 0
 
         return self.fitness
-    
+
     def eval_fitness_full(self):
-        maze, waypoints  = get_d4rl_map(self.states)
+        maze, waypoints = get_d4rl_map(self.states)
         start = time.time()
         if len(waypoints) < 3:
             self.fitness = 0
         else:
             fitness, reward = evaluate_robot_ant_model(maze, waypoints)
             end_time = time.time() - start
-            self.fitness = -1/fitness  # reward#
+            self.fitness = -1 / fitness  # reward#
             log.info("Fitness %s", self.fitness)
             log.info("Evaluation time %s", end_time)
-            #log.info("Reward %s", reward )
+            # log.info("Reward %s", reward )
         return self.fitness
-
-
-
 
     def intersect(self, tc1, tc2):
         """
@@ -87,23 +92,25 @@ class RobotSolution:
           state2: the second element to compare
 
         Returns:
-          The list of similar elements in the two test cases 
+          The list of similar elements in the two test cases
         """
         intersection = []
-        tc_size  = min(len(tc1), len(tc2))
+        tc_size = min(len(tc1), len(tc2))
         for i in range(tc_size):
             if tc1[i][0] == tc2[i][0]:
-                if (abs(tc1[i][1] - tc2[i][1]) <= 2) and (abs(tc1[i][2] - tc2[i][2]) <= 2):
+                if (abs(tc1[i][1] - tc2[i][1]) <= 2) and (
+                    abs(tc1[i][2] - tc2[i][2]) <= 2
+                ):
                     intersection.append(tc1[i])
 
         return intersection
-                
+
     def calculate_novelty(self, tc1, tc2):
         """
         > The novelty of two test cases is the proportion of states that are unique to each test case
         We implement novelty calculation according to Jaccard distance definition:
         intersection/(set1 size + set2 size - intersection)
-        
+
         :param tc1: The first test case
         :param tc2: The test case that is being compared to the test suite
         :return: The novelty of the two test cases.

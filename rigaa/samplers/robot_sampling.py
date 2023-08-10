@@ -1,3 +1,8 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script generating initial population for the robot problem
+"""
 import logging as log
 import numpy as np
 import sys
@@ -5,10 +10,12 @@ from pymoo.core.sampling import Sampling
 from rigaa.solutions.robot_solution import RobotSolution
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
+
 if sys.platform.startswith("linux"):
     from rigaa.rl_agents.robot_agent import generate_rl_map
 import config as cf
 import time
+
 
 def generate_random_solution():
     """
@@ -33,9 +40,11 @@ def generate_random_solution():
 
             ob_type = np.random.randint(0, 2)
             value = np.random.randint(
-                cf.robot_env["min_len"], cf.robot_env["max_len"] + 1)
+                cf.robot_env["min_len"], cf.robot_env["max_len"] + 1
+            )
             position = np.random.randint(
-                cf.robot_env["min_pos"], cf.robot_env["max_pos"] + 1)
+                cf.robot_env["min_pos"], cf.robot_env["max_pos"] + 1
+            )
             states.append([ob_type, value, position])
         map_builder = Map(map_size)
         map_points = map_builder.get_points_from_states(states, full=True)
@@ -46,9 +55,10 @@ def generate_random_solution():
         rx, ry, _ = a_star.planning(sx, sy, gx, gy)
         path_size = len(rx)
 
-    #RobotSolution.build_image(states)
+    # RobotSolution.build_image(states)
 
     return states, -path_size
+
 
 class RobotSampling(Sampling):
     """
@@ -58,7 +68,6 @@ class RobotSampling(Sampling):
     def __init__(self, init_pop_prob):
         super().__init__()
         self.init_pop_prob = init_pop_prob
-
 
     def _do(self, problem, n_samples, **kwargs):
         """
@@ -70,7 +79,7 @@ class RobotSampling(Sampling):
         for i in range(n_samples):
             r = np.random.random()
             s = RobotSolution()
-           
+
             if r < self.init_pop_prob:
                 start = time.time()
                 states, fitness = generate_rl_map()
@@ -78,9 +87,11 @@ class RobotSampling(Sampling):
                 log.debug("Individual produced by RL in %f sec", time.time() - start)
             else:
                 start = time.time()
-                states, fitness =  generate_random_solution()
-                log.debug("Individual produced by randomly in %f sec", time.time() - start)
-            
+                states, fitness = generate_random_solution()
+                log.debug(
+                    "Individual produced by randomly in %f sec", time.time() - start
+                )
+
             s.states = states
             s.fitness = fitness
             X[i, 0] = s

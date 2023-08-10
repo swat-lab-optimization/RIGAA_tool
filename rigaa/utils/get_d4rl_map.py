@@ -1,10 +1,14 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for adopting the generated maze points to the D4RL format
+"""
 
 import numpy as np
 from rigaa.utils.robot_map import Map
 import config as cf
 from rigaa.utils.rgp import rdp
 from rigaa.utils.a_star import AStarPlanner
-#from rigaa.solutions.robot_solution import RobotSolution
 
 def ant_adapt_points(points):
     points = points[::-1]
@@ -32,14 +36,7 @@ def get_d4rl_map(states):
 
     a_star = AStarPlanner(ox, oy, grid_size, robot_radius)  # noqa: E501
     rx, ry, rtime = a_star.planning(sx, sy, gx, gy)
-    #print("Time taken", rtime)
-    #print("original points", list(zip(rx, ry)))
     points = rdp(list(zip(rx, ry)), 1)
-    #print("Approximated points", (points[::-1]))
     adopt_points = ant_adapt_points(points)
-    #print("Adopted points", adopt_points)
-
-
-
     return ant_map_points, adopt_points
     

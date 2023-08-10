@@ -1,33 +1,35 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for generating mazes with an RL agent 
+"""
+
 from stable_baselines3 import PPO
 from rigaa.rl_envs.robot_env import RobotEnvEval
 from rigaa.utils.robot_map import Map
 from rigaa.utils.a_star import AStarPlanner
 import config as cf
 import numpy as np
+
+
 def generate_rl_map():
-    #model_save_path = "models//rl_model_09-21_mlp_v0_1_120000_steps.zip"
-    #model_save_path = "models//rl_model_09-24_mlp_v0_0_500000_steps.zip"
-    #model_save_path = "models\\2023-01-21-rl_model-0_540000_steps.zip"
-    #model_save_path = "models\\2023-01-28-rl_model-0_600000_steps.zip"
     model_save_path = "models/2023-01-28-rl_model-0_600000_steps.zip"
     model = PPO.load(model_save_path)
 
     environ = RobotEnvEval()
 
     scenario_found = False
-    #scenario_list = []
 
     i = 0
     while scenario_found == False:
         obs = environ.reset()
         done = False
-        #i = 0
+        # i = 0
         while not done:
             action, _ = model.predict(obs)
 
             obs, rewards, done, info = environ.step(action)
         i += 1
-        #fitness = environ.fitness
 
         map_builder = Map(cf.robot_env["map_size"])
         map_points = map_builder.get_points_from_states(environ.state, full=True)
@@ -47,28 +49,16 @@ def generate_rl_map():
         a_star = AStarPlanner(ox, oy, grid_size, robot_radius)  # noqa: E501
         rx, ry, rtime = a_star.planning(sx, sy, gx, gy)
 
-        #print(max_fitness)
-
         if len(rx) < 3:
             fitness = 0
         else:
             fitness = len(rx)
 
-        if (fitness > 65) or i >15:
-            #print(i)
-            #print("Round: {}".format(environ.episode))
-            #print("Max fitness: {}".format(max_fitness))
-            
-            #scenario = environ.state[:environ.t]
+        if (fitness > 65) or i > 15:
             scenario = environ.state
-            #fitness = environ.fitness
-
-            #environ.render(scenario)
-            #scenario_list.append(scenario)
             scenario_found = True
             print("Found scenario after %d attempts" % i)
 
-            i  = 0
-
+            i = 0
 
     return scenario, -fitness

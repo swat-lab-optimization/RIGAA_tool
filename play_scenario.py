@@ -1,3 +1,9 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for re-executing scenario with a simulator
+"""
+
 import json
 import os
 import time

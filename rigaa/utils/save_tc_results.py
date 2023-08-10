@@ -1,8 +1,13 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for saving test scenario metadata such as the test suite statistics and the test suite itself
+"""
+
 import os
 import json
 import logging as log
 from datetime import datetime
-
 import config as cf
 
 
@@ -28,12 +33,11 @@ def save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem):
         os.makedirs(tcs_path)
 
     with open(
-        os.path.join(stats_path, dt_string + "-stats.json"), "w"
-    , encoding="utf-8") as f:
+        os.path.join(stats_path, dt_string + "-stats.json"), "w", encoding="utf-8"
+    ) as f:
         json.dump(tc_stats, f, indent=4)
         log.info(
-            "Stats saved as %s",
-            os.path.join(stats_path, dt_string + "-stats.json")
+            "Stats saved as %s", os.path.join(stats_path, dt_string + "-stats.json")
         )
 
     with open(
@@ -41,13 +45,13 @@ def save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem):
     ) as f:
         json.dump(tcs_convergence, f, indent=4)
         log.info(
-            "Stats saved as %s",
-            os.path.join(stats_path, dt_string + "-conv.json")
+            "Stats saved as %s", os.path.join(stats_path, dt_string + "-conv.json")
         )
 
-    with open(os.path.join(tcs_path, dt_string + "-tcs.json"), "w", encoding= "utf-8") as f:
+    with open(
+        os.path.join(tcs_path, dt_string + "-tcs.json"), "w", encoding="utf-8"
+    ) as f:
         json.dump(tcs, f, indent=4)
         log.info(
-            "Test cases saved as %s",
-            os.path.join(tcs_path, dt_string + "-tcs.json")
+            "Test cases saved as %s", os.path.join(tcs_path, dt_string + "-tcs.json")
         )

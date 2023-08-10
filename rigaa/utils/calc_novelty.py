@@ -1,3 +1,8 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for evaluating the diversity of test scenarios
+"""
 
 from rigaa.solutions import VehicleSolution
 from rigaa.solutions import RobotSolution

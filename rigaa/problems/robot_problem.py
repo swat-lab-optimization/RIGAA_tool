@@ -1,10 +1,18 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for defining the robot problem
+"""
 from pymoo.core.problem import ElementwiseProblem
 import time
 import logging as log
+
+
 class RobotProblem2Obj(ElementwiseProblem):
-    '''
+    """
     A class to define the two objective problem for the robot.
-    '''
+    """
+
     def __init__(self, full=False):
         super().__init__(n_var=1, n_obj=2, n_ieq_constr=1)
         self.full = True
@@ -28,7 +36,6 @@ class RobotProblem2Obj(ElementwiseProblem):
             s.eval_fitness()
             out["G"] = 150 - s.fitness * (-1)
 
-
         algorithm = kwargs["algorithm"]
         solutions = algorithm.pop.get("X")
         # evalaute the novelty of the individual
@@ -50,14 +57,16 @@ class RobotProblem2Obj(ElementwiseProblem):
         out["F"] = [s.fitness, s.novelty]
         # put a constraint on the fitness to be bigger than 140
 
-        log.debug("Evaluated individual %s, fitness %s, novelty %s", s, s.fitness, s.novelty)
-        
+        log.debug(
+            "Evaluated individual %s, fitness %s, novelty %s", s, s.fitness, s.novelty
+        )
 
 
 class RobotProblem1Obj(ElementwiseProblem):
-    '''
+    """
     A class to define the single objective problem for the robot.
-    '''
+    """
+
     def __init__(self, full=False):
         super().__init__(n_var=1, n_obj=1, n_ieq_constr=1)
         self.full = full

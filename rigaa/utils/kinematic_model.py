@@ -1,4 +1,11 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script with vehicle model
+"""
+
 import math
+
 
 class KinematicModel:
     def __init__(self, x, y, yaw, speed):

@@ -1,9 +1,15 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for search operators
+"""
 import copy
 from pymoo.core.mutation import Mutation
 import numpy as np
 import config as cf
 from rigaa.utils.car_road import Map
 import logging as log
+
 
 class VehicleMutation(Mutation):
     """
@@ -23,7 +29,6 @@ class VehicleMutation(Mutation):
             if r < self.mut_rate:
 
                 log.debug("Mutation performed on individual %s", s)
-                
 
                 sn = copy.deepcopy(s)
 
@@ -32,19 +37,23 @@ class VehicleMutation(Mutation):
                 # exchnage mutation operator, exchange two random states
                 n = np.random.randint(1, 4)
                 if wr < 0.5:
-                    
+
                     while n > 0:
                         log.debug("Exchange mutation performed on individual %s", s)
-                        candidates = list(np.random.randint(0, high=len(child)-1, size=2))
+                        candidates = list(
+                            np.random.randint(0, high=len(child) - 1, size=2)
+                        )
                         temp = child[candidates[0]].copy()
                         child[candidates[0]] = child[(candidates[1])]
                         child[(candidates[1])] = temp
                         n -= 1
                 # change of value operator, change the value of one of the attributes of a random state
-                else:#if wr < 0.9:
+                else:  # if wr < 0.9:
                     while n > 0:
-                        log.debug("Change of value mutation performed on individual %s", s)
-                        num = np.random.randint(0, high=len(child)-1)
+                        log.debug(
+                            "Change of value mutation performed on individual %s", s
+                        )
+                        num = np.random.randint(0, high=len(child) - 1)
                         if child[(num)][0] == 0:
                             child[(num)][0] = np.random.choice([1, 2])
 
@@ -61,13 +70,15 @@ class VehicleMutation(Mutation):
                             child[num][1] = int(np.random.choice(value_list))
                         else:
                             value_list = np.arange(
-                                cf.vehicle_env["min_angle"], cf.vehicle_env["max_angle"], 5
+                                cf.vehicle_env["min_angle"],
+                                cf.vehicle_env["max_angle"],
+                                5,
                             )
                             child[num][2] = int(np.random.choice(value_list))
                         n -= 1
 
                 sn.states = child.copy()
-                
+
                 test_map = Map(cf.vehicle_env["map_size"])
                 sn.road_points, new_states = test_map.get_points_from_states(sn.states)
                 sn.states = copy.deepcopy(new_states)

@@ -1,4 +1,8 @@
-
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for generating initial population for the vehicle problem
+"""
 import logging as log
 import numpy as np
 from pymoo.core.sampling import Sampling
@@ -9,6 +13,8 @@ from rigaa.solutions import VehicleSolution
 from rigaa.rl_agents.vehicle_agent import generate_rl_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 from rigaa.utils.vehicle_evaluate import interpolate_road
+
+
 def generate_random_road():
     """
     It generates a random road topology
@@ -18,7 +24,6 @@ def generate_random_road():
     angles = list(range(cf.vehicle_env["min_angle"], cf.vehicle_env["max_angle"]))
 
     map_size = cf.vehicle_env["map_size"]
-
 
     fitness = 0
 
@@ -37,7 +42,7 @@ def generate_random_road():
                 angle = np.random.choice(angles)
                 done = not (test_map.turn_left(angle))
         scenario = test_map.scenario[:-1]
-        
+
         map = Map(map_size)
         road_points, scenario = map.get_points_from_states(scenario)
         intp_points = interpolate_road(road_points)
@@ -57,6 +62,7 @@ class VehicleSampling(Sampling):
     def __init__(self, init_pop_prob):
         super().__init__()
         self.init_pop_prob = init_pop_prob
+
     def _do(self, problem, n_samples, **kwargs):
 
         X = np.full((n_samples, 1), None, dtype=object)
@@ -70,7 +76,9 @@ class VehicleSampling(Sampling):
             else:
                 start = time.time()
                 states, fitness = generate_random_road()
-                log.debug("Individual produced by randomly in %f sec", time.time() - start)
+                log.debug(
+                    "Individual produced by randomly in %f sec", time.time() - start
+                )
             s = VehicleSolution()
             s.states = states
             s.fitness = fitness

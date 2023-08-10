@@ -1,3 +1,10 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for traning an RL agent for road topology generation
+"""
+
+
 from gym import Env
 from gym.spaces import Box, MultiDiscrete
 import numpy as np
@@ -5,6 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import os
 import time
+
 matplotlib.use("Agg")
 
 import logging as log
@@ -19,27 +27,26 @@ from rigaa.utils.vehicle import Car
 from rigaa.utils.vehicle_evaluate import interpolate_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 
+
 class CarEnv(Env):
     def __init__(self):
-        self.max_number_of_points = 31 
+        self.max_number_of_points = 31
         self.action_space = MultiDiscrete(
             [
                 3,
                 int(cf.vehicle_env["max_len"] - cf.vehicle_env["min_len"]),
-                int(cf.vehicle_env["max_angle"] - cf.vehicle_env["min_angle"])/2,
+                int(cf.vehicle_env["max_angle"] - cf.vehicle_env["min_angle"]) / 2,
             ]
-        ) 
+        )
 
         self.done = False
 
         self.evaluate = False
 
-
         self.min_fitness = 3.2
 
         self.dist_explored = []
         self.angle_explored = []
-
 
         self.max_steps = 30
         self.steps = 0
@@ -98,14 +105,13 @@ class CarEnv(Env):
             distance = action[1] + cf.vehicle_env["min_len"]
             angle = 0
         elif action[0] == 1:
-            angle = action[2]*2 + cf.vehicle_env["min_angle"]
+            angle = action[2] * 2 + cf.vehicle_env["min_angle"]
             distance = 0
         elif action[0] == 2:
-            angle = action[2]*2 + cf.vehicle_env["min_angle"]
+            angle = action[2] * 2 + cf.vehicle_env["min_angle"]
             distance = 0
 
         return [action[0], distance, angle]
-
 
     def eval_fitness(self, states):
         points, _ = self.map.get_points_from_states(states)
@@ -114,7 +120,6 @@ class CarEnv(Env):
         fitness, car_path = evaluate_scenario(intp_points, rl_train=True)
 
         return abs(fitness), car_path, intp_points
-
 
     def step(self, action):
 
@@ -137,10 +142,9 @@ class CarEnv(Env):
         else:
             reward = self.fitness
             if improvement > 0:
-                reward += improvement*2  # 10 * 
+                reward += improvement * 2  # 10 *
             if self.fitness > self.max_fitness:
                 reward += 50
-
 
             if not (dist in self.dist_explored):
                 reward += 1
@@ -152,9 +156,9 @@ class CarEnv(Env):
 
         self.old_fitness = self.fitness
 
-        #current_state = self.state.copy()
-        #self.all_fitness.append(self.fitness)
-        #self.all_states.append(current_state)
+        # current_state = self.state.copy()
+        # self.all_fitness.append(self.fitness)
+        # self.all_states.append(current_state)
 
         self.steps += 1
 
@@ -194,9 +198,7 @@ class CarEnv(Env):
 
         scenario = self.state[: self.steps]
 
-
-        #log.info(f"Scenario {scenario}")
-
+        # log.info(f"Scenario {scenario}")
 
         fitness, car_path, intp_points = self.eval_fitness(scenario)
         # if self.done:
@@ -212,17 +214,18 @@ class CarEnv(Env):
         if len(car_path):
             ax.plot(car_path[0], car_path[1], "bo", label="Car path")
 
-
-
-        road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(8.0, cap_style=2, join_style=2)
-        road_patch = PolygonPatch((road_poly), fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
+        road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(
+            8.0, cap_style=2, join_style=2
+        )
+        road_patch = PolygonPatch(
+            (road_poly), fc="gray", ec="dimgray"
+        )  # ec='#555555', alpha=0.5, zorder=4)
         ax.add_patch(road_patch)
-
 
         top = cf.vehicle_env["map_size"]
         bottom = 0
         ax.set_title("Test case fitenss " + str(fitness), fontsize=17)
-        ax.tick_params(axis='both', which='major', labelsize=16)
+        ax.tick_params(axis="both", which="major", labelsize=16)
         ax.legend(fontsize=16)
         ax.set_ylim(bottom, top)
         plt.ioff()
@@ -233,8 +236,7 @@ class CarEnv(Env):
 
         if self.evaluate:
             fig.savefig(
-                f"{img_path}{self.episode}_{fitness:.2f}.png",
-                bbox_inches="tight"
+                f"{img_path}{self.episode}_{fitness:.2f}.png", bbox_inches="tight"
             )
         else:
             os.makedirs("debug", exist_ok=True)
@@ -243,20 +245,16 @@ class CarEnv(Env):
         plt.close(fig)
 
 
-
 class CarEnvEval(CarEnv):
-
-
     def __init__(self):
         super().__init__()
-
 
     def step(self, action):
         assert self.action_space.contains(action)
         self.done = False
 
-        #r = np.random.random()
-        #if r < self.ran_prob:
+        # r = np.random.random()
+        # if r < self.ran_prob:
         #    action = self.action_space.sample()
 
         self.state[self.steps] = self.set_state(action)
@@ -273,7 +271,6 @@ class CarEnvEval(CarEnv):
         obs = [coordinate for tuple in self.state for coordinate in tuple]
 
         return np.array(obs, dtype=np.int8), reward, self.done, info
-
 
     def reset(self):
         # print("Reset")

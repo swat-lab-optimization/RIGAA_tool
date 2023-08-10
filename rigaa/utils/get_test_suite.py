@@ -1,6 +1,11 @@
-
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for exctacting the generated test scenarios
+"""
 import config as cf
 import logging as log
+
 
 def get_test_suite(res, algo):
     """
@@ -14,12 +19,12 @@ def get_test_suite(res, algo):
     """
     test_suite = {}
     gen = len(res.history) - 1
-    
+
     population = res.history[gen].pop.get("X")
     if algo != "nsga2" and algo != "rigaa":
         population = sorted(population, key=lambda x: abs(x[0].fitness), reverse=True)
     for i in range(cf.ga["test_suite_size"]):
-        #result = res.history[gen].pop.get("X")[i][0]
+        # result = res.history[gen].pop.get("X")[i][0]
         result = population[i][0]
         states = result.states
         new_states = []

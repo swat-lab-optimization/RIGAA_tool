@@ -1,7 +1,14 @@
-
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for trnslating the test scenario specification to a set of 2D points
+"""
 import numpy as np
 import logging as log
-log.getLogger('matplotlib').setLevel(log.WARNING)
+
+log.getLogger("matplotlib").setLevel(log.WARNING)
+
+
 class Map:
 
     """
@@ -15,7 +22,6 @@ class Map:
         self.max_y = map_size
         self.min_x = 0
         self.min_y = 0
-        
 
         self.init_pos = [0, 1]
 
@@ -39,13 +45,12 @@ class Map:
             self.all_map_points[i][self.map_size - 1] = 0
 
         self.all_map_points[-1][:] = 0
-        
-        
-        #self.all_map_points[-2][:3] = 0
-        #self.all_map_points[-3][:3] = 0
 
-        #self.all_map_points[1][-3:] = 0
-        #self.all_map_points[2][-3:] = 0
+        # self.all_map_points[-2][:3] = 0
+        # self.all_map_points[-3][:3] = 0
+
+        # self.all_map_points[1][-3:] = 0
+        # self.all_map_points[2][-3:] = 0
         #
 
         return
@@ -95,7 +100,7 @@ class Map:
 
         new_points = []
 
-        #init_pos = [self.current_level, position]
+        # init_pos = [self.current_level, position]
         init_pos = [position, self.current_level]
         if self.point_valid(init_pos):
             self.all_map_points[init_pos[1]][init_pos[0]] = 0
@@ -236,8 +241,8 @@ class Map:
                 if point == 0:
                     cords.append([j, i])
 
-        #to_remove = [[1, 1], [1, 2], [2, 1], [2, 2], [self.max_x - 2, self.max_y - 2], [self.max_x - 3, self.max_y - 3], [self.max_x - 3, self.max_y - 2], [self.max_x - 2, self.max_y - 3]]
-        #for r in to_remove:
+        # to_remove = [[1, 1], [1, 2], [2, 1], [2, 2], [self.max_x - 2, self.max_y - 2], [self.max_x - 3, self.max_y - 3], [self.max_x - 3, self.max_y - 2], [self.max_x - 2, self.max_y - 3]]
+        # for r in to_remove:
         #    cords.remove(r)
 
         return cords
@@ -264,7 +269,7 @@ class Map:
                 if full == True:
                     self.horizontal2(int(state[1]), int(state[2]))
                 else:
-                    self.horizontal(int(state[1]), int(state[2]))        
+                    self.horizontal(int(state[1]), int(state[2]))
             elif action == 1:
                 if full == True:
                     self.vertical2(int(state[1]), int(state[2]))

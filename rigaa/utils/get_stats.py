@@ -1,7 +1,13 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for getting the stats of the optimization algorithm
+"""
 from itertools import combinations
 import logging as log
 from rigaa.utils.calc_novelty import calc_novelty
 import config as cf
+
 
 def get_stats(res, problem, algo):
     """
@@ -23,18 +29,19 @@ def get_stats(res, problem, algo):
         population = sorted(population, key=lambda x: x[0], reverse=True)
     for i in range(cf.ga["test_suite_size"]):
 
-
-        #result = res.history[gen].pop.get("F")[i][0]
+        # result = res.history[gen].pop.get("F")[i][0]
         results.append(population[i][0])
 
     gen = len(res.history) - 1
     novelty_list = []
     test_population = res.history[gen].pop.get("X")
     if algo != "nsga2" and algo != "rigaa":
-        test_population = sorted(test_population, key=lambda x: abs(x[0].fitness), reverse=True)
+        test_population = sorted(
+            test_population, key=lambda x: abs(x[0].fitness), reverse=True
+        )
     for i in combinations(range(0, cf.ga["test_suite_size"]), 2):
-        current1 = test_population[i[0]] #res.history[gen].pop.get("X")[i[0]]
-        current2 = test_population[i[1]] #res.history[gen].pop.get("X")[i[1]]
+        current1 = test_population[i[0]]  # res.history[gen].pop.get("X")[i[0]]
+        current2 = test_population[i[1]]  # res.history[gen].pop.get("X")[i[1]]
         nov = calc_novelty(current1[0].states, current2[0].states, problem)
         novelty_list.append(nov)
     novelty = sum(novelty_list) / len(novelty_list)

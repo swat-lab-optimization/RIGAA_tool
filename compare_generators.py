@@ -1,3 +1,8 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for comparing random and RL-based test scenario generators
+"""
 
 import time
 import json
@@ -8,7 +13,8 @@ from itertools import combinations
 import sys
 import argparse
 import logging as log
-log.getLogger('matplotlib').setLevel(log.WARNING)
+
+log.getLogger("matplotlib").setLevel(log.WARNING)
 from rigaa.samplers import GENERATORS
 from rigaa.solutions.vehicle_solution import VehicleSolution
 from rigaa.solutions.robot_solution import RobotSolution
@@ -16,29 +22,35 @@ from rigaa.utils.calc_novelty import calc_novelty
 import config as cf
 from rigaa.utils.save_tcs_images import save_tcs_images
 
+
 def setup_logging(log_to, debug):
     """
     It sets up the logging system
     """
-    #def log_exception(extype, value, trace):
+    # def log_exception(extype, value, trace):
     #    log.exception('Uncaught exception:', exc_info=(extype, value, trace))
 
     term_handler = log.StreamHandler()
     log_handlers = [term_handler]
-    #term_handler.setLevel(log.INFO)
+    # term_handler.setLevel(log.INFO)
     start_msg = "Started test generation"
 
     if log_to is not None:
-        file_handler = log.FileHandler(log_to, 'w', 'utf-8')
-        #file_handler.setLevel(log.DEBUG)
+        file_handler = log.FileHandler(log_to, "w", "utf-8")
+        # file_handler.setLevel(log.DEBUG)
         log_handlers.append(file_handler)
         start_msg += " ".join([", writing logs to file: ", str(log_to)])
 
     log_level = log.DEBUG if debug else log.INFO
 
-    log.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',  level=log_level, handlers=log_handlers, force=True)
+    log.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=log_level,
+        handlers=log_handlers,
+        force=True,
+    )
 
-    #sys.excepthook = log_exception
+    # sys.excepthook = log_exception
 
     log.info(start_msg)
 
@@ -57,20 +69,20 @@ def full_model_eval(scenario, problem):
         sys.exit(1)
     return fitness
 
+
 def get_stats(scenarios, fitness, times, problem):
     res_dict = {}
     res_dict["fitness"] = fitness
     res_dict["times"] = times
-    
+
     novelty_list = []
     for i in combinations(range(0, len(scenarios)), 2):
-        current1 = scenarios[i[0]] #res.history[gen].pop.get("X")[i[0]]
-        current2 = scenarios[i[1]] #res.history[gen].pop.get("X")[i[1]]
+        current1 = scenarios[i[0]]  # res.history[gen].pop.get("X")[i[0]]
+        current2 = scenarios[i[1]]  # res.history[gen].pop.get("X")[i[1]]
         nov = calc_novelty(current1, current2, problem)
         novelty_list.append(nov)
     novelty = sum(novelty_list) / len(novelty_list)
 
-    
     res_dict["novelty"] = novelty
 
     return res_dict
@@ -85,15 +97,14 @@ def save_results(results, algo, problem):
     if not os.path.exists(stats_path):
         os.makedirs(stats_path)
 
-
     with open(
-        os.path.join(stats_path, dt_string + "-stats.json"), "w"
-    , encoding="utf-8") as f:
+        os.path.join(stats_path, dt_string + "-stats.json"), "w", encoding="utf-8"
+    ) as f:
         json.dump(results, f, indent=4)
         log.info(
-            "Stats saved as %s",
-            os.path.join(stats_path, dt_string + "-stats.json")
+            "Stats saved as %s", os.path.join(stats_path, dt_string + "-stats.json")
         )
+
 
 def compare_generators(problem, runs, test_scenario_num, full_model=False):
     generator = GENERATORS[problem]
@@ -101,12 +112,12 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
 
     run_stats = {}
     run_stats_rl = {}
-    f = open('results.csv', 'w')
+    f = open("results.csv", "w")
     writer = csv.writer(f)
     row = ["Model", "Simulator"]
     writer.writerow(row)
     f.close
-    
+
     test_suite_ran = {}
     test_suite_rl = {}
     for run in range(runs):
@@ -124,13 +135,13 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         full_eval = False
         if full_model:
             full_eval = True
-        
+
         current_suite_ran = {}
         current_suite_rl = {}
 
         for i in range(test_scenario_num):
 
-            start = time.time()        
+            start = time.time()
             scenario, fitness = generator()
             gen_time = time.time() - start
             times.append(gen_time)
@@ -152,8 +163,8 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
                 log.info("Evaluating RL scenario")
                 fitness_rl = full_model_eval(scenario_rl, problem)
                 log.info("Fitness RL %s", fitness_rl)
-                
-                '''
+
+                """
                 f = open('results.csv', 'a')
                 writer = csv.writer(f)
                 row1 = [fit_model1, fitness]
@@ -161,20 +172,21 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
                 writer.writerow(row1)
                 writer.writerow(row2)
                 f.close
-                '''
-                
-                #log.info("Finished evaluation, saving to file")
+                """
+
+                # log.info("Finished evaluation, saving to file")
 
             scenario_fitness.append(fitness)
             scenario_rl_fitness.append(fitness_rl)
             current_suite_ran[str(i)] = scenario
             current_suite_rl[str(i)] = scenario_rl
-        test_suite_ran["run"+str(run)] = current_suite_ran
-        test_suite_rl["run"+str(run)] = current_suite_rl
-
+        test_suite_ran["run" + str(run)] = current_suite_ran
+        test_suite_rl["run" + str(run)] = current_suite_rl
 
         results = get_stats(test_scenarios, scenario_fitness, times, problem)
-        results_rl = get_stats(test_scenarios_rl, scenario_rl_fitness, times_rl, problem)
+        results_rl = get_stats(
+            test_scenarios_rl, scenario_rl_fitness, times_rl, problem
+        )
 
         run_stats["run" + str(run)] = results
         run_stats_rl["run" + str(run)] = results_rl
@@ -185,34 +197,48 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         save_tcs_images(current_suite_ran, problem, run, "random_gen")
         save_tcs_images(current_suite_rl, problem, run, "rl_gen")
 
+        # save_tcs_images(test_suite, problem, m, algo)
 
 
-
-        #save_tcs_images(test_suite, problem, m, algo)
-
-
-            
 def parse_arguments():
-    '''
+    """
     Function for parsing the arguments
-    '''
+    """
     parser = argparse.ArgumentParser(
-                    prog = 'compare_generators.py',
-                    description = 'A script for comparing the random and RL generators for a given problem',
-                    epilog = "For more information, please visit https://github.com/swat-lab-optimization/rigaa-tool ")
-    parser.add_argument('--problem', type=str, default="robot", help='Name of the problem to generate the test scenarios for. Available options: robot, vehicle')
-    parser.add_argument('--runs', type=int, default=10, help='Number of times to run the comparison')
-    parser.add_argument('--tc_num', type=int, default=30, help='Number of test scenarios to generate for each run')
-    parser.add_argument('--full', type=str, default="False", help='Whether to run the evaluation using a simulator: True, False')
+        prog="compare_generators.py",
+        description="A script for comparing the random and RL generators for a given problem",
+        epilog="For more information, please visit https://github.com/swat-lab-optimization/rigaa-tool ",
+    )
+    parser.add_argument(
+        "--problem",
+        type=str,
+        default="robot",
+        help="Name of the problem to generate the test scenarios for. Available options: robot, vehicle",
+    )
+    parser.add_argument(
+        "--runs", type=int, default=10, help="Number of times to run the comparison"
+    )
+    parser.add_argument(
+        "--tc_num",
+        type=int,
+        default=30,
+        help="Number of test scenarios to generate for each run",
+    )
+    parser.add_argument(
+        "--full",
+        type=str,
+        default="False",
+        help="Whether to run the evaluation using a simulator: True, False",
+    )
     arguments = parser.parse_args()
     return arguments
 
-        
+
 if __name__ == "__main__":
     args = parse_arguments()
-    problem = args.problem # "robot"
-    runs = args.runs # 10
-    test_scenario_num = args.tc_num # 30
+    problem = args.problem  # "robot"
+    runs = args.runs  # 10
+    test_scenario_num = args.tc_num  # 30
     setup_logging("log.txt", False)
     if args.full == "True":
         full_model = True
@@ -221,4 +247,3 @@ if __name__ == "__main__":
     else:
         raise ValueError("full argument should be either True or False")
     compare_generators(problem, runs, test_scenario_num, full_model=full_model)
-

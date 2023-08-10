@@ -1,12 +1,18 @@
-#
-
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for generating the road topology waypoints from the given transformations
+"""
 import numpy as np
 import math as m
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import logging as log
-log.getLogger('matplotlib').setLevel(log.WARNING)
+
+log.getLogger("matplotlib").setLevel(log.WARNING)
 import copy
+
+
 class Map:
     """Class that conducts transformations to vectors automatically,
     using the commads "go straight", "turn left", "turn right".
@@ -46,7 +52,6 @@ class Map:
         end = np.array((self.max_y / 2 + self.width / 2, self.max_y / 2))
 
         return pos, end
-
 
     def position_to_center(self):
         """
@@ -409,8 +414,5 @@ class Map:
                     break
             else:
                 log.error("ERROR, invalid action")
-            
-
         points = self.road_points_list[:-1]
-
         return points, new_states

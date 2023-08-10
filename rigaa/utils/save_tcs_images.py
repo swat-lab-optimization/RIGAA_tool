@@ -1,3 +1,8 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for saving test scenario images
+"""
 
 import os
 import logging as log
@@ -23,7 +28,7 @@ def save_tcs_images(test_suite, problem, run, algo):
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%Y")
 
-    images_path = dt_string + "_" + cf.files["images_path"] +  "_" + algo + "_" + problem
+    images_path = dt_string + "_" + cf.files["images_path"] + "_" + algo + "_" + problem
 
     if not os.path.exists(images_path):
         os.makedirs(images_path)
@@ -38,6 +43,4 @@ def save_tcs_images(test_suite, problem, run, algo):
 
         elif problem == "vehicle":
             VehicleSolution.build_image(test_suite[str(i)], path)
-    log.info(
-        "Images saved in %s", images_path
-    )
+    log.info("Images saved in %s", images_path)

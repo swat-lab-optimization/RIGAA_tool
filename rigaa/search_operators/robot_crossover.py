@@ -1,4 +1,8 @@
-
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for search operators
+"""
 import random as rm
 import logging as log
 import numpy as np
@@ -12,6 +16,7 @@ class RobotCrossover(Crossover):
     """
     Class to define the crossover operator for the robot problem
     """
+
     def __init__(self, cross_rate):
 
         # define the crossover: number of parents and number of offsprings

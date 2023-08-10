@@ -1,6 +1,11 @@
+"""
+Author: Dmytro Humeniuk, SWAT Lab, Polytechnique Montreal
+Date: 2023-08-10
+Description: script for representing the vehicle solution
+"""
 
 import logging as log
-log.getLogger('matplotlib').setLevel(log.WARNING)
+log.getLogger("matplotlib").setLevel(log.WARNING)
 import matplotlib.pyplot as plt
 import sys
 
@@ -16,7 +21,7 @@ import os
 import copy
 
 if sys.platform.startswith("win"):
-    from simulator.code_pipeline.beamng_executor import BeamngExecutor 
+    from simulator.code_pipeline.beamng_executor import BeamngExecutor
     from simulator.code_pipeline.tests_generation import RoadTestFactory
     from simulator.code_pipeline.validation import TestValidator
 
@@ -55,14 +60,12 @@ class VehicleSolution:
         test_map = Map(self.map_size)
         road_points, new_states = test_map.get_points_from_states(self.states)
         self.states = copy.deepcopy(new_states)
-        
+
         if len(road_points) <= 2:
             self.fitness = 0
         else:
             self.intp_points = interpolate_road(road_points)
-            self.fitness, self.car_path = evaluate_scenario(
-                self.intp_points
-            )
+            self.fitness, self.car_path = evaluate_scenario(self.intp_points)
 
         self.road_points = road_points
 
@@ -70,7 +73,6 @@ class VehicleSolution:
 
     def eval_fitness_full(self):
 
-        
         test_validator = TestValidator(cf.vehicle_env["map_size"])
 
         map = Map(self.map_size)
@@ -83,22 +85,23 @@ class VehicleSolution:
         log.debug(is_valid)
         log.debug(validation_msg)
 
-        if (is_valid== True):
+        if is_valid == True:
 
-            res_path  = "BeamNG_res"
-            if not(os.path.exists(res_path)):
+            res_path = "BeamNG_res"
+            if not (os.path.exists(res_path)):
                 os.mkdir(res_path)
 
-            executor  = BeamngExecutor(res_path, cf.vehicle_env["map_size"],
-                                    time_budget=360,
-                                    beamng_home="<BemaNG_home_path>", 
-                                    beamng_user="<BeamNG_user_path>", 
-                                    road_visualizer=None) #RoadTestVisualizer(map_size=cf.vehicle_env["map_size"])
-            
-            
+            executor = BeamngExecutor(
+                res_path,
+                cf.vehicle_env["map_size"],
+                time_budget=360,
+                beamng_home="<BemaNG_home_path>",
+                beamng_user="<BeamNG_user_path>",
+                road_visualizer=None,
+            )  # RoadTestVisualizer(map_size=cf.vehicle_env["map_size"])
+
             test_outcome, description, execution_data = executor._execute(the_test)
-            #test_outcome, description, execution_data = executor.execute_test(the_test)
-            
+            # test_outcome, description, execution_data = executor.execute_test(the_test)
 
             fitness = -max([i.oob_percentage for i in execution_data])
 
@@ -110,8 +113,6 @@ class VehicleSolution:
 
         return fitness
 
-
-
     def intersect(self, tc1, tc2):
         """
         Compute the intersection of two sets (two test cases)
@@ -121,10 +122,10 @@ class VehicleSolution:
           state2: the second element to compare
 
         Returns:
-          The list of similar elements in the two test cases 
+          The list of similar elements in the two test cases
         """
         intersection = []
-        tc_size  = min(len(tc1), len(tc2))
+        tc_size = min(len(tc1), len(tc2))
         for i in range(tc_size):
             if tc1[i][0] == tc2[i][0]:
                 if tc1[i][0] == 0:
@@ -134,13 +135,13 @@ class VehicleSolution:
                     if abs(tc1[i][2] - tc2[i][2]) <= 5:
                         intersection.append(tc1[i])
         return intersection
-                
+
     def calculate_novelty(self, tc1, tc2):
         """
         > The novelty of two test cases is the proportion of states that are unique to each test case
         We implement novelty calculation according to Jaccard distance definition:
         intersection/(set1 size + set2 size - intersection)
-        
+
         :param tc1: The first test case
         :param tc2: The test case that is being compared to the test suite
         :return: The novelty of the two test cases.
@@ -184,13 +185,16 @@ class VehicleSolution:
         top = map_size
         bottom = 0
 
-        road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(8.0, cap_style=2, join_style=2)
-        road_patch = PolygonPatch((road_poly), fc='gray', ec='dimgray')  # ec='#555555', alpha=0.5, zorder=4)
+        road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(
+            8.0, cap_style=2, join_style=2
+        )
+        road_patch = PolygonPatch(
+            (road_poly), fc="gray", ec="dimgray"
+        )  # ec='#555555', alpha=0.5, zorder=4)
         ax.add_patch(road_patch)
 
-
         ax.set_title("Test case fitenss " + str(fitness), fontsize=17)
-        ax.tick_params(axis='both', which='major', labelsize=16)
+        ax.tick_params(axis="both", which="major", labelsize=16)
         ax.legend(fontsize=16)
         ax.set_ylim(bottom, top)
         plt.ioff()
