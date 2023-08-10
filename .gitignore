@@ -158,6 +158,8 @@ novelty_debug.py
 # Except JSON files in subfolders of "results" folder
 !results/**/*.json
 
+!results/**/*.csv
+
 # Except JSON files in the root "results" folder
 !results/*.png
 

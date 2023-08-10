@@ -1,0 +1,2 @@
+visualize_tests,time_budget,executor,map_size,module_name,class_name,beamng_home,beamng_user,oob_tolerance,speed_limit,module_path,log_to,debug
+True,7200,beamng,200,src.generators.random_frenet_generator,Frenetic,C:\Users\gumen\Downloads\BeamNG.research.v1.7.0.1\,,0.85,70,,,False
