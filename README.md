@@ -29,14 +29,13 @@ Autonomous systems testing), we first train an RL agent to learn useful constrai
 use it to produce a certain percentage of the initial population of the search algorithm. By incorporating an RL
 agent into the search process, we aim to guide the algorithm towards promising regions of the search space
 from the start, enabling more efficient exploration of the solution space.
-
 The diagram of the RIGAA approach is shown below. The *ρ* parameter corresponds to a proportion of RL generated solutions.
 
 <p float="center" align="center">
   <img src="./img/rigaa_diagram.png" width="600" /> 
 </p>
 
-
+You can see examples of some of the failures revealed by RIGAA in the following videos: [ant robot failures](https://youtu.be/eS25h7iLA1Q), [autonomous vehicle failures](https://youtu.be/zaTSuFrVrhw).
 ## Table of Contents
 - <span style="font-size: x-large;"> [Usage](#usage)
   - <span style="font-size: x-large;"> [Search-based test scenario generation](#search-based-test-scenario-generation)
