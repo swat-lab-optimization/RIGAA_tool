@@ -33,7 +33,7 @@ def setup_logging(log_to, debug):
     It sets up the logging system
     """
 
-    if debug == "True" or debug:
+    if debug == "True":
         debug = True
     else:
         debug = False

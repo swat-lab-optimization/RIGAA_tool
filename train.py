@@ -36,14 +36,14 @@ def setup_logging(log_to, debug):
 
     if debug == "True":
         debug = True
-    elif debug == "False":
+    else:
         debug = False
 
     log_level = log.DEBUG if debug else log.INFO
 
     log.basicConfig(
         format="%(asctime)s %(levelname)-8s %(message)s",
-        level=log.DEBUG,
+        level=log_level,
         handlers=log_handlers,
         force=True,
     )
@@ -101,9 +101,6 @@ def parse_arguments():
         type=str,
         default=False,
         help="Run in debug mode, possible values: True, False",
-    )
-    parser.add_argument(
-        "--model_path", type=str, default="", help="Path of the model to evaluate"
     )
     arguments = parser.parse_args()
     return arguments

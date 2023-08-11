@@ -57,7 +57,7 @@ def setup_logging(log_to, debug):
 def evaluate(name, model, problem):
 
     log.info("Running the evaluation of the trained agent")
-    img_path_save = name + "_rl_training_images/"
+    img_path_save = name + "_rl_evaluation_images/"
 
     if problem == "robot":
         environ = RobotEnvEval(policy)
@@ -88,8 +88,8 @@ def evaluate(name, model, problem):
             fitness > environ.min_fitness
         ) or i > 15: 
             log.info(i)
-            log.info("Round: {}".format(environ.episode))
-            log.info("Max fitness: {}".format(fitness))
+            log.info("Scenario found after {} attempts".format(environ.episode))
+            log.info("Scenario fitness: {}".format(fitness))
             scenario = environ.state
             environ.render(img_path=img_path_save)
             scenario_list.append(scenario)
@@ -112,7 +112,7 @@ def parse_arguments():
     Function for parsing the arguments
     """
     parser = argparse.ArgumentParser(
-        prog="train.py",
+        prog="evaluate.py",
         description="A script for evaluating RL agents for test scenario generation",
         epilog="For more information, please visit https://github.com/swat-lab-optimization/rigaa-tool ",
     )
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     final_novelty[str(m)] = novelty
     final_results[str(m)] = results
 
-    res_save_path = name + "_rl_training_stats/"
+    res_save_path = name + "_rl_evaluation_stats/"
     if not os.path.exists(res_save_path):
         os.makedirs(res_save_path)
 

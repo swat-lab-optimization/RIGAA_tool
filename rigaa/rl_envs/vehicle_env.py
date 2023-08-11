@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import os
 import time
+import logging as log
 
 from shapely.geometry import LineString
 from descartes import PolygonPatch
@@ -33,7 +34,6 @@ class CarEnv(Env):
                 int(cf.vehicle_env["max_angle"] - cf.vehicle_env["min_angle"]) / 2,
             ]
         )
-
         self.done = False
 
         self.evaluate = False
@@ -63,7 +63,6 @@ class CarEnv(Env):
         self.train_episode = 0
         self.evaluation = False
         self.scenario = []
-
         self.observation_space = Box(
             low=0, high=100, shape=(self.max_number_of_points * 3,), dtype=np.int8
         )
@@ -150,8 +149,8 @@ class CarEnv(Env):
                 self.angle_explored.append(angle)
 
         self.old_fitness = self.fitness
-
-
+        
+        log.debug(f"Step time: {time.time() - start}")
         self.steps += 1
 
         if self.steps >= self.max_steps:
@@ -159,8 +158,6 @@ class CarEnv(Env):
 
         info = {}
         obs = [coordinate for tuple in self.state for coordinate in tuple]
-
-        # print("Evaluation time", time.time() - start)
 
         return np.array(obs, dtype=np.int8), reward, self.done, info
 

@@ -18,7 +18,7 @@ import config as cf
 
 
 def generate_rl_road():
-    model_save_path = "models\\05-03-2023_vehicle_run1_0_2500000_steps.zip"
+    model_save_path = "models/vehicle_agent_2500000_steps.zip"
     model = PPO.load(model_save_path)
 
     environ = CarEnvEval()
