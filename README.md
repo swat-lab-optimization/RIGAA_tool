@@ -18,6 +18,8 @@
 	Reinforcement learning Informed Genetic Algorithm for Autonomous systems testing (RIGAA)
 </h1>
 
+[![DOI](https://zenodo.org/badge/580930128.svg)](https://zenodo.org/badge/latestdoi/580930128)
+
 <p align="center">
   <b>Current Tool Version: 0.1.0</b>
 </p>
