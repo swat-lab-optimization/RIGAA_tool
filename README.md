@@ -47,6 +47,19 @@ You can see examples of some of the failures revealed by RIGAA in the following 
 - <span style="font-size: x-large;">[Results replication](#replication-package)
 - <span style="font-size: x-large;">[Results processing](#result-processing)
 
+## Citation
+Please cite the following paper if you use this tool in your research:
+```bibtex
+@misc{humeniuk2023reinforcement,
+      title={Reinforcement Learning Informed Evolutionary Search for Autonomous Systems Testing}, 
+      author={Dmytro Humeniuk and Foutse Khomh and Giuliano Antoniol},
+      year={2023},
+      eprint={2308.12762},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO}
+}
+```
+
 ## Usage
 RIGAA tool can be used as a search-based test case generation tool, guided by a system behaviour in a simulator or by a surrogate (simplified) fitness function. We also provide scripts for traiinig and evaluating test generation RL agents.
 

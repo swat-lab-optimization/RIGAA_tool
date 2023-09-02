@@ -411,6 +411,8 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
 
     fig, ax1 = plt.subplots()  # figsize=(8, 4)
     ax1.set_xlabel("Generator", fontsize=20)
+    #ax1.set_xlabel("Rho value", fontsize=20)
+
 
     ax1.set_ylabel(name, fontsize=20)
 
@@ -501,7 +503,7 @@ def analyse(stats_path, stats_names, plot_name):
         build_times_table(time_list, stats_names)
 
     plot_boxplot(
-        fitness_list, stats_names, "Fitness", max_fitness + 0.05, plot_name
+        fitness_list, stats_names, "Fitness", max_fitness + 3, plot_name
     )  # + 2
     plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
 
