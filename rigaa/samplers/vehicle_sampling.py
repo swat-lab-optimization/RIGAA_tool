@@ -13,7 +13,19 @@ from rigaa.solutions import VehicleSolution
 from rigaa.rl_agents.vehicle_agent import generate_rl_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 from rigaa.utils.vehicle_evaluate import interpolate_road
+from rigaa.utils.kappa_generator import KappaRoadGenerator
 
+
+def generate_frenetic_road():
+    '''
+    This function generates a road topology represented a list of curvature values
+    '''
+    gen =  KappaRoadGenerator(200, 1.57, 10, 8)
+    road = gen.generate_road()
+    intp_points = interpolate_road(road)
+    fitness, _ = evaluate_scenario(intp_points)
+    return road, fitness
+    
 
 def generate_random_road():
     """

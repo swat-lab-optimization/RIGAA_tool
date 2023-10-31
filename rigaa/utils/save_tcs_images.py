@@ -10,6 +10,7 @@ from rigaa.solutions.robot_solution import RobotSolution
 from rigaa.solutions.vehicle_solution import VehicleSolution
 from datetime import datetime
 import config as cf
+from rigaa.utils.kappa_generator import KappaRoadGenerator
 
 
 def save_tcs_images(test_suite, problem, run, algo):
@@ -43,4 +44,8 @@ def save_tcs_images(test_suite, problem, run, algo):
 
         elif problem == "vehicle":
             VehicleSolution.build_image(test_suite[str(i)], path)
+        elif problem == "vehicle_fr":
+            gen = KappaRoadGenerator(200, 1.57, 10, 8)
+            gen.visualize_road(test_suite[str(i)], path)
+
     log.info("Images saved in %s", images_path)

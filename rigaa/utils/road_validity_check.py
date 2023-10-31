@@ -8,7 +8,7 @@ from scipy.interpolate import splprep, splev
 from shapely.geometry import LineString, Point
 from numpy.ma import arange
 from shapely.geometry import Polygon
-import config as cf
+#import config as cf
 
 rounding_precision = 3
 interpolation_distance = 1
@@ -80,7 +80,19 @@ def is_too_sharp(the_test, TSHD_RADIUS=47):
     return check
 
 
-def is_valid_road(points):
+def is_self_intersecting(points):
+    road = LineString([(t[0], t[1]) for t in points])
+    ends_too_close = np.linalg.norm( np.array(points[0]) - np.array(points[-1])) < 3
+    if not(road.is_simple) or ends_too_close:
+    #print("Self intersecting")
+        return True
+    else:
+        return False
+
+
+
+
+def is_valid_road(points, map_size=200, margin=5):
     """
     If the road is not simple, or if the road is too sharp, or if the road has less than 3 points, or if
     the last point is not in range, then the road is invalid
@@ -92,18 +104,22 @@ def is_valid_road(points):
       A boolean value.
     """
 
-    in_range = is_inside_map(points, cf.vehicle_env["map_size"])
-    the_test = interpolate_test(points)
+    if (len(points) < 3):
+        return False
+    else:
 
-    road = LineString([(t[0], t[1]) for t in points])
-    invalid = (
-        (road.is_simple is False)
-        # or (is_too_sharp(points) is True)
-        or (is_too_sharp(the_test) is True)
-        or (len(points) < 3)
-        or (in_range is False)
-    )
-    return not (invalid)
+        in_range = is_inside_map(points, map_size, margin)
+        the_test = interpolate_test(points)
+
+        
+        invalid = (
+            (is_self_intersecting(the_test) is True)
+            # or (is_too_sharp(points) is True)
+            or (is_too_sharp(the_test) is True)
+            or (len(points) < 3)
+            or (in_range is False)
+        )
+        return not (invalid)
 
 
 # some of this code was taken from https://github.com/se2p/tool-competition-av
@@ -163,10 +179,11 @@ def min_radius(x, w=5):
     return mr * 3.280839895  # , mincurv
 
 
-def is_inside_map(interpolated_points, map_size):
+def is_inside_map(points, map_size, margin):
     """
     Take the extreme points and ensure that their distance is smaller than the map side
     """
+    '''
     xs = [t[0] for t in interpolated_points]
     ys = [t[1] for t in interpolated_points]
 
@@ -183,3 +200,10 @@ def is_inside_map(interpolated_points, map_size):
         and 0 < max_y
         or max_y > map_size
     )
+    '''
+    min_size = 0 + margin
+    max_size = map_size - margin
+    for x, y in points:
+        if not (min_size <= x <= max_size and min_size <= y <= max_size):
+            return False
+    return True

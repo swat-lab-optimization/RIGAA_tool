@@ -56,10 +56,13 @@ def setup_logging(log_to, debug):
 
 
 def full_model_eval(scenario, problem):
-    if problem == "vehicle":
+    if "vehicle" in problem:
         vehicle = VehicleSolution()
         vehicle.states = scenario
-        fitness = vehicle.eval_fitness_full()
+        if problem == "vehicle_fr":
+            fitness = vehicle.eval_fitness_full(road=scenario)
+        else:
+            fitness = vehicle.eval_fitness_full()
     elif problem == "robot":
         robot = RobotSolution()
         robot.states = scenario
@@ -71,17 +74,36 @@ def full_model_eval(scenario, problem):
 
 
 def get_stats(scenarios, fitness, times, problem):
+    """
+    The function "get_stats" takes in scenarios, fitness, times, and problem as parameters, and returns
+    a dictionary containing the fitness, times, and novelty.
+    
+    :param scenarios: A list of scenarios, which are inputs to the problem being solved
+    :param fitness: The fitness parameter is a measure of how well a solution performs in solving the
+    given problem. It could be a numerical value representing the quality of the solution, such as a
+    fitness score or an objective function value
+    :param times: The "times" parameter is a list that contains the execution times of each scenario in
+    the "scenarios" list
+    :param problem: The `problem` parameter is the problem instance or configuration that is being
+    solved or analyzed. It could be any information or data related to the problem that is needed for
+    calculating the statistics
+    :return: a dictionary containing the fitness, times, and novelty values.
+    """
     res_dict = {}
     res_dict["fitness"] = fitness
     res_dict["times"] = times
 
     novelty_list = []
+    novelty = 0
+
+    '''
     for i in combinations(range(0, len(scenarios)), 2):
         current1 = scenarios[i[0]]  # res.history[gen].pop.get("X")[i[0]]
         current2 = scenarios[i[1]]  # res.history[gen].pop.get("X")[i[1]]
         nov = calc_novelty(current1, current2, problem)
         novelty_list.append(nov)
     novelty = sum(novelty_list) / len(novelty_list)
+    '''
 
     res_dict["novelty"] = novelty
 
@@ -107,8 +129,25 @@ def save_results(results, algo, problem):
 
 
 def compare_generators(problem, runs, test_scenario_num, full_model=False):
+    """
+    The function `compare_generators` compares the performance of two different generators by running
+    them multiple times and collecting statistics on the generated scenarios.
+    
+    :param problem: The "problem" parameter is a string that represents the problem for which the
+    generators are being compared. It is used to select the appropriate generator functions from the
+    `GENERATORS` dictionary
+    :param runs: The parameter "runs" represents the number of times the comparison between generators
+    will be run. It determines how many times the generator functions will be called and evaluated
+    :param test_scenario_num: The parameter "test_scenario_num" represents the number of test scenarios
+    that will be generated and evaluated in each run of the comparison
+    :param full_model: The `full_model` parameter is a boolean flag that determines whether to perform a
+    full evaluation of the generated scenarios using a separate evaluation function (`full_model_eval`).
+    If `full_model` is set to `True`, the evaluation function will be called for each generated scenario
+    to calculate its fitness. If `, defaults to False (optional)
+    """
     generator = GENERATORS[problem]
-    generator_rl = GENERATORS[problem + "_rl"]
+    #generator_rl = GENERATORS[problem + "_rl"]
+    generator_rl = GENERATORS[problem + "_frenetic"]
 
     run_stats = {}
     run_stats_rl = {}
@@ -161,7 +200,7 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
                 fitness = full_model_eval(scenario, problem)
                 log.info("Fitness random %s", fitness)
                 log.info("Evaluating RL scenario")
-                fitness_rl = full_model_eval(scenario_rl, problem)
+                fitness_rl = full_model_eval(scenario_rl, problem +"_fr")
                 log.info("Fitness RL %s", fitness_rl)
 
             scenario_fitness.append(fitness)
@@ -183,7 +222,7 @@ def compare_generators(problem, runs, test_scenario_num, full_model=False):
         save_results(run_stats_rl, "rl_gen", problem)
 
         save_tcs_images(current_suite_ran, problem, run, "random_gen")
-        save_tcs_images(current_suite_rl, problem, run, "rl_gen")
+        save_tcs_images(current_suite_rl, problem + "_fr", run, "rl_gen")
 
         # save_tcs_images(test_suite, problem, m, algo)
 

@@ -68,12 +68,15 @@ class VehicleSolution:
 
         return self.fitness
 
-    def eval_fitness_full(self):
+    def eval_fitness_full(self, road=[]):
 
         test_validator = TestValidator(cf.vehicle_env["map_size"])
 
         map = Map(self.map_size)
-        road_points, self.states = map.get_points_from_states(self.states)
+        if len(road) > 1:
+            road_points = list(road)
+        else:
+            road_points, self.states = map.get_points_from_states(self.states)
 
         the_test = RoadTestFactory.create_road_test(road_points)
 
@@ -92,8 +95,8 @@ class VehicleSolution:
                 res_path,
                 cf.vehicle_env["map_size"],
                 time_budget=360,
-                beamng_home="<BemaNG_home_path>",
-                beamng_user="<BeamNG_user_path>",
+                beamng_home="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0",
+                beamng_user="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0_user",
                 road_visualizer=None,
             )
 
@@ -182,7 +185,7 @@ class VehicleSolution:
         bottom = 0
 
         road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(
-            8.0, cap_style=2, join_style=2
+            4.0, cap_style=2, join_style=2
         )
         road_patch = PolygonPatch(
             (road_poly), fc="gray", ec="dimgray"
