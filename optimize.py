@@ -25,6 +25,7 @@ from rigaa.utils.get_test_suite import get_test_suite
 from rigaa.utils.random_seed import get_random_seed
 from rigaa.utils.save_tc_results import save_tc_results
 from rigaa.utils.save_tcs_images import save_tcs_images
+from rigaa.utils.save_pareto import save_pareto_front_img
 from rigaa.utils.callback import DebugCallback
 
 
@@ -85,9 +86,9 @@ def parse_arguments():
     parser.add_argument("--runs", type=int, default=1, help="Number of runs")
     parser.add_argument(
         "--save_results",
-        type=str,
-        default=True,
-        help="Save results, possible values: True, False",
+        type=bool,  # Use bool to parse "True" and "False" as boolean values
+        default=True,  # Set the default value to True
+        help="Save results (default: True)",
     )
     parser.add_argument("--seed", type=int, default=None, help="Random seed")
     parser.add_argument(
@@ -113,6 +114,12 @@ def parse_arguments():
         type=str,
         default="False",
         help="Whether to run the evaluation using a simulator: True, False",
+    )
+    parser.add_argument(
+        "--name",
+        type=str,
+        default="",
+        help="A special name for the run",
     )
     parser.add_argument(
         "--eval_time",
@@ -141,6 +148,7 @@ def main(
     full,
     eval_time,
     n_offsprings,
+    name,
     ro=0.4
 ):
     """
@@ -163,6 +171,10 @@ def main(
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
 
+    crossover_stats = {"valid":0, "invalid": 0}
+    mutation_stats = {"valid": 0, "invalid": 0}
+    crossover_operator = OPERATORS[problem + "_crossover"](cf.ga["cross_rate"], crossover_stats)
+    mutation_operator = OPERATORS[problem + "_mutation"](cf.ga["mut_rate"], mutation_stats)
 
     if n_offsprings is None:
         n_offsprings = cf.ga["pop_size"]
@@ -175,21 +187,23 @@ def main(
         n_offsprings=n_offsprings,
         pop_size=cf.ga["pop_size"],
         sampling=SAMPLERS[problem](rl_pop_percent),
-        crossover=OPERATORS[problem + "_crossover"](cf.ga["cross_rate"]),
-        mutation=OPERATORS[problem + "_mutation"](cf.ga["mut_rate"]),
+        crossover=crossover_operator,
+        mutation=mutation_operator,
         eliminate_duplicates=DuplicateElimination(algo, problem),
         n_points_per_iteration=n_offsprings,
     )
 
-    if n_eval is None:
-        termination = get_termination("n_gen", cf.ga["n_gen"])
-        log.info("The search will be terminated after %d generations", cf.ga["n_gen"])
-    elif eval_time is not None:
+
+    if eval_time is not None:
         termination = get_termination("time", eval_time)
-        log.info("The search will be terminated after %d seconds", eval_time)
-    else:
+        log.info("The search will be terminated after %s", eval_time)
+    elif n_eval is not None:
         termination = get_termination("n_eval", n_eval)
         log.info("The search will be terminated after %d evaluations", n_eval)
+    else:
+        termination = get_termination("n_gen", cf.ga["n_gen"])
+        log.info("The search will be terminated after %d generations", cf.ga["n_gen"])
+
 
     if full == "True":
         full = True
@@ -219,17 +233,32 @@ def main(
             callback=DebugCallback(debug),
         )
 
+        gen = len(res.history) - 1
+        opt_num = len(res.history[gen].opt)
+
         log.info("Execution time, %f sec", res.exec_time)
 
+        pareto = res.history[gen].pop.get("F")[:opt_num]
+        rest_soltions = res.history[gen].pop.get("F")[opt_num:]
+
+        log.info(f"Pareto optimal solutions found {pareto}")
+
+        cross_stats = res.algorithm.mating.crossover.cross_stats
+        mut_stats = res.algorithm.mating.mutation.mut_stats
+
         test_suite = get_test_suite(res, algo)
-        tc_stats["run" + str(m)] = get_stats(res, problem, algo)
+        tc_stats["run" + str(m)] = get_stats(res, problem, algo, cross_stats, mut_stats)
         tcs["run" + str(m)] = test_suite
 
         tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
 
-        if save_results == "True":
-            save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem)
-            save_tcs_images(test_suite, problem, m, algo)
+        if save_results:
+            save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem, name)
+            save_tcs_images(test_suite, problem, m, algo, name)
+
+            #pareto_test_suite = get_test_suite(res, algo, problem, pareto_size=opt_num)
+            save_pareto_front_img(pareto, rest_soltions, problem, m, algo, name)
+            #tcs_pareto["run" + str(m)] = pareto_test_suite 
 
 
 ################################## MAIN ########################################
@@ -247,5 +276,6 @@ if __name__ == "__main__":
         args.full,
         args.eval_time,
         args.n_offsprings,
+        args.name,
         ro=args.ro
     )

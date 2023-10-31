@@ -9,7 +9,7 @@ from rigaa.utils.calc_novelty import calc_novelty
 import config as cf
 
 
-def get_stats(res, problem, algo):
+def get_stats(res, problem, algo, cross_stat, mut_stat):
     """
     It takes the results of the optimization and returns a dictionary with the fitness, novelty, and
     convergence of the optimization
@@ -50,5 +50,8 @@ def get_stats(res, problem, algo):
     log.info("Average diversity: %f", novelty)
     res_dict["fitness"] = results
     res_dict["novelty"] = novelty
+    res_dict["cross_stats"] = cross_stat
+    res_dict["mutation_stats"] = mut_stat
+
 
     return res_dict

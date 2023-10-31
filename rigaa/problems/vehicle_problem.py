@@ -69,7 +69,7 @@ class VehicleProblem2Obj(ElementwiseProblem):
         algorithm = kwargs["algorithm"]
 
         solutions = algorithm.pop.get("X")
-        if (solutions.size > 0) and (s.fitness < -1):
+        if (solutions.size > 0) and (s.fitness < -0.1):
             top_solutions = solutions[0:5]
             best_scenarios = [
                 top_solutions[i][0].states for i in range(len(top_solutions))

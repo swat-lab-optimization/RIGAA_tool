@@ -92,16 +92,17 @@ class VehicleSolution:
                 res_path,
                 cf.vehicle_env["map_size"],
                 time_budget=360,
-                beamng_home="<BemaNG_home_path>",
-                beamng_user="<BeamNG_user_path>",
+                beamng_home="C:\\Users\\dmhum\\PROGRAMS\\BeamNG\\BeamNG.tech.v0.26.2.0",
+                beamng_user="C:\\Users\\dmhum\\PROGRAMS\\BeamNG\\BeamNG.tech.v0.26.2.0_user",
                 road_visualizer=None,
             )
 
             test_outcome, description, execution_data = executor._execute(the_test)
+            executor._close()
 
             fitness = -max([i.oob_percentage for i in execution_data])
 
-            log.debug("oob", fitness)
+            log.info(f"OOB percentage {fitness}")
         else:
             fitness = 0
 
@@ -182,7 +183,7 @@ class VehicleSolution:
         bottom = 0
 
         road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(
-            8.0, cap_style=2, join_style=2
+            4.0, cap_style=2, join_style=2
         )
         road_patch = PolygonPatch(
             (road_poly), fc="gray", ec="dimgray"

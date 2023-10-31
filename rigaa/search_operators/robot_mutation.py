@@ -16,7 +16,7 @@ class RobotMutation(Mutation):
     Class to define the mutation operator for the robot problem
     """
 
-    def __init__(self, mut_rate):
+    def __init__(self, mut_rate, mut_stats):
         super().__init__()
         self.mut_rate = mut_rate
 

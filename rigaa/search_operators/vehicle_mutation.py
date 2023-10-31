@@ -9,16 +9,17 @@ import numpy as np
 import config as cf
 from rigaa.utils.car_road import Map
 import logging as log
-
+from rigaa.utils.road_validity_check import is_valid_road
 
 class VehicleMutation(Mutation):
     """
     Module to perform the mutation
     """
 
-    def __init__(self, mut_rate):
+    def __init__(self, mut_rate, mut_stats):
         super().__init__()
         self.mut_rate = mut_rate
+        self.mut_stats = mut_stats
 
     def _do(self, problem, X, **kwargs):
 
@@ -83,5 +84,11 @@ class VehicleMutation(Mutation):
                 sn.road_points, new_states = test_map.get_points_from_states(sn.states)
                 sn.states = copy.deepcopy(new_states)
                 X[i, 0] = sn
+
+                
+                if is_valid_road(sn.road_points): 
+                    self.mut_stats["valid"] += 1
+                else:
+                    self.mut_stats["invalid"] += 1
 
         return X
