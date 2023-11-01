@@ -19,6 +19,7 @@ from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
 import os
 import copy
+import time
 
 if sys.platform.startswith("win"):
     from simulator.code_pipeline.beamng_executor import BeamngExecutor
@@ -107,6 +108,7 @@ class VehicleSolution:
             fitness = 0
 
         self.fitness = fitness
+        time.sleep(0.1)
 
         return fitness
 

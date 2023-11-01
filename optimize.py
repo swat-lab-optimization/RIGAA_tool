@@ -245,9 +245,11 @@ def main(
 
         cross_stats = res.algorithm.mating.crossover.cross_stats
         mut_stats = res.algorithm.mating.mutation.mut_stats
+        num_failures = res.algorithm.problem.num_failures
 
         test_suite = get_test_suite(res, algo)
-        tc_stats["run" + str(m)] = get_stats(res, problem, algo, cross_stats, mut_stats)
+        tc_stats["run" + str(m)] = get_stats(res, problem, algo, cross_stats,
+                                              mut_stats, res.exec_time, num_failures)
         tcs["run" + str(m)] = test_suite
 
         tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
