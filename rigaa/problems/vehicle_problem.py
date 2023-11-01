@@ -48,6 +48,7 @@ class VehicleProblem2Obj(ElementwiseProblem):
     def __init__(self, full=False, **kwargs):
         super().__init__(n_var=1, n_obj=2, n_ieq_constr=1)
         self.full = full
+        self.num_failures = 0
 
     def _evaluate(self, x, out, *args, **kwargs):
         """
@@ -61,6 +62,8 @@ class VehicleProblem2Obj(ElementwiseProblem):
         if self.full:
             s.fitness = s.eval_fitness_full()
             out["G"] = 0.95 - s.fitness * (-1)
+            if s.fitness < -0.95:
+                self.num_failures += 1
         else:
             s.fitness = s.eval_fitness()
             out["G"] = 4.5 - s.fitness * (-1)  # 4.5
@@ -69,7 +72,7 @@ class VehicleProblem2Obj(ElementwiseProblem):
         algorithm = kwargs["algorithm"]
 
         solutions = algorithm.pop.get("X")
-        if (solutions.size > 0) and (s.fitness < -1):
+        if (solutions.size > 0) and (s.fitness < -0.1):
             top_solutions = solutions[0:5]
             best_scenarios = [
                 top_solutions[i][0].states for i in range(len(top_solutions))

@@ -17,7 +17,7 @@ class RobotCrossover(Crossover):
     Class to define the crossover operator for the robot problem
     """
 
-    def __init__(self, cross_rate):
+    def __init__(self, cross_rate, cross_stats):
 
         # define the crossover: number of parents and number of offsprings
         super().__init__(2, 2)

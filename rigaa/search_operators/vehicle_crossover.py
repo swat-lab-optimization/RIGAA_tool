@@ -10,6 +10,7 @@ import copy
 from pymoo.core.crossover import Crossover
 from rigaa.utils.car_road import Map
 from rigaa.solutions import VehicleSolution
+from rigaa.utils.road_validity_check import is_valid_road
 import config as cf
 
 # this is the crossover operator for the vehicle problem
@@ -18,9 +19,10 @@ class VehicleCrossover(Crossover):
     Module to perform the crossover
     """
 
-    def __init__(self, cross_rate):
+    def __init__(self, cross_rate, cross_stats):
         super().__init__(2, 2)
         self.cross_rate = cross_rate
+        self.cross_stats = cross_stats
 
     def _do(self, problem, X, **kwargs):
         # The input of has the following shape (n_parents, n_matings, n_var)
@@ -64,9 +66,21 @@ class VehicleCrossover(Crossover):
 
                     Y[0, k, 0], Y[1, k, 0] = offa, offb
 
+
+                    if is_valid_road(offa.road_points): 
+                        self.cross_stats["valid"] += 1
+                    else:
+                        self.cross_stats["invalid"] += 1
+
+                    if is_valid_road(offb.road_points):
+                        self.cross_stats["valid"] += 1
+                    else:
+                        self.cross_stats["invalid"] += 1
+
                 else:
                     log.debug("Not enough states to perform crossover")
                     Y[0, k, 0], Y[1, k, 0] = s_a, s_b
+             
             else:
                 Y[0, k, 0], Y[1, k, 0] = s_a, s_b
 

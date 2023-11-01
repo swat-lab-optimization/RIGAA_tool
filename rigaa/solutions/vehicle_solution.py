@@ -19,6 +19,7 @@ from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
 import os
 import copy
+import time
 
 if sys.platform.startswith("win"):
     from simulator.code_pipeline.beamng_executor import BeamngExecutor
@@ -101,14 +102,16 @@ class VehicleSolution:
             )
 
             test_outcome, description, execution_data = executor._execute(the_test)
+            executor._close()
 
             fitness = -max([i.oob_percentage for i in execution_data])
 
-            log.debug("oob", fitness)
+            log.info(f"OOB percentage {fitness}")
         else:
             fitness = 0
 
         self.fitness = fitness
+        time.sleep(0.1)
 
         return fitness
 

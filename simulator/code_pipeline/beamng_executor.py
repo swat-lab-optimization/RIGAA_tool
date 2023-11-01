@@ -211,7 +211,7 @@ class BeamngExecutor(AbstractTestExecutor):
                 cmd = "taskkill /IM \"{}.exe\" /F".format(beamng_program_name)
                 ret = subprocess.check_output(cmd)
 
-                output_str = ret.decode("utf-8")
+#                output_str = ret.decode("utf-8")
             except Exception as ex:
                 traceback.print_exception(type(ex), ex, ex.__traceback__)
             self.brewer = None
