@@ -134,8 +134,8 @@ dmypy.json
 .stats/
 .images/
 
-*.png
-*.json
+#*.png
+#*.json
 
 logs.txt
 

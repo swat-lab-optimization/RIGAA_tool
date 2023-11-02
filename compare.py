@@ -398,7 +398,7 @@ def plot_convergence(dfs, stats_names, plot_name):
     plt.close()
 
 
-def plot_boxplot(data_list, label_list, name, max_range, plot_name):
+def plot_boxplot(data_list, label_list, name,  max_range=None, plot_name="boxplot"):
     """
      Function for plotting the boxplot of the statistics of the algorithms
     It takes a list of lists, a list of labels, a name, and a max range, and plots a boxplot of the data
@@ -410,7 +410,7 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
     """
 
     fig, ax1 = plt.subplots()  # figsize=(8, 4)
-    ax1.set_xlabel("Generator", fontsize=20)
+    #ax1.set_xlabel("Generator", fontsize=20)
     #ax1.set_xlabel("Rho value", fontsize=20)
 
 
@@ -421,8 +421,11 @@ def plot_boxplot(data_list, label_list, name, max_range, plot_name):
     ax1.yaxis.grid(
         True, linestyle="-", which="both", color="darkgray", linewidth=2, alpha=0.5
     )
-
-    top = max_range
+    
+    if (max_range is not None):
+        top = max_range
+    else:
+        top = max([max(data) for data in data_list]) + 2
     bottom = 0
     ax1.set_ylim(bottom, top)
     ax1.boxplot(data_list, widths=0.45, labels=label_list)
@@ -470,6 +473,13 @@ def analyse(stats_path, stats_names, plot_name):
     best_fitness_list = []
     novelty_list = []
     time_list = []
+
+    exec_time_list = []
+    valid_cross_list = []
+    valid_mut_list = []
+    tot_cross_list = []
+    tot_mut_list = []
+    failure_list = []
     max_fitness = 0
     for i, file in enumerate(stats_paths):
         with open(file, "r", encoding="utf-8") as f:
@@ -478,6 +488,12 @@ def analyse(stats_path, stats_names, plot_name):
         results_novelty = []
         results_time = []
         results_best_fitness = []
+        results_exec_time = []
+        results_valid_cross = []
+        results_tot_cross = []
+        results_tot_mut = []
+        results_valid_mutation = []
+        results_failures = []
 
         for m in range(len(data)):
             fitness_data = [abs(d) for d in data["run" + str(m)]["fitness"]]
@@ -488,6 +504,19 @@ def analyse(stats_path, stats_names, plot_name):
             results_fitness.extend(fitness_data)  # data["run"+str(m)]["fitness"]
             results_novelty.append(data["run" + str(m)]["novelty"])
             results_best_fitness.append(best_fitness)
+            results_exec_time.append(data["run" + str(m)]["exec_time"])
+            valid_cross = data["run" + str(m)]["cross_stats"]["valid"]
+            tot_cross = data["run" + str(m)]["cross_stats"]["invalid"] + valid_cross
+            results_valid_cross.append(valid_cross/tot_cross)
+            results_tot_cross.append(tot_cross)
+            valid_mut = data["run" + str(m)]["mutation_stats"]["valid"]
+            tot_mut = data["run" + str(m)]["mutation_stats"]["invalid"] + valid_mut
+            results_valid_mutation.append(valid_mut/tot_mut)
+            results_tot_mut.append(tot_mut)
+            failures = data["run" + str(m)]["num_failures"]
+            if failures > 0:
+                results_failures.append(failures)
+
 
             if "times" in str(data):
                 results_time.extend(data["run" + str(m)]["times"])
@@ -497,15 +526,32 @@ def analyse(stats_path, stats_names, plot_name):
         time_list.append(results_time)
         best_fitness_list.append(results_best_fitness)
 
+        exec_time_list.append(results_exec_time)
+        valid_cross_list.append(results_valid_cross)
+        valid_mut_list.append(results_valid_mutation)
+        tot_cross_list.append(results_tot_cross)
+        tot_mut_list.append(results_tot_mut)
+        failure_list.append(results_failures)
+
+
+
     if results_time:
         max_time = max(max(time_list[0]), max(time_list[1]))
         plot_boxplot(time_list, stats_names, "Time, s", max_time + 0.2, plot_name)
         build_times_table(time_list, stats_names)
 
     plot_boxplot(
-        fitness_list, stats_names, "Fitness", max_fitness + 3, plot_name
+        fitness_list, stats_names, "Fitness", max_fitness + 1, plot_name
     )  # + 2
     plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
+
+    plot_boxplot(exec_time_list, stats_names, "Execution time", None, plot_name)
+    plot_boxplot(valid_cross_list, stats_names, "Valid crossover", 1.05, plot_name)
+    plot_boxplot(valid_mut_list, stats_names, "Valid mutation", 1.05, plot_name)
+    plot_boxplot(tot_cross_list, stats_names, "Total crossover", None, plot_name)
+    plot_boxplot(tot_mut_list, stats_names, "Total mutation", None, plot_name)
+    if failures > 0:
+        plot_boxplot(failure_list, stats_names, "Number of failures", None, plot_name)
 
     build_median_table(fitness_list, novelty_list, stats_names, plot_name)
     build_cliff_data(fitness_list, novelty_list, stats_names, plot_name)

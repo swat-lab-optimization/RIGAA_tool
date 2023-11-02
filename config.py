@@ -1,5 +1,6 @@
 
-ga = {"pop_size": 40, "n_gen": 20,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 40} # specify the population size here
+#ga = {"pop_size": 150, "n_gen": 200,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 100} # specify the population size here
+ga = {"pop_size": 40, "n_gen": 15,  "mut_rate": 0.4, "cross_rate": 0.9, "test_suite_size": 40}
 files = {"stats_path": "stats", "tcs_path": "tcs", "images_path": "tc_images"}
 rl = {"init_pop_prob": 0.4}
 
