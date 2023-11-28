@@ -27,7 +27,7 @@ from rigaa.utils.save_tc_results import save_tc_results
 from rigaa.utils.save_tcs_images import save_tcs_images
 from rigaa.utils.save_pareto import save_pareto_front_img
 from rigaa.utils.callback import DebugCallback
-
+log.getLogger('PIL').setLevel(log.WARNING)
 
 def setup_logging(log_to, debug):
     """
