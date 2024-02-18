@@ -3,11 +3,11 @@ import logging
 from shapely.geometry import Point, LineString
 from shapely.ops import nearest_points
 
-from self_driving.edit_distance_polyline import iterative_levenshtein
-from self_driving.simulation_data import SimulationDataRecord
+from simulator.self_driving.edit_distance_polyline import iterative_levenshtein
+from simulator.self_driving.simulation_data import SimulationDataRecord
 
-from code_pipeline.test_analysis import direction_coverage, max_curvature
-from code_pipeline.test_analysis import sd_steering, mean_lateral_position, max_lateral_position
+from simulator.code_pipeline.test_analysis import direction_coverage, max_curvature
+from simulator.code_pipeline.test_analysis import sd_steering, mean_lateral_position, max_lateral_position
 
 from scipy.interpolate import splev, splprep
 

@@ -23,10 +23,11 @@ from rigaa.utils.get_convergence import get_convergence
 from rigaa.utils.get_stats import get_stats
 from rigaa.utils.get_test_suite import get_test_suite
 from rigaa.utils.random_seed import get_random_seed
-from rigaa.utils.save_tc_results import save_tc_results
+from rigaa.utils.save_tc_results import save_tc_results, create_summary
 from rigaa.utils.save_tcs_images import save_tcs_images
 from rigaa.utils.callback import DebugCallback
-
+from datetime import datetime
+import os
 
 def setup_logging(log_to, debug):
     """
@@ -159,6 +160,8 @@ def main(
         save_results,
     )
 
+    log.info(f"Using ro {ro}")
+
     if cf.ga["pop_size"] < cf.ga["test_suite_size"]:
         log.error("Population size should be greater or equal to test suite size")
         sys.exit(1)
@@ -181,15 +184,15 @@ def main(
         n_points_per_iteration=n_offsprings,
     )
 
-    if n_eval is None:
-        termination = get_termination("n_gen", cf.ga["n_gen"])
-        log.info("The search will be terminated after %d generations", cf.ga["n_gen"])
-    elif eval_time is not None:
-        termination = get_termination("time", eval_time)
-        log.info("The search will be terminated after %d seconds", eval_time)
-    else:
+    if n_eval is not None:
         termination = get_termination("n_eval", n_eval)
         log.info("The search will be terminated after %d evaluations", n_eval)
+    elif eval_time is not None:
+        termination = get_termination("time", eval_time)
+        log.info("The search will be terminated after %s ", eval_time)
+    else:
+        termination = get_termination("n_gen", cf.ga["n_gen"])
+        log.info("The search will be terminated after %d generations", cf.ga["n_gen"])
 
     if full == "True":
         full = True
@@ -199,6 +202,10 @@ def main(
     tc_stats = {}
     tcs = {}
     tcs_convergence = {}
+    tcs_all_stats = {}
+    
+    now = datetime.now()
+    dt_string = now.strftime("%d-%m-%Y")
     for m in range(runs_number):
         log.info("Executing run %d: ", m)
         if (random_seed is not None) and (m == 0):
@@ -208,15 +215,19 @@ def main(
 
         log.info("Using random seed: %s", seed)
 
+
+        sim_path = dt_string + "-rigaa-results_BEAM_NG_ro_" + str(rl_pop_percent)
+        sim_path = os.path.join(sim_path, str(m))
+
         res = minimize(
-            PROBLEMS[problem + "_" + algo](full=full),
+            PROBLEMS[problem + "_" + algo](full=full, sim_path=sim_path),
             algorithm,
             termination,
             seed=seed,
             verbose=True,
             save_history=True,
             eliminate_duplicates=True,
-            callback=DebugCallback(debug),
+            #callback=DebugCallback(debug),
         )
 
         log.info("Execution time, %f sec", res.exec_time)
@@ -224,12 +235,19 @@ def main(
         test_suite = get_test_suite(res, algo)
         tc_stats["run" + str(m)] = get_stats(res, problem, algo)
         tcs["run" + str(m)] = test_suite
+        tcs_all_stats["run" + str(m)] = res.problem.execution_data
+
 
         tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
 
         if save_results == "True":
-            save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem)
-            save_tcs_images(test_suite, problem, m, algo)
+            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_all_stats, dt_string, algo, problem, "_ro_" + str(rl_pop_percent))
+            save_tcs_images(test_suite, problem, m, algo, dt_string, "_ro_" + str(rl_pop_percent))
+
+
+        if full:
+            create_summary(sim_path, res.problem.executor.get_stats())
+
 
 
 ################################## MAIN ########################################
