@@ -112,6 +112,7 @@ class Map:
         sector = self.get_sector()
 
         if len(self.all_position_list) < 2:
+            sector = np.random.randint(4)
             if sector == 0:
                 R = np.array([[0, -1], [1, 0]])  # antilockwise
             elif sector == 1:

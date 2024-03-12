@@ -20,9 +20,17 @@ from descartes import PolygonPatch
 import config as cf
 from rigaa.utils.car_road import Map
 from rigaa.utils.vehicle_evaluate import interpolate_road
-from rigaa.utils.vehicle_evaluate import evaluate_scenario
+from rigaa.utils.vehicle_evaluate import evaluate_scenario, is_valid_road
+from freneticlib.executors.bicycle.carlapidonbicycle import execute_carla_pid_on_bicycle
+from rigaa.utils.road_validity_check import min_radius, interpolate_test
+
+from shapely import geometry, ops
 
 matplotlib.use("Agg")
+
+MAX_RADIUS_THRESHOLD = 130
+MIN_RADIUS_THRESHOLD = 47
+
 
 class CarEnv(Env):
     def __init__(self):
@@ -38,7 +46,7 @@ class CarEnv(Env):
 
         self.evaluate = False
 
-        self.min_fitness = 3.2
+        self.min_fitness = 3.2 #1.7
 
         self.dist_explored = []
         self.angle_explored = []
@@ -47,7 +55,7 @@ class CarEnv(Env):
         self.steps = 0
         self.old_fitness = 0
 
-        self.max_fitness = 5
+        self.max_fitness = 5 #1.65 2
 
         self.fitness = 0
         self.ran_prob = 0.1  # 0.05 #0.1
@@ -88,11 +96,25 @@ class CarEnv(Env):
         )
         state2 = [road_type2, value2, position2]
 
-        self.angle_explored = [position, position2]
-        self.dist_explored = [value, value2]
+        road_type3 = np.random.randint(0, 2)
+        value3 = np.random.randint(
+            cf.vehicle_env["min_len"], cf.vehicle_env["max_len"] + 1
+        )
+        position3 = np.random.randint(
+            cf.vehicle_env["min_angle"], cf.vehicle_env["max_angle"] + 1
+        )
+
+        state3 = [road_type3, value3, position3]
+
+
+
+
+        self.angle_explored = [position, position2, position3]
+        self.dist_explored = [value, value2, value2]
 
         self.state[0] = state
         self.state[1] = state2  # need two states to evaluate the initial fitness
+        self.state[2] = state3
 
     def set_state(self, action):
         if action[0] == 0:
@@ -106,14 +128,125 @@ class CarEnv(Env):
             distance = 0
 
         return [action[0], distance, angle]
+    
 
     def eval_fitness(self, states):
         points, _ = self.map.get_points_from_states(states)
         intp_points = interpolate_road(points)
-
         fitness, car_path = evaluate_scenario(intp_points, rl_train=True)
 
         return abs(fitness), car_path, intp_points
+    
+
+    def get_deviation(self, lane_center, car_points):
+
+        deviations = []
+
+        for p in car_points:
+            p = geometry.Point(p[0], p[1])
+            deviation = geometry.LineString(ops.nearest_points(lane_center, p)).length
+            deviations.append(deviation)
+
+        #print(deviations)
+
+        return max(deviations)
+
+
+    def eval_fitness_curve(self, states): # curve based
+
+
+        points, _ = self.map.get_points_from_states(states)
+        intp_points = interpolate_road(points)
+        fitness = 0
+        car_path = [[], []]
+
+
+        test = interpolate_test(points)
+
+
+        min_curve = min_radius(test)
+
+        if min_curve <= MIN_RADIUS_THRESHOLD:
+            fitness = 0
+        else:
+            fitness = 1/min_curve*100
+
+        #log.info(f"Fitness: {fitness}")
+        #fitness = 0 
+        
+        return  abs(fitness), car_path, intp_points
+
+
+    def eval_fitness_simple(self, states):
+        points, _ = self.map.get_points_from_states(states)
+        intp_points = interpolate_road(points)
+        fitness = 0
+        car_path = [[], []]
+
+        if is_valid_road(intp_points): 
+            x_coordinates, y_coordinates = zip(*intp_points)
+
+            #fitness, car_path = evaluate_scenario(intp_points, rl_train=True)
+            data = execute_carla_pid_on_bicycle(x_coordinates, y_coordinates, desired_speed=70,  pid_gains_long={"K_P": 5, "K_D": 0.01, "K_I": 0.01})
+            p_x = data["pxs"]
+            p_y = data["pys"]
+            car_path = [p_x, p_y]
+            lane_center =  geometry.LineString(np.array(intp_points))
+            fitness = self.get_deviation(lane_center, zip(p_x, p_y))
+
+
+        return abs(fitness), car_path, intp_points
+
+
+    def step_new(self, action):
+
+        start = time.time()
+        assert self.action_space.contains(action)
+        self.done = False
+
+        self.state[self.steps] = self.set_state(action)
+
+        dist = self.state[self.steps][1]
+        angle = self.state[self.steps][2]
+
+        self.fitness, self.car_path, _ = self.eval_fitness_simple(self.state[: self.steps])
+
+        improvement = self.fitness - self.old_fitness
+
+        if self.fitness == 0:
+            reward = -5#0
+            self.done = True
+        else:
+            reward = self.fitness
+            if self.fitness < self.min_fitness:
+                reward = 0
+            if improvement > 0:
+                reward += improvement * 5  # 10 *
+            if self.fitness > self.max_fitness:
+                reward += 10
+
+            if not (dist in self.dist_explored):
+                reward += 1
+                self.dist_explored.append(dist)
+
+            if not (angle in self.angle_explored):
+                reward += 1
+                self.angle_explored.append(angle)
+
+        self.old_fitness = self.fitness
+        
+        log.debug(f"Step time: {time.time() - start}")
+        self.steps += 1
+
+        if self.steps >= self.max_steps:
+            self.done = True
+
+        info = {}
+        obs = [coordinate for tuple in self.state for coordinate in tuple]
+
+        #self.render()
+
+        return np.array(obs, dtype=np.int8), reward, self.done, info
 
     def step(self, action):
 
@@ -126,7 +259,7 @@ class CarEnv(Env):
         dist = self.state[self.steps][1]
         angle = self.state[self.steps][2]
 
-        self.fitness, self.car_path, _ = self.eval_fitness(self.state[: self.steps])
+        self.fitness, self.car_path, _ = self.eval_fitnes(self.state[: self.steps])
 
         improvement = self.fitness - self.old_fitness
 
@@ -159,18 +292,22 @@ class CarEnv(Env):
         info = {}
         obs = [coordinate for tuple in self.state for coordinate in tuple]
 
+
+
         return np.array(obs, dtype=np.int8), reward, self.done, info
 
     def reset(self):
         # print("Reset")
 
+
+
         self.map = Map(cf.vehicle_env["map_size"])
 
-        self.steps = 2
+        self.steps = 3
         # print(self.fitness)
         self.generate_init_state()  # generate_random_state()#road()
 
-        self.old_fitness, _, _ = self.eval_fitness(self.state[: self.steps])
+        self.old_fitness, _, _ = self.eval_fitness_simple(self.state[: self.steps])
 
         obs = [coordinate for tuple in self.state for coordinate in tuple]
 
@@ -235,6 +372,7 @@ class CarEnv(Env):
 
 
 class CarEnvEval(CarEnv):
+
     def __init__(self):
         super().__init__()
 

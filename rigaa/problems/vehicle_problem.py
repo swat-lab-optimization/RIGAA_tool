@@ -36,8 +36,8 @@ class VehicleProblem1Obj(ElementwiseProblem):
             res_path,
             cf.vehicle_env["map_size"],
             time_budget=8000,
-            beamng_home="C:\\Users\\annguv\\Documents\\BeamNG\\BeamNG.tech.v0.26.2.0",
-            beamng_user="C:\\Users\\annguv\\Documents\\BeamNG\\BeamNG.tech.v0.26.2.0_user",
+            beamng_home="",
+            beamng_user="",
             road_visualizer=None,
         )
         self.current_test = 0
@@ -82,7 +82,7 @@ class VehicleProblem1Obj(ElementwiseProblem):
 
         self.current_test += 1
 
-        log.debug("Evaluated individual %s, fitness %s", s, s.fitness)
+        #log.debug("Evaluated individual %s, fitness %s", s, s.fitness)
 
 
 class VehicleProblem2Obj(ElementwiseProblem):
@@ -102,8 +102,8 @@ class VehicleProblem2Obj(ElementwiseProblem):
             cf.vehicle_env["map_size"],
             oob_tolerance=0.85,
             time_budget=8000,
-            beamng_home="C:\\Users\\annguv\\Documents\\BeamNG\\BeamNG.tech.v0.26.2.0",
-            beamng_user="C:\\Users\\annguv\\Documents\\BeamNG\\BeamNG.tech.v0.26.2.0_user",
+            beamng_home="C:\\Users\\DmytroHUMENIUK\\Documents\\BeamNG.tech.v0.26.2.0",
+            beamng_user="C:\\Users\\DmytroHUMENIUK\\Documents\\BeamNG.tech.v0.26.2.0_user",
             road_visualizer=None,
         )
         self.current_test = 0
@@ -122,30 +122,34 @@ class VehicleProblem2Obj(ElementwiseProblem):
 
         self.execution_data[str(self.current_test)] = {}
 
-
+        '''
         def target():
             nonlocal data
             s.fitness = s.eval_fitness_full()
             data = s.data
             return data
+        '''
         
         
         if self.full:
             s.beamng_executor = self.executor
-            thread = threading.Thread(target=target)
-            thread.start()
-            thread.join(200)
+            
+            #thread = threading.Thread(target=target)
+            #thread.start()
+            #thread.join(200)
             try:
+                s.fitness = s.eval_fitness_full()
+                data = s.data
                 #s.fitness = s.eval_fitness_full()
                 #data = s.data
-                if thread.is_alive():
-                    log.info(f"Timeout happened")
+             #   if thread.is_alive():
+             #       log.info(f"Timeout happened")
                 
-                    self.executor.close()
+              #      self.executor.close()
 
-                    raise TimeoutError("Timeout")
+              #      raise TimeoutError("Timeout")
 
-                data = target()
+                #data = target()
                 self.execution_data[str(self.current_test)]["test"] = data["test"]
                 self.execution_data[str(self.current_test)]["info_validity"] = data["info_validity"]
                 self.execution_data[str(self.current_test)]["outcome"] = data["outcome"]
@@ -154,15 +158,6 @@ class VehicleProblem2Obj(ElementwiseProblem):
                 #log.info("Fitness ", s.fitness)
                 self.num_failures +=  data["failure"]
                 self.n_sim += data["sim"]
-            except TimeoutError:
-                log.info(f"Exception happened")
-                #s.fitness = 0
-                #data = s.data
-                self.execution_data[str(self.current_test)]["test"] = None
-                self.execution_data[str(self.current_test)]["info_validity"] = None
-                self.execution_data[str(self.current_test)]["outcome"] = "ERROR"
-                self.execution_data[str(self.current_test)]["features"] = None
-                self.execution_data[str(self.current_test)]["fitness"] = 0
             except Exception as e:
             # Handle specific exceptions
                 log.error(f"Exception occurred: {e}")
@@ -204,6 +199,6 @@ class VehicleProblem2Obj(ElementwiseProblem):
         out["F"] = [s.fitness, s.novelty]
         self.current_test += 1
 
-        log.info(
+        log.debug(
             "Evaluated individual %s, fitness %s, novelty %s", s, s.fitness, s.novelty
         )
