@@ -36,7 +36,7 @@ def get_convergence(res, n_offsprings):
         pareto = res.history[gen].pop.get("F")[:opt_num]#*(-1)
         
         hv = HV(ref_point=ref_point, normalize=True) 
-        print(hv(pareto))
+        #print(hv(pareto))
         hyper_volume.append(hv(pareto))
 
     step = n_offsprings

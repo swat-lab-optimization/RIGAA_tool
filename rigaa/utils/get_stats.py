@@ -7,7 +7,8 @@ from itertools import combinations
 import logging as log
 from rigaa.utils.calc_novelty import calc_novelty
 import config as cf
-
+from pymoo.indicators.hv import HV
+import numpy as np
 
 def get_stats(res, problem, algo):
     """
@@ -50,5 +51,16 @@ def get_stats(res, problem, algo):
     log.info("Average diversity: %f", novelty)
     res_dict["fitness"] = results
     res_dict["novelty"] = novelty
+    res_dict["exec_time"] = res.time
+
+    opt_num = len(res.history[gen].opt)
+    pareto = res.history[gen].pop.get("F")[:opt_num]#*(-1)
+    
+    hv = HV(ref_point=np.array([1, 1]), normalize=True) 
+    #print(hv(pareto))
+    hyper_volume = hv(pareto)
+
+    res_dict["exec_time"] = hyper_volume
+                    
 
     return res_dict

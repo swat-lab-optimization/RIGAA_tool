@@ -217,7 +217,7 @@ def main(
         log.info("Using random seed: %s", seed)
 
 
-        sim_path = dt_string + "-rigaa-results_BEAM_NG_ro_" + str(rl_pop_percent)
+        sim_path = dt_string + algo + "-results_BEAM_NG_ro_" + str(rl_pop_percent)
         sim_path = os.path.join(sim_path, str(m))
 
         res = minimize(
