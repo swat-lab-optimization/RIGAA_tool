@@ -27,7 +27,7 @@ class BeamngExecutor(AbstractTestExecutor):
 
     def __init__(self, result_folder, map_size,
                  time_budget=None,
-                 oob_tolerance=0.95, max_speed_in_kmh=70,
+                 oob_tolerance=0.85, max_speed_in_kmh=70,
                  beamng_home=None, beamng_user=None, road_visualizer=None, debug=False):
         super(BeamngExecutor, self).__init__(result_folder, map_size,
                                              time_budget=time_budget, debug=debug)
@@ -211,7 +211,8 @@ class BeamngExecutor(AbstractTestExecutor):
                 cmd = "taskkill /IM \"{}.exe\" /F".format(beamng_program_name)
                 ret = subprocess.check_output(cmd)
 
-                output_str = ret.decode("utf-8")
+                #output_str = ret.decode("utf-8")
+                #log.info(f"{output_str}")
             except Exception as ex:
                 traceback.print_exception(type(ex), ex, ex.__traceback__)
             self.brewer = None

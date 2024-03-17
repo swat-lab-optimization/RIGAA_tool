@@ -63,7 +63,7 @@ def parse_arguments():
     parser.add_argument(
         "--problem",
         type=str,
-        default="robot",
+        default="vehicle",
         help="Name of the problem to generate the test scenarios for. Available options: robot, vehicle",
     )
     parser.add_argument(

@@ -82,20 +82,23 @@ def evaluate(name, model, problem):
             start = time.time()
             obs, rewards, done, info = environ.step(action)
         i += 1
-        fitness, _, _ = environ.eval_fitness(environ.state[: environ.steps])
+        fitness, _, _ = environ.eval_fitness_simple(environ.state[: environ.steps])
+
+        print(fitness)
 
         if (
-            fitness > environ.min_fitness
+            fitness > 1.2#environ.min_fitness
         ) or i > 15: 
             log.info(i)
-            log.info("Scenario found after {} attempts".format(environ.episode))
+            log.info("Scenario found after {} attempts".format(i))
             log.info("Scenario fitness: {}".format(fitness))
+            i = 0
             scenario = environ.state
             environ.render(img_path=img_path_save)
             scenario_list.append(scenario)
             environ.episode += 1
             results.append(fitness)
-            i = 0
+            
 
     novelty_list = []
     for i in combinations(range(0, episodes), 2):
@@ -192,3 +195,4 @@ if __name__ == "__main__":
 
     with open(res_save_path + "_novelty-ppo.txt", "w") as f:
         json.dump(final_novelty, f, indent=4)
+#python evaluate.py --model_path "11-03-2024_vehicle__test_curve_rl_training_models\11-03-2024_vehicle__test_curve_0_500000_steps.zip" --save_path_name "eval2"

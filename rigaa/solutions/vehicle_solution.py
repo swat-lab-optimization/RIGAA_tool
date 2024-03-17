@@ -13,7 +13,7 @@ import config as cf
 from rigaa.utils.car_road import Map
 from rigaa.utils.vehicle_evaluate import evaluate_scenario
 from rigaa.utils.vehicle_evaluate import interpolate_road
-
+from rigaa.utils.vehicle_evaluate import is_valid_road
 import matplotlib.patches as patches
 from shapely.geometry import LineString, Polygon
 from descartes import PolygonPatch
@@ -24,6 +24,7 @@ if sys.platform.startswith("win"):
     from simulator.code_pipeline.beamng_executor import BeamngExecutor
     from simulator.code_pipeline.tests_generation import RoadTestFactory
     from simulator.code_pipeline.validation import TestValidator
+    from simulator.code_pipeline.test_analysis import compute_all_features
 
 
 class VehicleSolution:
@@ -42,6 +43,9 @@ class VehicleSolution:
         self.car_path = []
         self.novelty = 0
         self.intp_points = []
+        self.data = {}
+        self.failure = 0
+        self.sim = 0
 
     def eval_fitness(self):
         """
@@ -70,42 +74,58 @@ class VehicleSolution:
 
     def eval_fitness_full(self):
 
-        test_validator = TestValidator(cf.vehicle_env["map_size"])
 
-        map = Map(self.map_size)
-        road_points, self.states = map.get_points_from_states(self.states)
 
-        the_test = RoadTestFactory.create_road_test(road_points)
+        test_map = Map(self.map_size)
+        road_points, new_states = test_map.get_points_from_states(self.states)
+        self.intp_points = interpolate_road(road_points)
 
-        is_valid, validation_msg = test_validator.validate_test(the_test)
+        self.data["test"] = road_points
 
-        log.debug(is_valid)
-        log.debug(validation_msg)
+        valid = is_valid_road(self.intp_points)
 
-        if is_valid == True:
+        self.data["info_validity"] = valid
 
-            res_path = "BeamNG_res"
-            if not (os.path.exists(res_path)):
-                os.mkdir(res_path)
+        self.data["outcome"] = None
+        self.data["features"] = None
 
-            executor = BeamngExecutor(
-                res_path,
-                cf.vehicle_env["map_size"],
-                time_budget=360,
-                beamng_home="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0",
-                beamng_user="C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0_user",
-                road_visualizer=None,
-            )
+        if valid:
 
-            test_outcome, description, execution_data = executor._execute(the_test)
 
-            fitness = -max([i.oob_percentage for i in execution_data])
+            the_test = RoadTestFactory.create_road_test(road_points)
 
-            log.debug("oob", fitness)
+
+ 
+
+            try:
+
+
+                test_outcome, description, execution_data = self.beamng_executor.execute_test(the_test)
+
+                log.info(f"Test outcome: {test_outcome}")
+
+                fitness = -max([i.oob_percentage for i in execution_data])
+                self.sim = 1
+                if "FAIL" in test_outcome:
+                    self.failure += 1
+
+                self.data["outcome"] = test_outcome
+                features = compute_all_features(the_test, execution_data)
+                self.data["features"] = features
+
+            except:
+                self.beamng_executor.close()
+                fitness = 0
+                self.data["outcome"] = "ERROR"
+
+
+
         else:
             fitness = 0
 
         self.fitness = fitness
+        self.data["sim"] = self.sim
+        self.data["failure"] = self.failure
 
         return fitness
 
