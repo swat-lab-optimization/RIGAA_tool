@@ -98,17 +98,28 @@ class VehicleSolution:
                 road_visualizer=None,
             )
 
-            test_outcome, description, execution_data = executor._execute(the_test)
-            executor._close()
 
-            fitness = -max([i.oob_percentage for i in execution_data])
+            try:
 
-            log.info(f"OOB percentage {fitness}")
+                test_outcome, description, execution_data = executor._execute(the_test)
+                #executor._close()
+
+                fitness = -max([i.oob_percentage for i in execution_data])
+
+                log.info(f"OOB percentage {fitness}")
+                time.sleep(0.3)
+            except:
+                executor._close()
+                fitness = 0
+                log.info(f"OOB percentage {fitness}")
+                time.sleep(0.3)
+
+
         else:
             fitness = 0
 
         self.fitness = fitness
-        time.sleep(0.1)
+        
 
         return fitness
 
@@ -184,13 +195,13 @@ class VehicleSolution:
         top = map_size
         bottom = 0
 
-        road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(
-            4.0, cap_style=2, join_style=2
-        )
-        road_patch = PolygonPatch(
-            (road_poly), fc="gray", ec="dimgray"
-        )  # ec='#555555', alpha=0.5, zorder=4)
-        ax.add_patch(road_patch)
+        #road_poly = LineString([(t[0], t[1]) for t in intp_points]).buffer(
+        #    4.0, cap_style=2, join_style=2
+        #)
+        #road_patch = PolygonPatch(
+        #    (road_poly), fc="gray", ec="dimgray"
+        #)  # ec='#555555', alpha=0.5, zorder=4)
+        #ax.add_patch(road_patch)
 
         ax.set_title("Test case fitenss " + str(fitness), fontsize=17)
         ax.tick_params(axis="both", which="major", labelsize=16)

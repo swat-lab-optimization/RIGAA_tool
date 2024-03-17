@@ -7,7 +7,8 @@ Description: script for running search-based test generation
 import argparse
 import sys
 import logging as log
-
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 log.getLogger("matplotlib").setLevel(log.WARNING)
 
 from pymoo.optimize import minimize

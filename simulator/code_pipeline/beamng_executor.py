@@ -209,6 +209,7 @@ class BeamngExecutor(AbstractTestExecutor):
 
                 beamng_program_name = "BeamNG.tech.x64"
                 cmd = "taskkill /IM \"{}.exe\" /F".format(beamng_program_name)
+                time.sleep(0.01)
                 ret = subprocess.check_output(cmd)
 
 #                output_str = ret.decode("utf-8")
