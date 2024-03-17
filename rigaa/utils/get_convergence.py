@@ -23,9 +23,9 @@ def get_convergence(res, n_offsprings):
     if res.problem._name == "vehicle":
         ref_point = np.array([1, 1])
     elif res.problem._name == "robot":
-        ref_point = np.array([0, 0])
+        ref_point = np.array([1, 1])
     else:
-        ref_point = np.array([0, 0])
+        ref_point = np.array([1, 1])
    
     for gen in generations:
         population = -res.history[gen].pop.get("F")
