@@ -12,7 +12,7 @@ import config as cf
 
 from simulator.code_pipeline.tests_evaluation import OOBAnalyzer
 from simulator.code_pipeline.tests_generation import TestGenerationStatistic
-def save_tc_results(tc_stats, tcs, tcs_convergence, all_tests, dt_string, algo, problem, name):
+def save_tc_results(tc_stats, tcs, tcs_convergence, tcs_hyper, all_tests, dt_string, algo, problem, name):
     """
     It takes two arguments, tc_stats and tcs, and saves them as JSON files in the directories specified
     in the config file
@@ -38,14 +38,14 @@ def save_tc_results(tc_stats, tcs, tcs_convergence, all_tests, dt_string, algo, 
         log.info(
             "Stats saved as %s", os.path.join(stats_path, dt_string + "-stats.json")
         )
-
-    with open(
-        os.path.join(stats_path, dt_string + "-all_tests.json"), "w", encoding="utf-8"
-    ) as f:
-        json.dump(all_tests, f, indent=4)
-        log.info(
-            "Stats saved as %s", os.path.join(stats_path, dt_string + "-all_tests.json")
-        )
+    if len(all_tests) > 0:
+        with open(
+            os.path.join(stats_path, dt_string + "-all_tests.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(all_tests, f, indent=4)
+            log.info(
+                "Stats saved as %s", os.path.join(stats_path, dt_string + "-all_tests.json")
+            )
 
     with open(
         os.path.join(stats_path, dt_string + "-conv.json"), "w", encoding="utf-8"

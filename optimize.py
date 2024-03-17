@@ -236,13 +236,14 @@ def main(
         test_suite = get_test_suite(res, algo)
         tc_stats["run" + str(m)] = get_stats(res, problem, algo)
         tcs["run" + str(m)] = test_suite
-        tcs_all_stats["run" + str(m)] = res.problem.execution_data
+        if full:
+            tcs_all_stats["run" + str(m)] = res.problem.execution_data
 
 
         tcs_convergence["run" + str(m)], tcs_hyper["run" + str(m)] = get_convergence(res, n_offsprings)
 
         if save_results == "True":
-            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_all_stats, dt_string, algo, problem, "_ro_" + str(rl_pop_percent))
+            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_hyper, tcs_all_stats, dt_string, algo, problem, "_ro_" + str(rl_pop_percent))
             save_tcs_images(test_suite, problem, m, algo, dt_string, "_ro_" + str(rl_pop_percent))
 
 
