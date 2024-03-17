@@ -30,7 +30,7 @@ class DuplicateElimination(ElementwiseDuplicateElimination):
 
     def is_equal(self, a, b):
 
-        threshold = 0.2
+        threshold = 0.22
         state1 = a.X[0].states
         state2 = b.X[0].states
 

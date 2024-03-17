@@ -16,6 +16,7 @@ class RobotProblem2Obj(ElementwiseProblem):
     def __init__(self, full=False):
         super().__init__(n_var=1, n_obj=2, n_ieq_constr=1)
         self.full = full
+        self._name = "robot"
     def _evaluate(self, x, out, *args, **kwargs):
         """
         > This function evaluates the individual's fitness and novelty

@@ -27,7 +27,7 @@ from rigaa.utils.save_tc_results import save_tc_results
 from rigaa.utils.save_tcs_images import save_tcs_images
 from rigaa.utils.callback import DebugCallback
 
-
+from pymoo.util.running_metric import RunningMetricAnimation
 def setup_logging(log_to, debug):
     """
     It sets up the logging system
@@ -199,6 +199,7 @@ def main(
     tc_stats = {}
     tcs = {}
     tcs_convergence = {}
+    tcs_hyper = {}
     for m in range(runs_number):
         log.info("Executing run %d: ", m)
         if (random_seed is not None) and (m == 0):
@@ -220,16 +221,17 @@ def main(
         )
 
         log.info("Execution time, %f sec", res.exec_time)
-
+        
         test_suite = get_test_suite(res, algo)
         tc_stats["run" + str(m)] = get_stats(res, problem, algo)
         tcs["run" + str(m)] = test_suite
 
-        tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
+        tcs_convergence["run" + str(m)], tcs_hyper["run" + str(m)] = get_convergence(res, n_offsprings)
 
         if save_results == "True":
-            save_tc_results(tc_stats, tcs, tcs_convergence, algo, problem)
-            save_tcs_images(test_suite, problem, m, algo)
+            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_hyper, algo, problem,  "_ro_" + str(rl_pop_percent))
+            save_tcs_images(test_suite, problem, m, algo,  "_ro_" + str(rl_pop_percent))
+
 
 
 ################################## MAIN ########################################
@@ -249,3 +251,5 @@ if __name__ == "__main__":
         args.n_offsprings,
         ro=args.ro
     )
+#
+# python optimize.py --problem "vehicle" --algorithm "rigaa" --runs 20 --save_results "True" --n_eval 65000 --debug "False"

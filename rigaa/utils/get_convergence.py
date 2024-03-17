@@ -21,11 +21,11 @@ def get_convergence(res, n_offsprings):
     convergence = []
     hyper_volume = []
     if res.problem._name == "vehicle":
-        ref_point = np.array([16, 1])
-    elif res.problem._name == "robot":
-        ref_point = np.array([280, 1])
-    else:
         ref_point = np.array([1, 1])
+    elif res.problem._name == "robot":
+        ref_point = np.array([0, 0])
+    else:
+        ref_point = np.array([0, 0])
    
     for gen in generations:
         population = -res.history[gen].pop.get("F")
@@ -33,9 +33,9 @@ def get_convergence(res, n_offsprings):
         convergence.append(population[0][0])
 
         opt_num = len(res.history[gen].opt)
-        pareto = res.history[gen].pop.get("F")[:opt_num]*(-1)
+        pareto = res.history[gen].pop.get("F")[:opt_num]#*(-1)
         
-        hv = HV(ref_point=ref_point) 
+        hv = HV(ref_point=ref_point, normalize=True) 
         print(hv(pareto))
         hyper_volume.append(hv(pareto))
 

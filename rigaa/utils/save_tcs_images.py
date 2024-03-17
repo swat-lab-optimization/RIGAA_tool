@@ -12,7 +12,7 @@ from datetime import datetime
 import config as cf
 
 
-def save_tcs_images(test_suite, problem, run, algo):
+def save_tcs_images(test_suite, problem, run, algo, ro):
     """
     It takes a test suite, a problem, and a run number, and then it saves the images of the test suite
     in the images folder
@@ -28,7 +28,7 @@ def save_tcs_images(test_suite, problem, run, algo):
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%Y")
 
-    images_path = dt_string + "_" + cf.files["images_path"] + "_" + algo + "_" + problem
+    images_path = dt_string + "_" + cf.files["images_path"] + "_" + algo + "_" + problem  + "_" + ro
 
     if not os.path.exists(images_path):
         os.makedirs(images_path)

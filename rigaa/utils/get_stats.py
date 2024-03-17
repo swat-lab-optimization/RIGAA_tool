@@ -25,7 +25,7 @@ def get_stats(res, problem, algo):
     gen = len(res.history) - 1
     results = []
     population = -res.history[gen].pop.get("F")
-    if algo != "nsga2" and algo != "rigaa":
+    if algo == "ga" or algo == "random":
         population = sorted(population, key=lambda x: x[0], reverse=True)
     for i in range(cf.ga["test_suite_size"]):
 
@@ -35,7 +35,7 @@ def get_stats(res, problem, algo):
     gen = len(res.history) - 1
     novelty_list = []
     test_population = res.history[gen].pop.get("X")
-    if algo != "nsga2" and algo != "rigaa":
+    if algo == "ga" or algo == "random":
         test_population = sorted(
             test_population, key=lambda x: abs(x[0].fitness), reverse=True
         )
