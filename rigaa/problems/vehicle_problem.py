@@ -30,8 +30,9 @@ class VehicleProblem1Obj(ElementwiseProblem):
         self.execution_data = {}
 
         res_path = sim_path#"BeamNG_res"
-        if not (os.path.exists(res_path)):
-            os.mkdir(res_path)
+        if full:
+            if not (os.path.exists(res_path)):
+                os.mkdir(res_path)
         self.executor = BeamngExecutor(
             res_path,
             cf.vehicle_env["map_size"],
@@ -95,8 +96,9 @@ class VehicleProblem2Obj(ElementwiseProblem):
         self.full = full
         self.execution_data = {}
         res_path = sim_path#"BeamNG_res"
-        if not (os.path.exists(res_path)):
-            os.makedirs(res_path)
+        if full:
+            if not (os.path.exists(res_path)):
+                os.makedirs(res_path)
         self.executor = BeamngExecutor(
             res_path,
             cf.vehicle_env["map_size"],

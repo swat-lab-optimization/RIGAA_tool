@@ -168,7 +168,7 @@ def main(
 
 
     if n_offsprings is None:
-        n_offsprings = int(cf.ga["pop_size"]/2)
+        n_offsprings = int(cf.ga["pop_size"])
 
     if algo == "rigaa" or algo == "rigaa_s":
         rl_pop_percent = ro
@@ -216,7 +216,7 @@ def main(
 
         log.info("Using random seed: %s", seed)
 
-
+        
         sim_path = dt_string + algo + "-results_BEAM_NG_ro_" + str(rl_pop_percent)
         sim_path = os.path.join(sim_path, str(m))
 

@@ -51,7 +51,7 @@ def get_stats(res, problem, algo):
     log.info("Average diversity: %f", novelty)
     res_dict["fitness"] = results
     res_dict["novelty"] = novelty
-    res_dict["exec_time"] = res.time
+    res_dict["exec_time"] = res.exec_time
 
     opt_num = len(res.history[gen].opt)
     pareto = res.history[gen].pop.get("F")[:opt_num]#*(-1)
@@ -60,7 +60,7 @@ def get_stats(res, problem, algo):
     #print(hv(pareto))
     hyper_volume = hv(pareto)
 
-    res_dict["exec_time"] = hyper_volume
+    res_dict["hypervolume"] = hyper_volume
                     
 
     return res_dict

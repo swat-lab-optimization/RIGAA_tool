@@ -140,7 +140,7 @@ class RobotSolution:
         robot_radius = cf.robot_env["robot_radius"]
         sx, sy = cf.robot_env["sx"], cf.robot_env["sy"]
         gx, gy = cf.robot_env["gx"], cf.robot_env["gy"]
-        map_points = map_builder.get_points_from_states(states, full=True)
+        map_points = map_builder.get_points_from_states(states, full=False)
         points_list = map_builder.get_points_cords(map_points)
 
         ox = [t[0] for t in points_list]
