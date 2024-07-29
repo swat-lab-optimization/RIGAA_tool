@@ -373,13 +373,16 @@ def plot_convergence(dfs, stats_names, plot_name):
     """
     fig, ax = plt.subplots()
 
-    #plt.xlabel("Number of generations", fontsize=16)
-    plt.xlabel("Number of simulations", fontsize=16)
-    plt.ylabel("Number of failures", fontsize=16)
+    plt.xlabel("Number of generations", fontsize=22)
+    #plt.xlabel("Number of simulations", fontsize=16)
+    #plt.ylabel("Hypervolume", fontsize=22)
+    plt.ylabel("Fitness", fontsize=22)
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     plt.grid()
+    plt.xticks(fontsize=18)
+    plt.yticks(fontsize=18)
 
     len_df = np.inf
     for i, df in enumerate(dfs):
@@ -418,15 +421,18 @@ def plot_convergence_time(dfs, stats_names, name):
     fig, ax = plt.subplots() 
 
     if name == "iter":
-        plt.xlabel("Number of iterations", fontsize=16)
+        plt.xlabel("Number of iterations", fontsize=22)
     else:
-        plt.xlabel("Time, minutes", fontsize=16)
+        plt.xlabel("Time, minutes", fontsize=22)
 
-    plt.ylabel("Number of failures", fontsize=16)
+    plt.ylabel("Number of failures", fontsize=22)
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     plt.grid()
+
+    plt.xticks(fontsize=18)
+    plt.yticks(fontsize=18)
     
 
     for i, df in enumerate(dfs):
@@ -435,6 +441,7 @@ def plot_convergence_time(dfs, stats_names, name):
         for r, run in enumerate(current_df):
             size_list.append(len(current_df[run]))
         num_elements = min(size_list)
+ 
         mean_values_array = []
         mean_times_array = []
         for r, run in enumerate(current_df):
@@ -448,7 +455,11 @@ def plot_convergence_time(dfs, stats_names, name):
         mean_times = np.mean(mean_times_array, axis=0)
         std_values = np.std(mean_values_array, axis=0)
 
-        plt.plot(mean_times, mean_values, label=stats_names[i])
+        line_styles = ['-', '--', '-.', ':', 'solid', 'dashed'] 
+        plt.plot(mean_times, mean_values, label=stats_names[i], linestyle=line_styles[i % len(line_styles)], linewidth=2)
+        #markers = ['o', 's', 'D', 'v', '^', 'p', '*', 'h']
+        #plt.scatter(mean_times, mean_values, marker=markers[i % len(markers)], color='black', s=1)
+       # plt.scatter(mean_times, mean_values, marker='o', color='black', s=1)
         plt.fill_between(mean_times, np.array(mean_values - std_values), np.array(mean_values + std_values), alpha=0.2)
         plt.legend()
         plt.xlim(0, 120)
@@ -475,12 +486,13 @@ def plot_boxplot(data_list, label_list, name, max_range=None, plot_name=""):
 
     fig, ax1 = plt.subplots()  # figsize=(8, 4)
     #ax1.set_xlabel("Generator", fontsize=20)
-    #ax1.set_xlabel("Rho value", fontsize=20)
+    ax1.set_xlabel("Rho value", fontsize=20)
     
-    ax1.set_xlabel("Algorithm", fontsize=20)
+    #ax1.set_xlabel("Algorithm", fontsize=22)
+    #ax1.set_xlabel("Tool", fontsize=22)
 
 
-    ax1.set_ylabel(name, fontsize=20)
+    ax1.set_ylabel(name, fontsize=22)
 
     ax1.tick_params(axis="both", labelsize=18)
 
@@ -504,7 +516,7 @@ def plot_boxplot(data_list, label_list, name, max_range=None, plot_name=""):
     fig.savefig(plot_name + "_" + name + ".png", bbox_inches="tight")
     plt.close()
 
-def calculate_test_list_novelty(test_list, problem="vehicle"):
+def calculate_test_list_novelty(test_list, problem="robot"):
     """
     Calculate the novelty of a test list.
 
@@ -526,6 +538,7 @@ def calculate_test_list_novelty(test_list, problem="vehicle"):
         novelty_list.append(nov)
     novelty = sum(novelty_list) / len(novelty_list)
     return novelty
+
 def analyse_all_test(tests_path, stats_names, plot_name):
 
     stats_paths = []
@@ -564,7 +577,17 @@ def analyse_all_test(tests_path, stats_names, plot_name):
             n_sim  = all_tests[run][list(all_tests[run].keys())[-1]]["n_sim"]
             #n_sim  = len(list(all_tests[run].keys()))
             #print(n_sim)
-            dt = 7750/n_sim
+            #if "random_rl" in file:
+            #    dt = 6500/n_sim
+            #else:
+            if i==0 or i==2:
+                dt = 8000/n_sim
+            #if i == 2:
+            #    dt = 7800/n_sim
+            elif i == 3:
+                dt = 7950/n_sim
+            else:
+                dt = 7750/n_sim
             dt = dt/60 # in minutes
             time_passed = 0
             for tc in all_tests[run]:
@@ -588,7 +611,11 @@ def analyse_all_test(tests_path, stats_names, plot_name):
             valid_test_num.append(valid_tests/tot_tests)
             failure_percentage.append(fail_num/valid_tests)
             #print(fail_num)
-            novelty = calculate_test_list_novelty(failed_test_list)
+            if "BEAMNG" in file:
+                problem = "vehicle"
+            else:   
+                problem = "robot"
+            novelty = calculate_test_list_novelty(failed_test_list, problem=problem)
             novelty_list.append(novelty)
             #print(f"Failure convergence size {len(failure_convergence[run])}")
 
@@ -611,13 +638,18 @@ def analyse_all_test(tests_path, stats_names, plot_name):
 
     #plot_convergence(dfs, stats_names, plot_name)
     plot_convergence_time(dfs_time, stats_names, plot_name)
+    print(fail_num_list_all)
     
     
     plot_boxplot(fail_num_list_all, stats_names, "Number of failures", plot_name=plot_name)
     plot_boxplot(tot_tests_num_all, stats_names, "Total tests generated", plot_name=plot_name)
     plot_boxplot(valid_test_num_all, stats_names, "Percentage of valid tests", plot_name=plot_name)
     plot_boxplot(failure_percentage_all, stats_names, "Percentage of failed tests", plot_name=plot_name)
-    plot_boxplot(novelty_list_all, stats_names, "Novelty", plot_name=plot_name)
+    plot_boxplot(novelty_list_all, stats_names, "Sparseness", plot_name=plot_name)
+
+
+    build_median_table(fail_num_list_all, novelty_list_all, stats_names, plot_name)
+    build_cliff_data(fail_num_list_all, novelty_list_all, stats_names, plot_name)
 
 
 def analyse(stats_path, stats_names, plot_name):
@@ -711,18 +743,18 @@ def analyse(stats_path, stats_names, plot_name):
 
     if hyper_list:
         max_hyper = max(max(hyper_list[0]), max(hyper_list[1]))
-        plot_boxplot(hyper_list, stats_names, "Hypervolume", max_hyper + 6, plot_name)
+        plot_boxplot(hyper_list, stats_names, "Hypervolume", max_hyper + 10, plot_name)
 
     plot_boxplot(
         fitness_list, stats_names, "Fitness", max_fitness + 3, plot_name
     )  # + 2
     plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
 
-    build_median_table(fitness_list, novelty_list, stats_names, plot_name)
-    build_cliff_data(fitness_list, novelty_list, stats_names, plot_name)
+    build_median_table(hyper_list, novelty_list, stats_names, plot_name)
+    build_cliff_data(hyper_list, novelty_list, stats_names, plot_name)
 
-    compare_mean_best_values_found(best_fitness_list, stats_names, plot_name)
-    compare_p_val_best_values_found(best_fitness_list, stats_names, plot_name)
+    compare_mean_best_values_found(hyper_list, stats_names, plot_name)
+    compare_p_val_best_values_found(hyper_list, stats_names, plot_name)
 
 
 def analyse_tools(stats_path, stats_names, plot_name):
@@ -744,14 +776,19 @@ def analyse_tools(stats_path, stats_names, plot_name):
     for path in stats_path:
         current_sparseness_list = []
         current_oob_list = []
-        for root, _, files in os.walk(path):
+        for root, fd, files in os.walk(path):
             for filename in files:
+                #print(filename)
+                #print(path)
+                #print(root)
+
                 if "oob_stats.csv" in filename:
                     data = pd.read_csv(os.path.join(root, filename))
                     sparseness = float(data["avg_sparseness"])
                     oobs = int(data["total_oob"])
                     current_sparseness_list.append(sparseness)
                     current_oob_list.append(oobs)
+                    break
         if max(current_sparseness_list) > max_sparseness:
             max_sparseness = max(current_sparseness_list)
         if max(current_oob_list) > max_oob:
