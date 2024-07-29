@@ -20,7 +20,12 @@ from descartes import PolygonPatch
 import os
 import copy
 
+from scipy.spatial.distance import cdist
+
+from scipy.spatial.distance import directed_hausdorff
+
 if sys.platform.startswith("win"):
+    from simulator.self_driving.edit_distance_polyline import iterative_levenshtein
     from simulator.code_pipeline.beamng_executor import BeamngExecutor
     from simulator.code_pipeline.tests_generation import RoadTestFactory
     from simulator.code_pipeline.validation import TestValidator
@@ -91,14 +96,9 @@ class VehicleSolution:
 
         if valid:
 
-
             the_test = RoadTestFactory.create_road_test(road_points)
 
-
- 
-
             try:
-
 
                 test_outcome, description, execution_data = self.beamng_executor.execute_test(the_test)
 
@@ -117,8 +117,6 @@ class VehicleSolution:
                 self.beamng_executor.close()
                 fitness = 0
                 self.data["outcome"] = "ERROR"
-
-
 
         else:
             fitness = 0
@@ -167,6 +165,20 @@ class VehicleSolution:
 
         novelty = 1 - len(intersection) / total_states
         return -novelty
+    
+
+    def hausdorff_distance(self, points1, points2):
+        """Calculate the Hausdorff distance between two sets of 2D points."""
+        distance_matrix = cdist(points1, points2, 'euclidean')
+        max_distance_from_points1 = distance_matrix.max(axis=1).min()
+        max_distance_from_points2 = distance_matrix.max(axis=0).min()
+        return max(max_distance_from_points1, max_distance_from_points2)
+    
+    def calculate_novelty2(self, tc1, tc2):
+
+        distance, _, _ = directed_hausdorff(tc1, tc2)#self.hausdorff_distance(tc1, tc2)
+        return distance
+
 
     @staticmethod
     def build_image(states, save_path="test.png"):

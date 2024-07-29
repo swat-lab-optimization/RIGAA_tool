@@ -169,6 +169,7 @@ def main(
 
     if n_offsprings is None:
         n_offsprings = int(cf.ga["pop_size"])
+        n_offsprings = int(cf.ga["pop_size"])
 
     if algo == "rigaa" or algo == "rigaa_s":
         rl_pop_percent = ro
@@ -208,6 +209,7 @@ def main(
     
     now = datetime.now()
     dt_string = now.strftime("%d-%m-%Y")
+    tcs_hyper = {}
     for m in range(runs_number):
         log.info("Executing run %d: ", m)
         if (random_seed is not None) and (m == 0):
@@ -217,8 +219,8 @@ def main(
 
         log.info("Using random seed: %s", seed)
 
-
-        sim_path = dt_string + algo + "-results_BEAM_NG_ro2_" + str(rl_pop_percent)
+        
+        sim_path = dt_string + algo + "-results_BEAM_NG_ro_" + str(rl_pop_percent)
         sim_path = os.path.join(sim_path, str(m))
 
         res = minimize(
@@ -233,18 +235,19 @@ def main(
         )
 
         log.info("Execution time, %f sec", res.exec_time)
-
+        
         test_suite = get_test_suite(res, algo)
         tc_stats["run" + str(m)] = get_stats(res, problem, algo)
         tcs["run" + str(m)] = test_suite
-        tcs_all_stats["run" + str(m)] = res.problem.execution_data
+        if full:
+            tcs_all_stats["run" + str(m)] = res.problem.execution_data
 
 
-        tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
+        tcs_convergence["run" + str(m)], tcs_hyper["run" + str(m)] = get_convergence(res, n_offsprings)
 
         if save_results == "True":
-            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_all_stats, dt_string, algo, problem, "_ro2_" + str(rl_pop_percent))
-            save_tcs_images(test_suite, problem, m, algo, dt_string, "_ro2_" + str(rl_pop_percent))
+            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_hyper, tcs_all_stats, dt_string, algo, problem, "_ro_" + str(rl_pop_percent))
+            save_tcs_images(test_suite, problem, m, algo, dt_string, "_ro_" + str(rl_pop_percent))
 
 
         if full:
@@ -269,3 +272,5 @@ if __name__ == "__main__":
         args.n_offsprings,
         ro=args.ro
     )
+#
+# python optimize.py --problem "vehicle" --algorithm "rigaa" --runs 20 --save_results "True" --n_eval 65000 --debug "False"

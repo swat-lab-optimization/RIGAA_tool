@@ -30,8 +30,9 @@ class VehicleProblem1Obj(ElementwiseProblem):
         self.execution_data = {}
 
         res_path = sim_path#"BeamNG_res"
-        if not (os.path.exists(res_path)):
-            os.makedirs(res_path)
+        if full:
+            if not (os.path.exists(res_path)):
+                os.mkdir(res_path)
         self.executor = BeamngExecutor(
             res_path,
             cf.vehicle_env["map_size"],
@@ -96,8 +97,9 @@ class VehicleProblem2Obj(ElementwiseProblem):
         self.full = full
         self.execution_data = {}
         res_path = sim_path#"BeamNG_res"
-        if not (os.path.exists(res_path)):
-            os.makedirs(res_path)
+        if full:
+            if not (os.path.exists(res_path)):
+                os.makedirs(res_path)
         self.executor = BeamngExecutor(
             res_path,
             cf.vehicle_env["map_size"],
@@ -110,6 +112,7 @@ class VehicleProblem2Obj(ElementwiseProblem):
         self.current_test = 0
         self.n_sim = 0
         self.num_failures = 0
+        self._name = "vehicle"
 
     def _evaluate(self, x, out, *args, **kwargs):
         """
@@ -183,8 +186,11 @@ class VehicleProblem2Obj(ElementwiseProblem):
         algorithm = kwargs["algorithm"]
 
         solutions = algorithm.pop.get("X")
+        solutions_sort = sorted(
+           solutions, key=lambda x: abs(x[0].fitness), reverse=True
+        )
         if (solutions.size > 0) and (s.fitness < -1):
-            top_solutions = solutions[0:5]
+            top_solutions = solutions_sort[0:10]
             best_scenarios = [
                 top_solutions[i][0].states for i in range(len(top_solutions))
             ]
@@ -195,7 +201,7 @@ class VehicleProblem2Obj(ElementwiseProblem):
                 novelty_list.append(nov)
             s.novelty = sum(novelty_list) / len(novelty_list)
         else:
-            s.novelty = 0
+            s.novelty = -0.001
 
         out["F"] = [s.fitness, s.novelty]
         self.current_test += 1
