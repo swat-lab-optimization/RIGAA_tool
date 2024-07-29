@@ -31,13 +31,14 @@ class VehicleProblem1Obj(ElementwiseProblem):
 
         res_path = sim_path#"BeamNG_res"
         if not (os.path.exists(res_path)):
-            os.mkdir(res_path)
+            os.makedirs(res_path)
         self.executor = BeamngExecutor(
             res_path,
             cf.vehicle_env["map_size"],
+            oob_tolerance=0.85,
             time_budget=8000,
-            beamng_home="",
-            beamng_user="",
+            beamng_home="C:\\Users\\DmytroHUMENIUK\\Documents\\BeamNG.tech.v0.26.2.0",
+            beamng_user="C:\\Users\\DmytroHUMENIUK\\Documents\\BeamNG.tech.v0.26.2.0_user",
             road_visualizer=None,
         )
         self.current_test = 0

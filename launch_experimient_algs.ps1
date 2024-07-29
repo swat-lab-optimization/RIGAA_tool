@@ -2,14 +2,15 @@
 $args = @(
     "--problem", "vehicle",
     "--algorithm", "rigaa",
-    "--runs", "3",
+    "--runs", "5",
     "--save_results", "True",
     "--eval_time", "02:05:00",
-    "--full", "True"
+    "--full", "True",
+    "--ro", "0.2",
 )
 
 # Define the different algorithm options
-$algorithms = @( "rigaa", "nsga2", "smsemoa", "rigaa_s", "random")
+$algorithms = @( "rigaa",  "rigaa_s", "smsemoa") #"nsga2", "smsemoa",
 
 # Loop through different values of "--algorithm"
 foreach ($algorithm in $algorithms) {

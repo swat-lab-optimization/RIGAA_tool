@@ -12,6 +12,7 @@ ALRGORITHMS = {
     "smsemoa": SMSEMOA,
     "rigaa": NSGA2,
     "rigaa_s" : SMSEMOA,
-    "random": RandomSearch
+    "random": RandomSearch,
+    "random_rl": RandomSearch
 }
 

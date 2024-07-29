@@ -168,10 +168,12 @@ def main(
 
 
     if n_offsprings is None:
-        n_offsprings = int(cf.ga["pop_size"]/2)
+        n_offsprings = int(cf.ga["pop_size"])
 
     if algo == "rigaa" or algo == "rigaa_s":
         rl_pop_percent = ro
+    elif algo == "random_rl":
+        rl_pop_percent = 1
     else:
         rl_pop_percent = 0
     algorithm = ALRGORITHMS[algo](
@@ -216,7 +218,7 @@ def main(
         log.info("Using random seed: %s", seed)
 
 
-        sim_path = dt_string + "-rigaa-results_BEAM_NG_ro_" + str(rl_pop_percent)
+        sim_path = dt_string + algo + "-results_BEAM_NG_ro2_" + str(rl_pop_percent)
         sim_path = os.path.join(sim_path, str(m))
 
         res = minimize(
@@ -241,8 +243,8 @@ def main(
         tcs_convergence["run" + str(m)] = get_convergence(res, n_offsprings)
 
         if save_results == "True":
-            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_all_stats, dt_string, algo, problem, "_ro_" + str(rl_pop_percent))
-            save_tcs_images(test_suite, problem, m, algo, dt_string, "_ro_" + str(rl_pop_percent))
+            save_tc_results(tc_stats, tcs, tcs_convergence, tcs_all_stats, dt_string, algo, problem, "_ro2_" + str(rl_pop_percent))
+            save_tcs_images(test_suite, problem, m, algo, dt_string, "_ro2_" + str(rl_pop_percent))
 
 
         if full:

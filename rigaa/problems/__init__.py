@@ -15,4 +15,5 @@ PROBLEMS = {
     "vehicle_rigaa_s": VehicleProblem2Obj,
     "robot_rigaa": RobotProblem2Obj,
     "robot_rigaa_s": RobotProblem2Obj,
+    "vehicle_random_rl": VehicleProblem1Obj
 }
