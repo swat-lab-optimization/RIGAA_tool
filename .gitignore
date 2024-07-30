@@ -151,6 +151,15 @@ logs.txt
 novelty_debug.py
 
 *zip*
+
+
+!results_1st_revision_arxiv_version/*.json
+!results_1st_revision_arxiv_version/**/*.json
+!results_1st_revision_arxiv_version/**/*.csv
+!results_1st_revision_arxiv_version/*.png
+!results_1st_revision_arxiv_version/**/*.png
+
+
 !rigaa_diagram.png
 # Except JSON files in the root "results" folder
 !results/*.json
