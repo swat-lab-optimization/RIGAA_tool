@@ -21,7 +21,7 @@
 [![DOI](https://zenodo.org/badge/580930128.svg)](https://zenodo.org/badge/latestdoi/580930128)
 
 <p align="center">
-  <b>Current Tool Version: 0.1.0</b>
+  <b>Current Tool Version: 1.0.1</b>
 </p>
 
 To improve the computational efficiency of the search-based testing, we propose augmenting the evolutionary
@@ -61,7 +61,7 @@ Please cite the following paper if you use this tool in your research:
 ```
 
 ## Usage
-RIGAA tool can be used as a search-based test case generation tool, guided by a system behaviour in a simulator or by a surrogate (simplified) fitness function. We also provide scripts for traiinig and evaluating test generation RL agents.
+RIGAA tool can be used as a search-based test case generation tool, guided by a system behaviour in a simulator or by a surrogate (simplified) fitness function. We also provide scripts for trainig and evaluating test generation RL agents.
 
 To use the tool first, make sure your environment is with ``python>=3.7`` and install the requirements with:
 ```python
@@ -156,9 +156,9 @@ pip install -e .
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your_path/.mujoco/mujoco210/bin
 ```
-9. At this point you should be able to run the simulator guided search search for the ``robot`` problem. To do so, run the following command:
+9. At this point you should be able to run the simulator guided search search for the ``robot`` problem. To do so, and run the search for 2 hours run the following command:
 ```python
-python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --n_eval 8000 --n_offsprings 100 --full True
+python optimize.py --problem robot --algorithm rigaa --runs 30 --save_results True --eval_time "02:00:00" --full True
 ```
 10. The provided installation instructions were based on the one provided in the D4RL repository. For more details, please refer to the [D4RL repository](https://github.com/Farama-Foundation/D4RL).
 
@@ -187,27 +187,99 @@ Copy the tech.key file that you received after registering inside the <BEAMNG_US
 > NOTE: Our pipeline supports also the previous simulator version, i.e., `BeamNG.tech v0.26.1.0`. 
 
 
-4. Enter the `<BEAMNG_HOME>` and `<BEAMNG_USER>`paths to the [vehicle_solition.py](rigaa/solutions/vehicle_solution.py) file.
+4. Enter the `<BEAMNG_HOME>` and `<BEAMNG_USER>`paths to the [vehicle_problem.py](rigaa/problems/vehicle_problem.py) file, specifically ```VehicleProblem2Obj``` class.
 ```python
-executor  = BeamngExecutor(res_path, cf.vehicle_env["map_size"],
-                                    time_budget=360,
-                                    beamng_home="<BemaNG_home_path>", 
-                                    beamng_user="<BeamNG_user_path>",
-                                    road_visualizer=None) 
+        self.executor = BeamngExecutor(
+            res_path,
+            cf.vehicle_env["map_size"],
+            time_budget=8000,
+            beamng_home="",
+            beamng_user="",
+            road_visualizer=None,
+        )
 ```
+Here are examples of the paths: ```beamng_home="...\\Documents\\BeamNG.tech.v0.26",
+            beamng_user="...\\Documents\\BeamNG.tech.v0.26_user".```
 
 5. At this point you should be able to run the simulator guided search search for the ``vehicle`` problem. To do so, run the following command to run the search algorithm for 2 hours:
 ```python
-python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --eval_time "01:30:00" --full True
+python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --eval_time "02:00:00" --full True
 ```
 
 ## Replication package
 
 Below we provide the instrucions on how to replicate the results presented in each RQ of the paper.
 
-### RQ1: *Comparing the performance of the RL-based test generator and random test generator*
 
-For comparing random and RL-based test generator for autonomous robot problem, we used the following commands (to use the simulator for comparison use the ``full`` argument):
+
+### RQ1: *Usefulness of RIGAA for simulator-based testing of autonomous robotic systems*
+
+To replicate the data we obtained in our experiments, run the following command:
+```python
+python optimize.py --problem <problem> --algorithm <algorithm> --runs 10 --eval_time "02:00:00" --full True
+```
+For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``<algorithm>`` we used the following values: *``"random"``, ``"nsga2"``,  ``random_rl``, ``"rigaa"`` (with ρ=0.4)*. Here ``random_rl`` corresponds to scenario generation only with the pre-trained RL agent, without the evolutionary search.
+
+For the comparing the performace of the lane-keeping assist system (LKAS) testing tools, such as WOGAN, AmbieGen, Frenetic, CRAG and RIGAA we used the pipeline provided by the [SBST 2022 tool competition](https://github.com/se2p/tool-competition-av). We followed the [instructions provided](https://github.com/sbft-cps-tool-competition/cps-tool-competition/blob/tools/run.py) for running each tool and executed the search for 10 hours for each tool. We ran RIGAA with the command provided above.
+
+To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command for comparing RIGAA to random search, RL generator and NSGA-II:
+
+```python
+python compare.py --stats_path "results\RQ1\robot\random" "results\RQ1\robot\nsga2" "results\RQ1\robot\random_rl" "results\RQ1\robot\rigaa" --stats_names "Random" "NSGA2" "RL" "RIGAA" --plot_name "rq1_robot" --all_tests
+```
+```python
+python compare.py --stats_path "results\RQ1\vehicle\random" "results\RQ1\vehicle\nsga2" "results\RQ1\vehicle\random_rl" "results\RQ1\vehicle\rigaa" --stats_names "Random" "NSGA2" "RL" "RIGAA" --plot_name "rq1_vehicle" --all_tests
+```
+To obtain the evalaution of the sparseness according to the same metric as in SBFT/SBST tool competitions run the following command (the sparseness plot in the paper is obtained from this command):
+
+```python
+python compare.py --stats_path "results\RQ1\vehicle\random" "results\RQ1\vehicle\nsga2" "results\RQ1\vehicle\random_rl" "results\RQ1\vehicle\rigaa" --stats_names "Random" "NSGA2" "RL" "RIGAA" --plot_name "rq1_vehicle" --tools
+```
+
+To visulalize the results for the LKAS testing tools, run the following command:
+```python
+python compare.py --stats_path "results\RQ1\vehicle\wogan" "results\RQ1\vehicle\frenetic" "results\RQ1\vehicle\ambiegen" "results\RQ1\vehicle\crag" "results\RQ1\vehicle\rigaa" --stats_names "WOGAN", "Frenetic", "AmbieG", "CRAG", "RIGAA" --plot_name "rq1_vehicle_baselines" --tools
+```
+
+
+### RQ2: *Selecting the *ρ* hyperparameter of the RIGAA algorithm*
+
+To replicate the data we obtained in our experiments, run the following command:
+```python
+python optimize.py --problem <problem> --algorithm "rigaa" --runs 10 --eval_time "02:00:00" --full True --ro <ρ value>
+```
+For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``ρ`` we used the following values: *0.2, 0.4, 0.6, 0.8, 1*. 
+
+To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command for the robot problem:
+```python
+python compare.py --stats_path "results\RQ2\robot\nsga2" "results\RQ2\robot\rigaa\0.2" "results\RQ2\robot\rigaa\0.4" "results\RQ2\robot\rigaa\0.6" "results\RQ2\robot\rigaa\0.8" "results\RQ2\robot\rigaa\1" --stats_names "0" "0.2" "0.4" "0.6" "0.8" "1" "--plot_name" "rq2_robot" "--all_tests"
+```
+For the vehicle problem:
+```python
+python compare.py --stats_path "results\RQ2\vehicle\nsga2" "results\RQ2\vehicle\rigaa\0.2" "results\RQ2\vehicle\rigaa\0.4" "results\RQ2\vehicle\rigaa\0.6" "results\RQ2\vehicle\rigaa\0.8" "results\RQ2\vehicle\rigaa\1" --stats_names "0" "0.2" "0.4" "0.6" "0.8" "1" "--plot_name" "rq2_vehicle" "--tools"
+```
+
+### RQ3: *Comparing RIGAA and randomly initialized MOEA*
+To replicate the data we obtained in our experiments, run the following command:
+```python
+python optimize.py --problem <problem> --algorithm <algorithm> --runs 10 --eval_time "02:00:00" --full True
+```
+For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``<algorithm>`` we used the following values: *``"random"``, ``"nsga2"``, ``"smsemoa"``, ``"rigaa"`` and ``"rigaa_s"``*. 
+
+To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command for the robot problem:
+
+```python
+python compare.py --stats_path "results\RQ3\robot\nsga2" "results\RQ3\robot\rigaa" "results\RQ3\robot\semoa" "results\RQ3\robot\s_rigaa" --stats_names "NSGA-II" "RIGAA" "SEMOA"  "SRIGAA" --plot_name "rq3_robot" --all_tests
+```
+For the vehicle problem:
+```python
+python compare.py --stats_path "results\RQ3\vehicle\nsga2" "results\RQ3\vehicle\rigaa" "results\RQ3\vehicle\semoa" "results\RQ3\vehicle\s_rigaa" --stats_names "NSGA-II" "RIGAA" "SEMOA"  "SRIGAA" --plot_name "rq3_vehicle" --tools
+```
+You can use an analogical command to process the results for the vehicle problem.
+
+### RQ4: *Comparing the performance of the RL-based test generator and random test generator*
+
+For comparing random and RL-based test generator we used the following commands (to use the simulator for evaluating the fitness function use the ``full`` argument, otherwise the surrogate fitness function will be used):
 ```python
 python compare_generators.py --problem <problem> --runs 30 --tc_num 30
 ```
@@ -216,67 +288,16 @@ python compare_generators.py --problem <problem> --runs 30 --tc_num 30
 python compare_generators.py --problem <problem> --runs 10 --tc_num 30 --full True
 ```
 The script will generate the file with the statistics in terms of fitness and diversity of the generated test scenarios with random and RL based generators.
-The obtained results are stored in the [``results/RQ1``](/results/RQ1) folder.  
+The obtained results are stored in the [``results/RQ4``](/results/RQ4) folder.  
 To visualize the results (i.e. obtain the boxplots as well as the tables with statistical tests) run the following command with the ``compare.py`` script:
 
 ```python
-python compare.py  --stats_path "/results/RQ1/09-03-2023_stats_random_gen_vehicle" "results/RQ1/09-03-2023_stats_rl_gen_vehicle" --stats_names "Random" "RL agent" --plot_name "rq1_vehicle_full"
+python compare.py  --stats_path "results\RQ4\vehicle\full\09-03-2023_stats_random_gen_vehicle" "results\RQ4\vehicle\full\09-03-2023_stats_rl_gen_vehicle" --stats_names "Random" "RL agent" --plot_name "rq4_vehicle_full"
 ```
-where ``stats_names`` and ``plot-name`` can be chosen arbitrary and are only used for visualisation and storage.
-
-### RQ2: *Selecting the *ρ* hyperparameter of the RIGAA algorithm*
-
-To replicate the data we obtained in our experiments, run the following command:
-```python
-python optimize.py --problem <problem> --algorithm "rigaa" --runs 30 --n_eval <eval_num> --ro <ρ value>
-```
-For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``ρ`` we used the following values: *0.2, 0.4, 0.6, 0.8, 1*. For the ``robot`` problem the ``<eval_num>`` was 8000 and for the ``vehicle`` 65000.
-
-To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command:
-```python
-python compare.py --stats_path "results/RQ2/robot/07-02-2023_stats2_rigaa_robot" "results/RQ2/robot/08-02-2023_stats_04_rigaa_robot" "results/RQ2/robot/08-02-2023_stats_06_rigaa_robot/" "results/RQ2/robot/08-02-2023_stats_08_rigaa_robot/" "results/RQ2/robot/08-02-2023_stats_1_rigaa_robot/" --stats_names "0.2" "0.4" "0.6" "0.8" "1" --plot_name "rq2_robot"
-```
-You can use an analogical command to process the results for the vehicle problem using the results for the [vehicle problem](results/RQ2/vehicle/).
-
-### RQ3: *Comparing RIGAA and randomly initialized MOEA*
-To replicate the data we obtained in our experiments, run the following command:
-```python
-python optimize.py --problem <problem> --algorithm <algorithm> --runs 30 --n_eval <eval_num>
-```
-For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``<algorithm>`` we used the following values: *``"random"``, ``"nsga2"``, ``"smsemoa"``, ``"rigaa"`` and ``"rigaa_s"``*. For the ``robot`` problem the ``<eval_num>`` was 8000 and for the ``vehicle`` 65000.
-
-To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command:
-
-```python
-python compare.py --stats_path "results/RQ3/robot/08-02-2023_stats_random_robot" "results/RQ3/robot/07-02-2023_stats2_nsga2_robot" "results/RQ3/robot/31-03-2023_stats_smsemoa_robot" "results/RQ3/robot/07-02-2023_stats2_rigaa_robot" "results/RQ3/robot/31-03-2023_stats_rigaa_s_robot" --stats_names "Random" "NSGA-II" "SMSEMOA" "RIGAA" "RIGAA_S" --plot_name "rq3_robot"
-```
-You can use an analogical command to process the results for the vehicle problem.
-
-### RQ4: *Usefulness of RIGAA for simulator-based testing of autonomous robotic systems*
-
-To replicate the data we obtained in our experiments, run the following command:
-```python
-python optimize.py --problem <problem> --algorithm <algorithm> --runs 30 --eval_time "02:00:00" --full True
-```
-For the ``<problem>`` you can specify either ``robot`` or ``vehicle``, for the ``<algorithm>`` we used the following values: *``"random"``, ``"nsga2"``,  ``"rigaa"`` (with ρ=0.4)*. 
-
-For the comparing the performace of the lane-keeping assist system (LKAS) testing tools, such as AmbieGen, Frenetic and RIGAA we used the pipeline provided by the [SBST 2022 tool competition](https://github.com/se2p/tool-competition-av).  
-
-To build the fitness, diversity and convergence plots as well as obtain statistical testing results, run the following command for comparing RIGAA to random search and NSGA-II:
-
-```python
-python compare.py --stats_path "results/RQ4/robot/04-03-2023_stats_fit_random_robot" "results/RQ4/robot/04-03-2023_stats_fit_nsga2_robot" "results/RQ4/robot/05-03-2023_fit_rigaa_robot" --stats_names "Random" "NSGA2" "RIGAA" --plot_name "rq4_robot"
-```
-(For the vehicle problem use the results from the [``results/RQ4/vehicle``](/results/RQ4/vehicle) folder.
-
-To visulalize the results for the LKAS testing tools, run the following command:
-```python
-python compare.py --stats_path "results/RQ4/vehicle/results_rigaa_2h/" "results/RQ4/vehicle/results_ambiegen_2h/" "/results/RQ4/vehicle/results_frenetic_2h/" --stats_names "RIGAA" "AmbieGen" "Frenetic" --plot_name "rq4_tools" --tools
-```
-
+where ``stats_names`` and ``plot-name`` can be chosen arbitrary and are only used for visualisation and storage. Analogical command can be used for the robot problem.
 ## Results processing
 
-After the RIGAA tool run, the experiment metadata, such as the fitness and diversity of the solutions, the best solution found at each generation, the final test scenarios specifications as well as the illustations of the scenarios are saved into the corresponding folders, with the name of the folder starting with a current date.
+After the RIGAA tool run, the experiment metadata, such as the fitness and diversity of the solutions, the number of failures, the test scenarios specifications as well as the illustations of the scenarios are saved into the corresponding folders, with the name of the folder starting with a current date.
 
 The obtained folders can be directly passed to the ``compare.py`` script to obtain the boxplots and statistical tests.
 

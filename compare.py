@@ -575,15 +575,9 @@ def analyse_all_test(tests_path, stats_names, plot_name):
             valid_tests = 0
             failed_test_list = []
             n_sim  = all_tests[run][list(all_tests[run].keys())[-1]]["n_sim"]
-            #n_sim  = len(list(all_tests[run].keys()))
-            #print(n_sim)
-            #if "random_rl" in file:
-            #    dt = 6500/n_sim
-            #else:
+
             if i==0 or i==2:
                 dt = 8000/n_sim
-            #if i == 2:
-            #    dt = 7800/n_sim
             elif i == 3:
                 dt = 7950/n_sim
             else:
@@ -591,9 +585,6 @@ def analyse_all_test(tests_path, stats_names, plot_name):
             dt = dt/60 # in minutes
             time_passed = 0
             for tc in all_tests[run]:
-                #print(file)
-                #print(run)
-                #print(tc)
                 if all_tests[run][tc]["info_validity"] == "True" : #and all_tests[run][tc]["fitness"] != 0
                     valid_tests += 1
                     time_passed += dt
@@ -611,7 +602,7 @@ def analyse_all_test(tests_path, stats_names, plot_name):
             valid_test_num.append(valid_tests/tot_tests)
             failure_percentage.append(fail_num/valid_tests)
             #print(fail_num)
-            if "BEAMNG" in file:
+            if "vehicle" in file:
                 problem = "vehicle"
             else:   
                 problem = "robot"
@@ -633,18 +624,15 @@ def analyse_all_test(tests_path, stats_names, plot_name):
         dfs[i] = dfs[i].iloc[:]
 
         dfs_time[i] = failure_convergence
-        #print(f"Size {len(dfs_time[i])}")
-        #dfs[i].drop([70:], axis=0)
 
-    #plot_convergence(dfs, stats_names, plot_name)
-    plot_convergence_time(dfs_time, stats_names, plot_name)
-    print(fail_num_list_all)
+    #plot_convergence_time(dfs_time, stats_names, plot_name)
+    #print(fail_num_list_all)
     
     
     plot_boxplot(fail_num_list_all, stats_names, "Number of failures", plot_name=plot_name)
-    plot_boxplot(tot_tests_num_all, stats_names, "Total tests generated", plot_name=plot_name)
-    plot_boxplot(valid_test_num_all, stats_names, "Percentage of valid tests", plot_name=plot_name)
-    plot_boxplot(failure_percentage_all, stats_names, "Percentage of failed tests", plot_name=plot_name)
+    #plot_boxplot(tot_tests_num_all, stats_names, "Total tests generated", plot_name=plot_name)
+    #plot_boxplot(valid_test_num_all, stats_names, "Percentage of valid tests", plot_name=plot_name)
+    #plot_boxplot(failure_percentage_all, stats_names, "Percentage of failed tests", plot_name=plot_name)
     plot_boxplot(novelty_list_all, stats_names, "Sparseness", plot_name=plot_name)
 
 
@@ -741,7 +729,7 @@ def analyse(stats_path, stats_names, plot_name):
         plot_boxplot(time_list, stats_names, "Time, s", max_time + 0.2, plot_name)
         build_times_table(time_list, stats_names)
 
-    if hyper_list:
+    if len(hyper_list[0]): # 
         max_hyper = max(max(hyper_list[0]), max(hyper_list[1]))
         plot_boxplot(hyper_list, stats_names, "Hypervolume", max_hyper + 10, plot_name)
 
@@ -750,11 +738,11 @@ def analyse(stats_path, stats_names, plot_name):
     )  # + 2
     plot_boxplot(novelty_list, stats_names, "Diversity", 1.05, plot_name)
 
-    build_median_table(hyper_list, novelty_list, stats_names, plot_name)
-    build_cliff_data(hyper_list, novelty_list, stats_names, plot_name)
+    build_median_table(fitness_list, novelty_list, stats_names, plot_name)
+    build_cliff_data(fitness_list, novelty_list, stats_names, plot_name)
 
-    compare_mean_best_values_found(hyper_list, stats_names, plot_name)
-    compare_p_val_best_values_found(hyper_list, stats_names, plot_name)
+    compare_mean_best_values_found(fitness_list, stats_names, plot_name)
+    compare_p_val_best_values_found(fitness_list, stats_names, plot_name)
 
 
 def analyse_tools(stats_path, stats_names, plot_name):

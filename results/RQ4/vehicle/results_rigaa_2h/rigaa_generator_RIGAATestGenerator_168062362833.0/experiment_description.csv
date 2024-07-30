@@ -1,2 +1,0 @@
-visualize_tests,time_budget,executor,oob_tolerance,map_size,module_name,class_name,beamng_home,beamng_user,dave2_model,speed_limit,module_path,log_to,debug
-True,7200,beamng,0.85,200,rigaa_generator,RIGAATestGenerator,C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0,C:\\DIMA\\BeamNG\\BeamNG.tech.v0.26.2.0_user,,70,,,False

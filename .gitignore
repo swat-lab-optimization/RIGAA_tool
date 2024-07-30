@@ -169,3 +169,4 @@ novelty_debug.py
 !models/*.zip
 
 !levels_template/**/*.json
+delete_json.bat

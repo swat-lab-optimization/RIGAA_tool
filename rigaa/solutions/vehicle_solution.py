@@ -79,8 +79,6 @@ class VehicleSolution:
 
     def eval_fitness_full(self):
 
-
-
         test_map = Map(self.map_size)
         road_points, new_states = test_map.get_points_from_states(self.states)
         self.intp_points = interpolate_road(road_points)
@@ -150,7 +148,7 @@ class VehicleSolution:
                         intersection.append(tc1[i])
         return intersection
 
-    def calculate_novelty(self, tc1, tc2):
+    def calculate_novelty2(self, tc1, tc2):
         """
         > The novelty of two test cases is the proportion of states that are unique to each test case
         We implement novelty calculation according to Jaccard distance definition:
@@ -174,7 +172,7 @@ class VehicleSolution:
         max_distance_from_points2 = distance_matrix.max(axis=0).min()
         return max(max_distance_from_points1, max_distance_from_points2)
     
-    def calculate_novelty2(self, tc1, tc2):
+    def calculate_novelty(self, tc1, tc2):
 
         distance, _, _ = directed_hausdorff(tc1, tc2)#self.hausdorff_distance(tc1, tc2)
         return distance
