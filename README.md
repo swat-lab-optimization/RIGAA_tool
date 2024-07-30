@@ -50,13 +50,18 @@ You can see examples of some of the failures revealed by RIGAA in the following 
 ## Citation
 Please cite the following paper if you use this tool in your research:
 ```bibtex
-@misc{humeniuk2023reinforcement,
-      title={Reinforcement Learning Informed Evolutionary Search for Autonomous Systems Testing}, 
-      author={Dmytro Humeniuk and Foutse Khomh and Giuliano Antoniol},
-      year={2023},
-      eprint={2308.12762},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO}
+@article{10.1145/3680468,
+author = {Humeniuk, Dmytro and Khomh, Foutse and Antoniol, Giuliano},
+title = {Reinforcement Learning Informed Evolutionary Search for Autonomous Systems Testing},
+year = {2024},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+issn = {1049-331X},
+url = {https://doi.org/10.1145/3680468},
+doi = {10.1145/3680468},
+journal = {ACM Trans. Softw. Eng. Methodol.},
+month = {jul},
+keywords = {test scenario generation, autonomous systems, virtual road topologies, virtual maze environments, reinforcement learning, evolutionary search}
 }
 ```
 
