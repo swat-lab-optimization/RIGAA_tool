@@ -170,3 +170,6 @@ novelty_debug.py
 
 !levels_template/**/*.json
 delete_json.bat
+merge_runs.py
+launch_experimient.ps1
+launch_experimient_algs.ps1
