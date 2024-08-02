@@ -210,7 +210,7 @@ Here are examples of the paths: ```beamng_home="...\\Documents\\BeamNG.tech.v0.2
 ```python
 python optimize.py --problem vehicle --algorithm rigaa --runs 30 --save_results True --eval_time "02:00:00" --full True
 ```
-
+As an option for the algorithm you can also use ```nsga2```, ```random```, ```smsemoa``` or ```rigaa_s```. The ```rigaa_s``` algorithm corresponds to the [`smsemoa`](https://pymoo.org/algorithms/moo/sms.html) algorithm with the RL agent based initialization.
 ## Replication package
 
 Below we provide the instrucions on how to replicate the results presented in each RQ of the paper.

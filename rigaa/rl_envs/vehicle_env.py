@@ -21,7 +21,7 @@ import config as cf
 from rigaa.utils.car_road import Map
 from rigaa.utils.vehicle_evaluate import interpolate_road
 from rigaa.utils.vehicle_evaluate import evaluate_scenario, is_valid_road
-from freneticlib.executors.bicycle.carlapidonbicycle import execute_carla_pid_on_bicycle
+#from freneticlib.executors.bicycle.carlapidonbicycle import execute_carla_pid_on_bicycle
 from rigaa.utils.road_validity_check import min_radius, interpolate_test
 
 from shapely import geometry, ops
@@ -186,13 +186,15 @@ class CarEnv(Env):
         if is_valid_road(intp_points): 
             x_coordinates, y_coordinates = zip(*intp_points)
 
-            #fitness, car_path = evaluate_scenario(intp_points, rl_train=True)
+            fitness, car_path = evaluate_scenario(intp_points, rl_train=True)
+            '''
             data = execute_carla_pid_on_bicycle(x_coordinates, y_coordinates, desired_speed=70,  pid_gains_long={"K_P": 5, "K_D": 0.01, "K_I": 0.01})
             p_x = data["pxs"]
             p_y = data["pys"]
             car_path = [p_x, p_y]
             lane_center =  geometry.LineString(np.array(intp_points))
             fitness = self.get_deviation(lane_center, zip(p_x, p_y))
+            '''
 
 
         return abs(fitness), car_path, intp_points

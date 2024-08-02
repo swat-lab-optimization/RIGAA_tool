@@ -10,3 +10,4 @@ beamngpy==1.24
 gym==0.26.2
 tensorboard==2.13.0
 shimmy>=0.2.1b
+gymnasium==0.28.1
